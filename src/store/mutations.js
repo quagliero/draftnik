@@ -1,0 +1,4 @@
+export const RECEIVE_TEAMS = 'RECEIVE_TEAMS';
+export const RECEIVE_DRAFTS = 'RECEIVE_DRAFTS';
+export const RECEIVE_PICKS = 'RECEIVE_PICKS';
+export const SELECT_TEAM = 'SELECT_TEAM';
