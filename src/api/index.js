@@ -13,4 +13,9 @@ export default {
     .then(response => response.json())
     .then(response => cb(response));
   },
+  getPickValuesBayesian(cb) {
+    window.fetch('/static/data/pick-values-bayesian.json')
+    .then(response => response.json())
+    .then(response => cb(response));
+  },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="card is-fullwidth" :class="{ 'is-selected' : isSelected }">
+  <div class="pick card is-fullwidth" :class="{ 'is-selected' : isSelected }" @click="handleClick">
     <b>{{ pick.overall }}</b><br>
     <small>{{ pick.round }}.{{ pick.pickInRound }}</small>
   </div>
@@ -24,10 +24,19 @@
         required: true,
       },
     },
+    methods: {
+      handleClick() {
+        this.$emit('click', this.pick);
+      },
+    },
   };
 </script>
 
 <style scoped>
+  .pick {
+    cursor: pointer;
+  }
+
   .is-selected {
     background-color: #00d1b2;
     color: white;

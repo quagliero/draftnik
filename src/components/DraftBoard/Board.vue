@@ -1,25 +1,32 @@
 <template>
   <section class="section">
     <div class="board container">
-      <h1 class="title" v-if="draft">{{ draft.name }}</h1>
+      <h1 class="title" v-if="currentDraft">{{ currentDraft.name }}</h1>
       <h1 class="title" v-else><i class="fa fa-spinner fa-spin"></i></h1>
-      <section v-if="draft">
+
+      <section v-if="currentDraft">
         <div class="columns is-mobile is-gapless is-multiline">
           <div class="column" v-for="team in teams">
             <team :team="team"></team>
           </div>
         </div>
       </section>
-      <section v-if="draft">
-        <round v-for="(round, key) in picksByRound" :round="round"></round>
+      <section v-if="currentDraft">
+        <round v-for="(round, key) in picksByRound"
+          :round="round"
+          @click="launchPickModal">
+        </round>
       </section>
     </div>
+    <modal v-if="showModal" :modalContent="modalContent" @close="showModal = false"></modal>
   </section>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Round from './Round.vue';
 import Team from './Team.vue';
+import Modal from '../Modal.vue';
 import roundPicksMap from '../../utils/utils';
 
 export default {
@@ -27,33 +34,61 @@ export default {
   components: {
     Team,
     Round,
+    Modal,
   },
   data() {
     return {
       title: 'The Draft Board',
+      showModal: false,
+      modalContent: '',
     };
   },
   computed: {
-    draft() {
-      return this.$store.getters.currentDraft;
-    },
+    ...mapGetters([
+      'bayesianValues',
+      'currentDraft',
+    ]),
     teams() {
-      return this.draft.users;
+      return this.currentDraft.users;
     },
     picksByRound() {
-      return roundPicksMap(this.draft.rounds, this.draft.picks);
+      return roundPicksMap(this.currentDraft.rounds, this.currentDraft.picks);
+    },
+    bayesianMaxValue() {
+      return this.bayesianValues.filter(p => p.overall === 1).pop().value;
     },
   },
   methods: {
-    highlightManagerPicks(managerId) {
-      return this.draft.picks.filter(a => Number(a.user_id) === Number(managerId));
+    launchPickModal(pick) {
+      const team = this.getTeamById(pick.team);
+      const pickValues = this.getPickValues(pick);
+      const value = (pickValues.value / this.bayesianMaxValue) * 100;
+
+      this.modalContent = `
+        <h3 class="title">Pick #${pick.overall} (${pick.round}.${pick.pickInRound})</h3>
+        <p>Currently owned by: ${team.name}</p>
+        <p>fantasyfootballdraftcalculator.com value: <strong>${pickValues.value}</strong></p>
+        <progress class="progress" value="${value}" max="100">${value}%</progress>
+        <p>
+          <button class="button is-primary">Trade for this pick</button>
+          <button class="button is-secondary">Add to trade</button>
+        </p>
+      `;
+      this.showModal = true;
+    },
+    getTeamById(id) {
+      return this.teams.filter(team => team.id === id).pop();
+    },
+    getPickValues(pick) {
+      return this.bayesianValues.filter(p => p.overall === pick.overall).pop();
     },
   },
   created() {
     this.$store.dispatch('getAllDrafts');
+    this.$store.dispatch('getPickValuesBayesian');
   },
   ready() {
-    this.picks = this.draft.picks;
+    this.picks = this.currentDraft.picks;
   },
 };
 
