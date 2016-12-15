@@ -16,6 +16,7 @@
       </section>
       <section v-if="currentDraft">
         <round v-for="(round, key) in picksByRound"
+          :index="key"
           :round="round"
           :boardView="boardView"
           :adp="adp"
@@ -113,9 +114,9 @@ export default {
   .columns {
     margin-bottom: 1rem;
   }
-  .columns:nth-child(even) {
-    flex-direction: row-reverse;
-  }
+  // .columns:nth-child(even) {
+  //   flex-direction: row-reverse;
+  // }
 }
 
 </style>
