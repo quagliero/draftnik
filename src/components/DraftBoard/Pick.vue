@@ -3,7 +3,7 @@
     <b>{{ pick.overall }}</b><br>
     <small>{{ pick.round }}.{{ pick.pickInRound }}</small>
     <div v-if="boardView === 'adp'">
-      {{ playerInfo.name }}
+      <span class="player-name">{{ playerInfo.name }}</span>
     </div>
   </div>
 </template>
@@ -58,6 +58,8 @@
   .pick {
     cursor: pointer;
     height: 100%;
+    word-break: break-word;
+    padding: 0.2em;
   }
 
   .rb {
@@ -82,6 +84,10 @@
 
   .def {
     background-color: #fbbf69;
+  }
+
+  .player-name {
+    font-size: 0.9em;
   }
 
   .is-selected {
