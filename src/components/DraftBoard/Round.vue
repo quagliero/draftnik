@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-mobile is-gapless is-multiline">
     <div class="column" v-for="pick in round">
-      <pick :pick="pick" @click="handleClick"></pick>
+      <pick :pick="pick" :boardView="boardView" :adp="adp" :players="players" @click="handleClick"></pick>
     </div>
   </div>
 </template>
@@ -18,6 +18,16 @@
       round: {
         type: Array,
         required: true,
+      },
+      boardView: {
+        type: String,
+        required: true,
+      },
+      adp: {
+        type: Array,
+      },
+      players: {
+        type: Array,
       },
     },
     methods: {

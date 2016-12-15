@@ -3,7 +3,10 @@
     <div class="board container">
       <h1 class="title" v-if="currentDraft">{{ currentDraft.name }}</h1>
       <h1 class="title" v-else><i class="fa fa-spinner fa-spin"></i></h1>
-
+      <div class="content">
+        <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
+        <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
+      </div>
       <section v-if="currentDraft">
         <div class="columns is-mobile is-gapless is-multiline">
           <div class="column" v-for="team in teams">
@@ -14,6 +17,9 @@
       <section v-if="currentDraft">
         <round v-for="(round, key) in picksByRound"
           :round="round"
+          :boardView="boardView"
+          :adp="adp"
+          :players="players"
           @click="launchPickModal">
         </round>
       </section>
@@ -41,12 +47,15 @@ export default {
       title: 'The Draft Board',
       showModal: false,
       modalContent: '',
+      boardView: 'pick',
     };
   },
   computed: {
     ...mapGetters([
       'bayesianValues',
       'currentDraft',
+      'adp',
+      'players',
     ]),
     teams() {
       return this.currentDraft.users;
@@ -67,7 +76,7 @@ export default {
       this.modalContent = `
         <h3 class="title">Pick #${pick.overall} (${pick.round}.${pick.pickInRound})</h3>
         <p>Currently owned by: ${team.name}</p>
-        <p>fantasyfootballdraftcalculator.com value: <strong>${pickValues.value}</strong></p>
+        <p>draftpicktradecalculator.com value: <strong>${pickValues.value}</strong></p>
         <progress class="progress" value="${value}" max="100">${value}%</progress>
         <p>
           <button class="button is-primary">Trade for this pick</button>
@@ -86,6 +95,8 @@ export default {
   created() {
     this.$store.dispatch('getAllDrafts');
     this.$store.dispatch('getPickValuesBayesian');
+    this.$store.dispatch('getPlayers');
+    this.$store.dispatch('getAdp');
   },
   ready() {
     this.picks = this.currentDraft.picks;

@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import teams from './modules/teams';
 import drafts from './modules/drafts';
+import players from './modules/players';
+import adp from './modules/adp';
 import pickValues from './modules/pick-values';
 
 Vue.use(Vuex);
@@ -13,6 +15,8 @@ export default new Vuex.Store({
   modules: {
     teams,
     drafts,
+    players,
+    adp,
     pickValues,
   },
   strict: debug,

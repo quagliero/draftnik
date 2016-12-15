@@ -18,4 +18,14 @@ export default {
     .then(response => response.json())
     .then(response => cb(response));
   },
+  getPlayers(cb) {
+    window.fetch('/static/data/players.json')
+    .then(response => response.json())
+    .then(response => cb(response));
+  },
+  getAdp(cb) {
+    window.fetch('/static/data/adp.json')
+    .then(response => response.json())
+    .then(response => cb(response));
+  },
 };

@@ -41,7 +41,7 @@
   }
 
   .is-selected {
-    background-color: #00d1b2;
+    background-color: #333;
     color: white;
   }
 </style>
