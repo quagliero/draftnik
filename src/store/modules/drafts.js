@@ -17,9 +17,12 @@ const getters = {
 // actions
 const actions = {
   getAllDrafts({ commit }) {
-    api.getDrafts(drafts => {
-      commit(types.RECEIVE_DRAFTS, { drafts });
-    });
+    // once we have them, don't bother again
+    if (!(state.all.length)) {
+      api.getDrafts(drafts => {
+        commit(types.RECEIVE_DRAFTS, { drafts });
+      });
+    }
   },
 };
 

@@ -1,8 +1,9 @@
 <template>
   <div class="pick card is-fullwidth" :class="[{ 'is-selected' : isSelected }, playerPositionClass ]" @click="handleClick">
     <b>{{ pick.overall }}</b><br>
-    <small>{{ pick.round }}.{{ pick.pickInRound }}</small>
-    <div v-if="boardView === 'adp'">
+    <small>{{ pick.round }}.{{ pick.pickInRound }}</small><br />
+    <em><small>{{ teamInfo.name }}</small></em>
+    <div v-show="boardView === 'adp'">
       <span class="player-name">{{ playerInfo.name }}</span>
     </div>
   </div>
@@ -13,24 +14,6 @@
 
   export default {
     name: 'pick',
-    computed: {
-      ...mapGetters([
-        'selectedTeam',
-      ]),
-      isSelected() {
-        return this.pick.team === this.selectedTeam;
-      },
-      playerInfo() {
-        const player = this.players.filter(p => this.adp[this.pick.overall - 1].id === p.id).pop();
-        return {
-          name: (player) ? player.name.split(', ').reverse().join(' ') : '',
-          position: (player) ? player.position : '',
-        };
-      },
-      playerPositionClass() {
-        return (this.boardView === 'adp') ? this.playerInfo.position.toLowerCase() : '';
-      },
-    },
     props: {
       pick: {
         type: Object,
@@ -44,6 +27,44 @@
       },
       players: {
         type: Array,
+      },
+    },
+    computed: {
+      ...mapGetters([
+        'selectedTeam',
+        'currentDraft',
+      ]),
+      isSelected() {
+        return this.pick.team === this.selectedTeam;
+      },
+      teamInfo() {
+        return this.currentDraft.users.filter(user => user.id === this.pick.team).pop();
+      },
+      playerPositionClass() {
+        if (this.boardView === 'adp') {
+          if (this.playerInfo.position) {
+            return this.playerInfo.position.toLowerCase();
+          }
+        }
+
+        return '';
+      },
+    },
+    asyncComputed: {
+      playerInfo: {
+        get() {
+          const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);
+          return new Promise(resolve => {
+            resolve({
+              name: (player) ? player.name.split(', ').reverse().join(' ') : '',
+              position: (player) ? player.position : '',
+            });
+          });
+        },
+        default: {
+          name: '',
+          position: '',
+        },
       },
     },
     methods: {
@@ -60,6 +81,7 @@
     height: 100%;
     word-break: break-word;
     padding: 0.2em;
+    transition: background-color 0.2s, color 0.2s;
   }
 
   .rb {

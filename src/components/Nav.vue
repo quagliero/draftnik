@@ -1,8 +1,8 @@
 <template>
   <nav class="nav-menu">
-    <a href="/board" class="nav-item is-tab is-active">Board</a>
-    <a class="nav-item is-tab" href="/me">My Draft</a>
-    <a class="nav-item is-tab" href="/trades">Trades</a>
+    <router-link to="/board" class="nav-item is-tab">Board</router-link>
+    <router-link to="/me" class="nav-item is-tab">My Draft</router-link>
+    <router-link to="/trades" class="nav-item is-tab">Trades</router-link>
   </nav>
 </template>
 
@@ -16,3 +16,7 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+
+</style>

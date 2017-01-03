@@ -14,9 +14,13 @@ const getters = {
 // actions
 const actions = {
   getPickValuesBayesian({ commit }) {
-    api.getPickValuesBayesian(pickValues => {
-      commit(types.RECEIVE_PICK_VALUES_BAYESIAN, { pickValues });
-    });
+    // pick values are static snapshot of 3rd party data so do not waste time and resource
+    // fetching them over and over and over and over
+    if (!(state.bayesian.length)) {
+      api.getPickValuesBayesian(pickValues => {
+        commit(types.RECEIVE_PICK_VALUES_BAYESIAN, { pickValues });
+      });
+    }
   },
 };
 

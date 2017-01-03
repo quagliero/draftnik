@@ -2,7 +2,7 @@
   <header class="nav">
     <div class="container">
       <span class="nav-left">
-        <logo class="nav-item is-brand"></logo>
+        <router-link to="/" exact><logo class="nav-item is-brand"></logo></router-link>
       </span>
       <site-nav class="nav-right"></site-nav>
     </div>
@@ -28,7 +28,5 @@ export default {
 </script>
 
 <style lang="scss">
-  // header {
-  //   padding: 0 0.5rem;
-  // }
+
 </style>

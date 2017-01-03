@@ -18,9 +18,12 @@ const getters = {
 // actions
 const actions = {
   getAdp({ commit }) {
-    api.getAdp(data => {
-      commit(types.RECEIVE_ADP, { data });
-    });
+    // adps change daily, so in the future compare a timestamp and only update if they differ
+    if (!(state.all.length)) {
+      api.getAdp(data => {
+        commit(types.RECEIVE_ADP, { data });
+      });
+    }
   },
 };
 

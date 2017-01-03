@@ -29,7 +29,9 @@
         selectTeam: 'SELECT_TEAM',
       }),
       handleClick(value) {
-        this.selectTeam({ teamId: value });
+        if (!(this.isSelected)) {
+          this.selectTeam({ teamId: value });
+        }
       },
     },
   };
