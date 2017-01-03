@@ -22,23 +22,16 @@
       boardView: {
         type: String,
       },
-      adp: {
-        type: Array,
-      },
-      players: {
-        type: Array,
-      },
     },
     computed: {
       ...mapGetters([
         'selectedTeam',
-        'currentDraft',
+        'selectedDraft',
+        'adp',
+        'players',
       ]),
       isSelected() {
         return this.pick.team === this.selectedTeam;
-      },
-      teamInfo() {
-        return this.currentDraft.users.filter(user => user.id === this.pick.team).pop();
       },
       playerPositionClass() {
         if (this.boardView === 'adp') {
@@ -51,6 +44,16 @@
       },
     },
     asyncComputed: {
+      teamInfo: {
+        get() {
+          const team = this.selectedDraft.users.find(user => user.id === this.pick.team);
+          return new Promise(resolve => resolve(team));
+        },
+        default: {
+          name: '',
+          position: '',
+        },
+      },
       playerInfo: {
         get() {
           const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);

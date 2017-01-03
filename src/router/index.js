@@ -6,7 +6,7 @@ import UserView from '../views/UserView.vue';
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history', // use html5 history API instead of /#!/ hashing URL routes
+  // mode: 'history', // use html5 history API instead of /#!/ hashing URL routes
   routes: [
     { path: '/', redirect: '/board' },
     { path: '/board', component: DraftBoardView },

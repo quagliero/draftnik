@@ -11,7 +11,7 @@ export default {
   name: 'site-nav',
   data() {
     return {
-      size: '',
+
     };
   },
 };

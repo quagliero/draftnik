@@ -38,7 +38,6 @@ function roundPicksMap(rounds, picks) {
     }
   */
 
-
   return map;
 }
 

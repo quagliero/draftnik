@@ -1,9 +1,9 @@
 <template>
   <section class="section">
     <div class="board container">
-      <div v-if="!currentDraft" class="title"><i class="fa fa-spinner fa-spin"></i></div>
-      <template v-if="currentDraft">
-        <h1 class="title">{{ currentDraft.name }}</h1>
+      <div v-if="!selectedDraft" class="title"><i class="fa fa-spinner fa-spin"></i></div>
+      <template v-if="selectedDraft">
+        <h1 class="title">{{ selectedDraft.name }}</h1>
         <div class="content">
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
@@ -16,17 +16,13 @@
           </div>
         </section>
         <section>
-          <transition-group name="fade" appear>
-            <round v-for="(round, key) in picksByRound"
-              :key="key"
-              :index="key"
-              :round="round"
-              :boardView="boardView"
-              :adp="adp"
-              :players="players"
-              @click="launchPickModal">
-            </round>
-          </transition-group>
+          <round v-if="picksByRound" v-for="(round, key) in picksByRound"
+            :key="key"
+            :index="key"
+            :round="round"
+            :boardView="boardView"
+            @click="launchPickModal">
+          </round>
         </section>
       </template>
     </div>
@@ -41,7 +37,6 @@ import { mapGetters } from 'vuex';
 import Round from '../components/DraftBoard/Round.vue';
 import Team from '../components/DraftBoard/Team.vue';
 import Modal from '../components/Modal.vue';
-import roundPicksMap from '../utils/utils';
 
 export default {
   name: 'draft-board',
@@ -60,15 +55,13 @@ export default {
   computed: {
     ...mapGetters([
       'bayesianValues',
-      'currentDraft',
+      'selectedDraft',
+      'picksByRound',
       'adp',
       'players',
     ]),
     teams() {
-      return this.currentDraft.users;
-    },
-    picksByRound() {
-      return roundPicksMap(this.currentDraft.rounds, this.currentDraft.picks);
+      return this.selectedDraft.users;
     },
     bayesianMaxValue() {
       return this.bayesianValues[0].value;

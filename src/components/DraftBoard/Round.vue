@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-mobile is-gapless is-multiline">
-    <div class="column" v-for="pick in checkRound">
-      <pick :pick="pick" :boardView="boardView" :adp="adp" :players="players" @click="handleClick"></pick>
+    <div class="column" v-for="pick in displayRound">
+      <pick :pick="pick" :boardView="boardView" @click="handleClick"></pick>
     </div>
   </div>
 </template>
@@ -26,17 +26,17 @@
         type: String,
         required: true,
       },
-      adp: {
-        type: Array,
-      },
-      players: {
-        type: Array,
-      },
+    },
+    data() {
+      return {
+        // create local version as we reverse it and therefore mutate the state
+        displayRound: this.round.slice(0),
+      };
     },
     computed: {
       checkRound() {
         // odd numbered rounds should print like a snake
-        return (this.index % 2 === 0) ? this.round.reverse() : this.round;
+        return (this.index % 2 === 0) ? this.displayRound.reverse() : this.displayRound;
       },
     },
     methods: {
