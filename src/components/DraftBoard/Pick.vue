@@ -46,8 +46,10 @@
     asyncComputed: {
       teamInfo: {
         get() {
-          const team = this.selectedDraft.users.find(user => user.id === this.pick.team);
-          return new Promise(resolve => resolve(team));
+          return new Promise(resolve => {
+            const team = this.selectedDraft.users.find(user => user.id === this.pick.team);
+            resolve(team);
+          });
         },
         default: {
           name: '',
@@ -56,8 +58,8 @@
       },
       playerInfo: {
         get() {
-          const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);
           return new Promise(resolve => {
+            const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);
             resolve({
               name: (player) ? player.name.split(', ').reverse().join(' ') : '',
               position: (player) ? player.position : '',

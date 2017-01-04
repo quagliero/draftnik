@@ -14,7 +14,6 @@
         type: Object,
         required: true,
       },
-      selectedTeam: {},
     },
     computed: {
       ...mapGetters([
