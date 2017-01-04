@@ -61,8 +61,8 @@
           return new Promise(resolve => {
             const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);
             resolve({
-              name: (player) ? player.name.split(', ').reverse().join(' ') : '',
-              position: (player) ? player.position : '',
+              name: player.name.split(', ').reverse().join(' '),
+              position: player.position,
             });
           });
         },

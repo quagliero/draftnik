@@ -108,9 +108,6 @@ export default {
     this.$store.dispatch('getPlayers');
     this.$store.dispatch('getAdp');
   },
-  ready() {
-
-  },
 };
 
 </script>
@@ -125,16 +122,20 @@ export default {
   }
 }
 
-.fade-enter-active, .fade-leave-active {
-  .modal-content {
-    margin-top: 0;
-    transition: margin-top .3s;
-  }
+// modal fade
+.modal-content {
+  transition: margin-top .3s;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+
 .fade-enter, .fade-leave-active {
+  opacity: 0;
+
   .modal-content {
     margin-top: -50%;
   }
 }
-
 </style>
