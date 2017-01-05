@@ -2,14 +2,15 @@
  * Mocking client-server processing
  */
 
+
 export default {
   getTeams(cb) {
-    window.fetch('//draftnik.app/api/users')
+    window.fetch(`${process.env.API_URL}/users`)
     .then(response => response.json())
     .then(response => cb(response));
   },
   getDrafts(cb) {
-    window.fetch('//draftnik.app/api/drafts')
+    window.fetch(`${process.env.API_URL}/drafts`)
     .then(response => response.json())
     .then(response => cb(response));
   },
