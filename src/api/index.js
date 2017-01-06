@@ -1,32 +1,24 @@
-/**
- * Mocking client-server processing
- */
-
+import axios from 'axios';
 
 export default {
   getTeams(cb) {
-    window.fetch(`${process.env.API_URL}/users`)
-    .then(response => response.json())
+    axios.get(`${process.env.API_URL}/users`)
     .then(response => cb(response));
   },
   getDrafts(cb) {
-    window.fetch(`${process.env.API_URL}/drafts`)
-    .then(response => response.json())
+    axios.get(`${process.env.API_URL}/drafts`)
     .then(response => cb(response));
   },
   getPickValuesBayesian(cb) {
-    window.fetch('/static/data/pick-values-bayesian.json')
-    .then(response => response.json())
+    axios.get('/static/data/pick-values-bayesian.json')
     .then(response => cb(response));
   },
   getPlayers(cb) {
-    window.fetch('/static/data/players.json')
-    .then(response => response.json())
+    axios.get('/static/data/players.json')
     .then(response => cb(response));
   },
   getAdp(cb) {
-    window.fetch('/static/data/adp.json')
-    .then(response => response.json())
+    axios.get('/static/data/adp.json')
     .then(response => cb(response));
   },
 };
