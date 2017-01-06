@@ -23,8 +23,8 @@ const actions = {
   getAllDrafts({ commit }) {
     // once we have them, don't bother again
     if (!(state.all.length)) {
-      api.getDrafts(drafts => {
-        commit(types.RECEIVE_DRAFTS, { drafts });
+      api.getDrafts(response => {
+        commit(types.RECEIVE_DRAFTS, { response });
         commit(types.MAP_PICKS);
       });
     }
@@ -33,9 +33,9 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_DRAFTS](stateObj, { drafts }) {
-    stateObj.all = drafts;
-    stateObj.selectedDraft = drafts[drafts.length - 1];
+  [types.RECEIVE_DRAFTS](stateObj, { response }) {
+    stateObj.all = response.data;
+    stateObj.selectedDraft = response.data[response.data.length - 1];
   },
   [types.SELECT_TEAM](stateObj, { teamId }) {
     stateObj.selectedTeam = teamId;

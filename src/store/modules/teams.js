@@ -14,16 +14,16 @@ const getters = {
 // actions
 const actions = {
   getAllTeams({ commit }) {
-    api.getTeams(teams => {
-      commit(types.RECEIVE_TEAMS, { teams });
+    api.getTeams(response => {
+      commit(types.RECEIVE_TEAMS, { response });
     });
   },
 };
 
 // mutations
 const mutations = {
-  [types.RECEIVE_TEAMS](stateObj, { teams }) {
-    stateObj.all = teams;
+  [types.RECEIVE_TEAMS](stateObj, { response }) {
+    stateObj.all = response.data.teams;
   },
 };
 

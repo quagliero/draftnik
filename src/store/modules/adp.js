@@ -20,8 +20,8 @@ const actions = {
   getAdp({ commit }) {
     // adps change daily, so in the future compare a timestamp and only update if they differ
     if (!(state.all.length)) {
-      api.getAdp(data => {
-        commit(types.RECEIVE_ADP, { data });
+      api.getAdp(response => {
+        commit(types.RECEIVE_ADP, { response });
       });
     }
   },
@@ -29,10 +29,10 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_ADP](stateObj, { data }) {
-    stateObj.all = data.adp.player;
-    stateObj.timestap = Number(data.adp.timestamp);
-    stateObj.totalDrafts = Number(data.adp.totalDrafts);
+  [types.RECEIVE_ADP](stateObj, { response }) {
+    stateObj.all = response.data.adp.player;
+    stateObj.timestap = Number(response.data.adp.timestamp);
+    stateObj.totalDrafts = Number(response.data.adp.totalDrafts);
   },
 };
 
