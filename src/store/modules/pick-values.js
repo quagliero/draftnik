@@ -27,7 +27,7 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_PICK_VALUES_BAYESIAN](stateObj, { response }) {
-    stateObj.bayesian = response.data.pickValues;
+    stateObj.bayesian = response.data;
   },
 };
 
