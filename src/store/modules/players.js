@@ -18,8 +18,8 @@ const actions = {
     // players are static (right now, anyway) so do not waste time and resource
     // fetching them over and over and over and over
     if (!(state.all.length)) {
-      api.getPlayers(data => {
-        commit(types.RECEIVE_PLAYERS, { data });
+      api.getPlayers(response => {
+        commit(types.RECEIVE_PLAYERS, { response });
       });
     }
   },
@@ -27,11 +27,11 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_PLAYERS](stateObj, { data }) {
+  [types.RECEIVE_PLAYERS](stateObj, { response }) {
     const allowedPos = /^(QB|RB|WR|TE|PK|Def)$/;
-    stateObj.all = data.players.player.filter(p => allowedPos.test(p.position))
+    stateObj.all = response.data.players.player.filter(p => allowedPos.test(p.position))
     .sort((a, b) => a.id - b.id);
-    stateObj.timestap = Number(data.players.timestamp);
+    stateObj.timestap = Number(response.data.players.timestamp);
   },
 };
 

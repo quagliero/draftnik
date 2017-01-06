@@ -17,8 +17,8 @@ const actions = {
     // pick values are static snapshot of 3rd party data so do not waste time and resource
     // fetching them over and over and over and over
     if (!(state.bayesian.length)) {
-      api.getPickValuesBayesian(pickValues => {
-        commit(types.RECEIVE_PICK_VALUES_BAYESIAN, { pickValues });
+      api.getPickValuesBayesian(response => {
+        commit(types.RECEIVE_PICK_VALUES_BAYESIAN, { response });
       });
     }
   },
@@ -26,8 +26,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_PICK_VALUES_BAYESIAN](stateObj, { pickValues }) {
-    stateObj.bayesian = pickValues;
+  [types.RECEIVE_PICK_VALUES_BAYESIAN](stateObj, { response }) {
+    stateObj.bayesian = response.data.pickValues;
   },
 };
 
