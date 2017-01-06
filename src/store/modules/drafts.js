@@ -34,8 +34,8 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_DRAFTS](stateObj, { response }) {
-    stateObj.all = response.data.drafts;
-    stateObj.selectedDraft = response.data.drafts[response.data.drafts.length - 1];
+    stateObj.all = response.data;
+    stateObj.selectedDraft = response.data[response.data.length - 1];
   },
   [types.SELECT_TEAM](stateObj, { teamId }) {
     stateObj.selectedTeam = teamId;
