@@ -23,7 +23,7 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_TEAMS](stateObj, { response }) {
-    stateObj.all = response.data.teams;
+    stateObj.all = response.data;
   },
 };
 
