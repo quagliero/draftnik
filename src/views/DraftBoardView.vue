@@ -98,11 +98,10 @@ export default {
     getPlayersInRange(pick) {
       // map players by IDs and find the 3 players around the current pick in the format
       // n-1, n, n+1
-      const players = this.adp.slice(pick - 1, pick + 2).map(pk =>
-        this.players.find(player => player.id === pk.id));
+      const adpChunk = this.adp.slice(pick - 2, pick + 2);
 
       // format it
-      return players.map(player => player.name.split(', ').reverse().join(' ')).join(', ');
+      return adpChunk.map(p => p.player.name.split(', ').reverse().join(' ')).join(', ');
     },
   },
   created() {

@@ -28,9 +28,7 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_PLAYERS](stateObj, { response }) {
-    const allowedPos = /^(QB|RB|WR|TE|PK|Def)$/;
-    stateObj.all = response.data.players.player.filter(p => allowedPos.test(p.position))
-    .sort((a, b) => a.id - b.id);
+    stateObj.all = response.data.players.player;
     stateObj.timestap = Number(response.data.players.timestamp);
   },
 };
