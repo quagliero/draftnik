@@ -6,7 +6,7 @@ export default {
     .then(response => cb(response));
   },
   getDrafts(cb) {
-    axios.get(`${process.env.API_URL}/drafts`)
+    axios.get('/static/data/drafts.json')
     .then(response => cb(response));
   },
   getPickValuesBayesian(cb) {

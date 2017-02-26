@@ -1,9 +1,9 @@
 <template>
   <section class="section">
     <div class="board container">
-      <div v-if="!selectedDraft" class="title"><i class="fa fa-spinner fa-spin"></i></div>
-      <template v-if="selectedDraft">
-        <h1 class="title">{{ selectedDraft.name }}</h1>
+      <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
+      <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
+      <template v-if="dataLoaded">
         <div class="content">
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
@@ -65,6 +65,9 @@ export default {
     },
     bayesianMaxValue() {
       return this.bayesianValues[0].value;
+    },
+    dataLoaded() {
+      return this.selectedDraft && this.picksByRound && this.players.length && this.adp.length;
     },
   },
   methods: {
