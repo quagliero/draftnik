@@ -28,7 +28,6 @@
         'selectedTeam',
         'selectedDraft',
         'adp',
-        'players',
       ]),
       isSelected() {
         return this.pick.team === this.selectedTeam;
@@ -59,10 +58,10 @@
       playerInfo: {
         get() {
           return new Promise(resolve => {
-            const player = this.players.find(p => this.adp[this.pick.overall - 1].id === p.id);
+            const pick = this.adp[Number(this.pick.overall) - 1];
             resolve({
-              name: player.name.split(', ').reverse().join(' '),
-              position: player.position,
+              name: pick.player.name.split(', ').reverse().join(' '),
+              position: pick.player.position,
             });
           });
         },
@@ -85,7 +84,7 @@
     cursor: pointer;
     height: 100%;
     word-break: break-word;
-    padding: 0.2em;
+    padding: 0.2em 0.3em;
     transition: background-color 0.2s, color 0.2s;
   }
 

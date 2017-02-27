@@ -6,7 +6,7 @@ function roundPicksMap(rounds, picks) {
 
   function getPick(pickNumber) {
     pickNumber = Number(pickNumber);
-    return picks.filter(a => Number(a.number) === pickNumber)[0];
+    return picks.filter(a => Number(a.overall) === pickNumber)[0];
   }
 
   for (let i = 1; i <= rounds; i += 1) {
@@ -18,7 +18,7 @@ function roundPicksMap(rounds, picks) {
       const pick = getPick(overall);
       map[i].push({
         team: Number(pick.user_id),
-        overall: Number(pick.number),
+        overall: Number(pick.overall),
         round: Number(i),
         pickInRound: Number(j),
       });
