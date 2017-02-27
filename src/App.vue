@@ -2,16 +2,19 @@
   <div id="app">
     <site-header></site-header>
     <router-view></router-view>
+    <trade-dock></trade-dock>
   </div>
 </template>
 
 <script>
 import SiteHeader from './components/Header.vue';
+import TradeDock from './components/TradeDock.vue';
 
 export default {
   name: 'app',
   components: {
     SiteHeader,
+    TradeDock,
   },
 };
 </script>
@@ -20,11 +23,10 @@ export default {
 @import './node_modules/bulma/bulma';
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: $text;
 }
 
 </style>

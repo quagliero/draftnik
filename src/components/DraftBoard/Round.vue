@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-mobile is-gapless is-multiline">
-    <div class="column" v-for="pick in displayRound">
+    <div class="column" v-for="pick in checkRound">
       <pick :pick="pick" :boardView="boardView" @click="handleClick"></pick>
     </div>
   </div>

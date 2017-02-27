@@ -67,6 +67,7 @@ export default {
       return this.bayesianValues[0].value;
     },
     dataLoaded() {
+      // we've got all the data we want
       return this.selectedDraft && this.picksByRound && this.players.length && this.adp.length;
     },
   },
@@ -90,10 +91,10 @@ export default {
       this.showModal = true;
     },
     getTeamById(id) {
-      return this.teams.filter(team => team.id === id).pop();
+      return this.teams.find(team => team.id === id);
     },
     getPickValues(pick) {
-      return this.bayesianValues.filter(p => p.overall === pick.overall).pop();
+      return this.bayesianValues.find(p => p.overall === pick.overall);
     },
     getPlayersInRange(pick) {
       // map players by IDs and find the 3 players around the current pick in the format
@@ -109,6 +110,7 @@ export default {
     this.$store.dispatch('getPickValuesBayesian');
     this.$store.dispatch('getPlayers');
     this.$store.dispatch('getAdp');
+    this.$store.dispatch('getSavedTrades');
   },
 };
 

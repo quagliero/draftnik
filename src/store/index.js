@@ -5,6 +5,7 @@ import drafts from './modules/drafts';
 import players from './modules/players';
 import adp from './modules/adp';
 import pickValues from './modules/pick-values';
+import trade from './modules/trade';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     players,
     adp,
     pickValues,
+    trade,
   },
   strict: debug,
 });

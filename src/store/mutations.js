@@ -7,3 +7,13 @@ export const RECEIVE_PICKS = 'RECEIVE_PICKS';
 export const RECEIVE_ADP = 'RECEIVE_ADP';
 export const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 export const SELECT_TEAM = 'SELECT_TEAM';
+
+export const RECEIVE_TRADES = 'RECEIVE_TRADES';
+export const CREATE_TRADE = 'CREATE_TRADE';
+export const ADD_PICK_TO_TEAM_A = 'ADD_PICK_TO_TEAM_A';
+export const ADD_PICK_TO_TEAM_B = 'ADD_PICK_TO_TEAM_B';
+export const REMOVE_PICK_FROM_TEAM_A = 'REMOVE_PICK_FROM_TEAM_A';
+export const REMOVE_PICK_FROM_TEAM_B = 'REMOVE_PICK_FROM_TEAM_B';
+export const CLEAR_TRADE = 'CLEAR_TRADE';
+export const SAVE_TRADE = 'SAVE_TRADE';
+export const LOAD_TRADE = 'LOAD_TRADE';
