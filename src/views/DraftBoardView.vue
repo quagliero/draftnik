@@ -1,31 +1,33 @@
 <template>
   <section class="section">
-    <div class="board container">
-      <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
-      <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
+    <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
+    <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
       <template v-if="dataLoaded">
         <div class="content">
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
         </div>
-        <section>
-          <div class="columns is-mobile is-gapless is-multiline">
-            <div class="column" v-for="team in teams">
-              <team :team="team"></team>
+        <div class="scroll-container">
+          <div class="board container">
+          <section>
+            <div class="columns is-mobile is-gapless is-multiline">
+              <div class="column" v-for="team in teams">
+                <team :team="team"></team>
+              </div>
             </div>
-          </div>
-        </section>
-        <section>
-          <round v-if="picksByRound" v-for="(round, key) in picksByRound"
-            :key="key"
-            :index="key"
-            :round="round"
-            :boardView="boardView"
-            @click="launchPickModal">
-          </round>
-        </section>
-      </template>
-    </div>
+          </section>
+          <section>
+            <round v-if="picksByRound" v-for="(round, key) in picksByRound"
+              :key="key"
+              :index="key"
+              :round="round"
+              :boardView="boardView"
+              @click="launchPickModal">
+            </round>
+          </section>
+        </div>
+      </div>
+    </template>
     <transition name="fade">
       <modal v-if="showModal" :modalContent="modalContent" @close="showModal = false"></modal>
     </transition>
@@ -116,11 +118,27 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+@import "~bulma/variables";
+
+.scroll-container {
+  padding: 1px 0;
+  overflow-x: scroll;
+  margin: 2rem -10px 1rem;
+  width: 100%;
+
+  @media screen and (max-width: 850px) {
+    box-shadow: inset -3px -2px 5px rgba(0,0,0,.1), inset 3px -2px 5px rgba(0,0,0,.1);
+    border-right: 2px dashed $grey-light;
+    border-left: 2px dashed $grey-light;
+  }
+}
 
 .board {
-  margin-top: 2rem;
+  min-width: 800px;
+  width: 100%;
+  padding: 1px; // prevent box-shadow clipping
+
   .columns {
     margin-bottom: 1rem !important;
   }
