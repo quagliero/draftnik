@@ -161,7 +161,7 @@
 
   .is-receiving,
   .is-giving {
-    transform: scale(1.03);
+    transform: scale(1.05);
     z-index: 2,
   }
 

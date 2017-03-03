@@ -83,7 +83,7 @@ export default {
 .scroll-container {
   padding: 1px 0;
   overflow-x: scroll;
-  margin: 2rem auto 1rem;
+  margin: 2rem auto;
   width: 100%;
 
   @media screen and (max-width: 850px) {
