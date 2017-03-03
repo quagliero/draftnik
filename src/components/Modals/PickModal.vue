@@ -53,7 +53,9 @@
         return this.currentTrade.id !== undefined;
       },
       newTrade() {
-        return !(this.existingTrade) || this.currentTrade.receivingTeam !== this.selectedPick.team;
+        const notAllowed = [this.currentTrade.receivingTeam, this.currentTrade.givingTeam];
+        // there is no existing trade and the pick doesn't belong to us or them
+        return !(this.existingTrade) || notAllowed.indexOf(this.selectedPick.team) === -1;
       },
       pickAlreadyIncluded() {
         return this.currentTrade.receivingPicks.find(
@@ -89,7 +91,7 @@
         this.createNewTrade({
           givingTeam: 2,
           receivingTeam: this.team.id,
-          receivingPick: this.selectedPick,
+          pick: this.selectedPick,
         });
         this.SELECT_RECEIVING_TEAM(this.team.id);
         this.$emit('close');
@@ -100,7 +102,7 @@
           id: this.currentTrade.id,
           givingTeam: 2,
           receivingTeam: this.team.id,
-          receivingPick: this.selectedPick,
+          pick: this.selectedPick,
         });
         this.$emit('close');
       },
@@ -110,7 +112,7 @@
           id: this.currentTrade.id,
           givingTeam: 2,
           receivingTeam: this.team.id,
-          receivingPick: this.selectedPick,
+          pick: this.selectedPick,
         });
         this.$emit('close');
       },

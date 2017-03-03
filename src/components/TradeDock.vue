@@ -2,10 +2,15 @@
   <div v-if="hasTrade" class="trade-dock">
     <div class="container">
       <div class="level">
-        <div class="level-left">
-          <b v-if="receivingTeam">Trading with {{ receivingTeam.name }}:&nbsp;</b>
-          <span v-html="currentGivingPicks"></span>
-          <span v-html="currentReceivingPicks"></span>
+        <div class="level-left trade-info">
+          <div>
+            <b v-if="currentTrade.givingPicks.length">You send:&nbsp;</b>
+            <span v-html="currentGivingPicks"></span>
+          </div>
+          <div>
+            <b v-if="receivingTeam">{{ receivingTeam.name }} sends:&nbsp;</b>
+            <span v-html="currentReceivingPicks"></span>
+          </div>
         </div>
         <div class="level-right">
           <button class="delete"></button>
@@ -33,7 +38,7 @@
         const givingPicks = this.currentTrade.givingPicks.slice(0);
 
         if (givingPicks.length) {
-          return `You give <b>${this.displayPicks(givingPicks)}</b> and receive `;
+          return `<b>${this.displayPicks(givingPicks)}</b>`;
         }
 
         return '';
@@ -55,7 +60,7 @@
       displayPicks(picks) {
         return picks.sort((a, b) => a.overall - b.overall).map(pick =>
           `${pick.round}.${pick.pickInRound} (#${pick.overall})`,
-        ).join(',');
+        ).join(', ');
       },
     },
   };
@@ -76,6 +81,11 @@
     right: 0;
     background-color: $dark;
     color: $light
+  }
+
+  .trade-info {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
 </style>

@@ -29,11 +29,11 @@ const actions = {
   createNewTrade({ commit }, data) {
     data.id = +new Date();
     commit(types.CREATE_TRADE, { data });
-    if (data.givingPick) {
-      commit(types.ADD_GIVING_TEAM_PICK, data.givingPick);
+    if (data.pick.team === data.givingTeam) {
+      commit(types.ADD_GIVING_TEAM_PICK, data.pick);
     }
-    if (data.receivingPick) {
-      commit(types.ADD_RECEIVING_TEAM_PICK, data.receivingPick);
+    if (data.pick.team === data.receivingTeam) {
+      commit(types.ADD_RECEIVING_TEAM_PICK, data.pick);
     }
   },
   addPickToTrade({ commit }, data) {
@@ -45,24 +45,24 @@ const actions = {
     }
 
     if (data.givingTeam === state.current.givingTeam) {
-      if (data.givingPick) {
-        commit(types.ADD_GIVING_TEAM_PICK, data.givingPick);
+      if (data.pick.team === data.givingTeam) {
+        commit(types.ADD_GIVING_TEAM_PICK, data.pick);
       }
     }
 
     // only allow picks from the team currently in discussions
     if (data.receivingTeam === state.current.receivingTeam) {
-      if (data.receivingPick) {
-        commit(types.ADD_RECEIVING_TEAM_PICK, data.receivingPick);
+      if (data.pick.team === data.receivingTeam) {
+        commit(types.ADD_RECEIVING_TEAM_PICK, data.pick);
       }
     }
   },
   removePickFromTrade({ commit }, data) {
     if (data.givingTeam === state.current.givingTeam) {
-      commit(types.REMOVE_GIVING_TEAM_PICK, data.givingPick);
+      commit(types.REMOVE_GIVING_TEAM_PICK, data.pick);
     }
     if (data.receivingTeam === state.current.receivingTeam) {
-      commit(types.REMOVE_RECEIVING_TEAM_PICK, data.receivingPick);
+      commit(types.REMOVE_RECEIVING_TEAM_PICK, data.pick);
     }
 
     // have removed all receiving picks so remove trade partner
