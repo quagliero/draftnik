@@ -1,4 +1,6 @@
-function roundPicksMap(rounds, picks) {
+import store from '../store';
+
+export const roundPicksMap = (rounds, picks) => {
   const map = {};
   const perRound = picks.length / rounds;
 
@@ -39,6 +41,27 @@ function roundPicksMap(rounds, picks) {
   */
 
   return map;
-}
+};
 
-export default roundPicksMap;
+export const getTeamById = (id) => store.getters.teams.find(team => team.id === id);
+
+export const getPickValue = (pickNumber) => {
+  const pick = store.getters.bayesianValues.find(p => p.overall === pickNumber);
+  return pick.value;
+};
+
+export const getPlayersInRange = (pick) => {
+  // map players by IDs and find the 3 players around the current pick in the format
+  // n-1, n, n+1
+  const adpChunk = store.getters.adp.slice(pick - 2, pick + 2);
+
+  // format it
+  return adpChunk.map(p => p.player.name.split(', ').reverse().join(' ')).join(', ');
+};
+
+export default {
+  roundPicksMap,
+  getTeamById,
+  getPickValue,
+  getPlayersInRange,
+};

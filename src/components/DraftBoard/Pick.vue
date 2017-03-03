@@ -1,5 +1,13 @@
 <template>
-  <div class="pick card is-fullwidth" :class="[{ 'is-selected' : isSelected }, playerPositionClass ]" @click="handleClick">
+  <div
+    class="pick card is-fullwidth"
+    :class="[{
+      'is-selected' : isSelected,
+      'is-available' : isAvailable,
+      'is-in-trade' : isInTrade,
+    }, playerPositionClass ]"
+    @click="onPickClick"
+  >
     <b>{{ pick.overall }}</b><br>
     <small>{{ pick.round }}.{{ pick.pickInRound }}</small><br />
     <em><small>{{ teamInfo.name }}</small></em>
@@ -10,7 +18,8 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
+  import { SELECT_PICK } from '../../store/mutations';
 
   export default {
     name: 'pick',
@@ -26,11 +35,21 @@
     computed: {
       ...mapGetters([
         'selectedTeam',
+        'currentTrade',
+        'receivingTeam',
         'selectedDraft',
         'adp',
       ]),
       isSelected() {
         return this.pick.team === this.selectedTeam;
+      },
+      isInTrade() {
+        return this.currentTrade.id && this.currentTrade.receivingPicks.find(pick =>
+          this.pick.overall === pick.overall,
+        );
+      },
+      isAvailable() {
+        return this.pick.team === this.receivingTeam;
       },
       playerPositionClass() {
         if (this.boardView === 'adp') {
@@ -72,20 +91,28 @@
       },
     },
     methods: {
-      handleClick() {
-        this.$emit('click', this.pick);
+      ...mapMutations({
+        SELECT_PICK,
+      }),
+      onPickClick() {
+        this.SELECT_PICK({ pick: this.pick });
+        this.$emit('onPickClick', this.pick);
       },
     },
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import "~bulma/variables";
+
   .pick {
     cursor: pointer;
     height: 100%;
     word-break: break-word;
     padding: 0.2em 0.3em;
-    transition: background-color 0.2s, color 0.2s;
+    position: relative;
+    z-index: 1;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
   }
 
   .rb {
@@ -117,7 +144,19 @@
   }
 
   .is-selected {
-    background-color: #333;
+    background-color: $grey-dark;
     color: white;
+  }
+
+  .is-available {
+    background-color: $white-ter;
+    color: $grey-darker;
+  }
+
+  .is-in-trade {
+    background-color: $yellow;
+    color: $grey-darker;
+    transform: scale(1.03);
+    z-index: 2,
   }
 </style>

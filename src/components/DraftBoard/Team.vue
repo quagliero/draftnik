@@ -28,21 +28,21 @@
         selectTeam: 'SELECT_TEAM',
       }),
       handleClick(value) {
-        if (!(this.isSelected)) {
-          this.selectTeam({ teamId: value });
-        }
+        this.selectTeam({ teamId: value });
       },
     },
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import "~bulma/variables";
+
   .card {
     cursor: pointer;
   }
 
   .is-selected {
-    background-color: #333;
+    background-color: $grey-dark;
     color: white;
   }
 </style>

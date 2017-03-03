@@ -22,14 +22,17 @@
               :index="key"
               :round="round"
               :boardView="boardView"
-              @click="launchPickModal">
+              @onPickClick="handleClickPick">
             </round>
           </section>
         </div>
       </div>
     </template>
     <transition name="fade">
-      <modal v-if="showModal" :modalContent="modalContent" @close="showModal = false"></modal>
+      <pick-modal
+        v-if="showPickModal"
+        @close="showPickModal = false"
+      />
     </transition>
   </section>
 </template>
@@ -38,25 +41,24 @@
 import { mapGetters } from 'vuex';
 import Round from '../components/DraftBoard/Round.vue';
 import Team from '../components/DraftBoard/Team.vue';
-import Modal from '../components/Modal.vue';
+import PickModal from '../components/Modals/PickModal.vue';
 
 export default {
   name: 'draft-board',
   components: {
     Team,
     Round,
-    Modal,
+    PickModal,
   },
   data() {
     return {
-      showModal: false,
+      showPickModal: false,
       modalContent: '',
       boardView: 'pick',
     };
   },
   computed: {
     ...mapGetters([
-      'bayesianValues',
       'selectedDraft',
       'picksByRound',
       'adp',
@@ -65,46 +67,14 @@ export default {
     teams() {
       return this.selectedDraft.users;
     },
-    bayesianMaxValue() {
-      return this.bayesianValues[0].value;
-    },
     dataLoaded() {
       // we've got all the data we want
       return this.selectedDraft && this.picksByRound && this.players.length && this.adp.length;
     },
   },
   methods: {
-    launchPickModal(pick) {
-      const team = this.getTeamById(pick.team);
-      const pickValues = this.getPickValues(pick);
-      const value = (pickValues.value / this.bayesianMaxValue) * 100;
-
-      this.modalContent = `
-        <h3 class="title">Pick #${pick.overall} (${pick.round}.${pick.pickInRound})</h3>
-        <p>Currently owned by: ${team.name}</p>
-        <p>draftpicktradecalculator.com value: <strong>${pickValues.value}</strong></p>
-        <progress class="progress" value="${value}" max="100">${value}%</progress>
-        <p>Players in this range: ${this.getPlayersInRange(pick.overall)}</p>
-        <p>
-          <button class="button is-primary">Trade for this pick</button>
-          <button class="button is-secondary">Add to trade</button>
-        </p>
-      `;
-      this.showModal = true;
-    },
-    getTeamById(id) {
-      return this.teams.find(team => team.id === id);
-    },
-    getPickValues(pick) {
-      return this.bayesianValues.find(p => p.overall === pick.overall);
-    },
-    getPlayersInRange(pick) {
-      // map players by IDs and find the 3 players around the current pick in the format
-      // n-1, n, n+1
-      const adpChunk = this.adp.slice(pick - 2, pick + 2);
-
-      // format it
-      return adpChunk.map(p => p.player.name.split(', ').reverse().join(' ')).join(', ');
+    handleClickPick() {
+      this.showPickModal = true;
     },
   },
   created() {
@@ -138,26 +108,13 @@ export default {
   min-width: 800px;
   width: 100%;
   padding: 1px; // prevent box-shadow clipping
+  @media screen and (max-width: 850px) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 
   .columns {
     margin-bottom: 1rem !important;
-  }
-}
-
-// modal fade
-.modal-content {
-  transition: margin-top .3s;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .2s;
-}
-
-.fade-enter, .fade-leave-active {
-  opacity: 0;
-
-  .modal-content {
-    margin-top: -50%;
   }
 }
 </style>

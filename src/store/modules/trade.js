@@ -2,55 +2,73 @@ import * as types from '../mutations';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
+
   return {
     id: tradeProps.id,
-    teamA: tradeProps.teamA,
-    teamB: tradeProps.teamB,
-    teamAPicks: tradeProps.teamAPicks || [],
-    teamBPicks: tradeProps.teamBPicks || [],
+    givingTeam: tradeProps.givingTeam,
+    receivingTeam: tradeProps.receivingTeam,
+    givingPicks: [],
+    receivingPicks: [],
   };
 };
 
-const defaultState = {
-  temp: {},
+// initial state
+const state = {
   current: {},
   savedTrades: [],
 };
 
-// initial state
-const state = Object.assign({}, defaultState);
-
 // getters
 const getters = {
-  tempTrade: stateObj => stateObj.temp,
   currentTrade: stateObj => stateObj.current,
   savedTrades: stateObj => stateObj.savedTrades,
 };
 
 // actions
 const actions = {
-  addPickToTrade({ commit }, { data }) {
-    // all trades start by adding a pick, check if this is adding pick to existing trade
-    // or create a new temp one
-    if (!(data.id)) {
-      data.id = +new Date();
-      commit(types.CREATE_TRADE, { data });
-      return;
+  createNewTrade({ commit }, data) {
+    data.id = +new Date();
+    commit(types.CREATE_TRADE, { data });
+    if (data.givingPick) {
+      commit(types.ADD_GIVING_TEAM_PICK, data.givingPick);
     }
-
-    if (data.teamA === state.temp.teamA) {
-      commit(types.ADD_PICK_TO_TEAM_A, data.pick);
-    }
-    if (data.teamB === state.temp.teamB) {
-      commit(types.ADD_PICK_TO_TEAM_B, data.pick);
+    if (data.receivingPick) {
+      commit(types.ADD_RECEIVING_TEAM_PICK, data.receivingPick);
     }
   },
-  removePickFromTrade({ commit }, { data }) {
-    if (data.teamA === state.temp.teamA) {
-      commit(types.REMOVE_PICK_FROM_TEAM_A, data.pick);
+  addPickToTrade({ commit }, data) {
+    // we already had a trade on the go, but all picks got emptied and the
+    // receiving team has now changed
+    if (data.receivingTeam !== state.current.receivingTeam &&
+      state.current.receivingPicks.length === 0) {
+      commit(types.CHANGE_RECEIVING_TEAM, data.receivingTeam);
     }
-    if (data.teamB === state.temp.teamB) {
-      commit(types.REMOVE_PICK_FROM_TEAM_B, data.pick);
+
+    if (data.givingTeam === state.current.givingTeam) {
+      if (data.givingPick) {
+        commit(types.ADD_GIVING_TEAM_PICK, data.givingPick);
+      }
+    }
+
+    // only allow picks from the team currently in discussions
+    if (data.receivingTeam === state.current.receivingTeam) {
+      if (data.receivingPick) {
+        commit(types.ADD_RECEIVING_TEAM_PICK, data.receivingPick);
+      }
+    }
+  },
+  removePickFromTrade({ commit }, data) {
+    if (data.givingTeam === state.current.givingTeam) {
+      commit(types.REMOVE_GIVING_TEAM_PICK, data.givingPick);
+    }
+    if (data.receivingTeam === state.current.receivingTeam) {
+      commit(types.REMOVE_RECEIVING_TEAM_PICK, data.receivingPick);
+    }
+
+    // have removed all receiving picks so remove trade partner
+    // but leave our picks in place (if we have any)
+    if (state.current.receivingPicks.length === 0) {
+      commit(types.CLEAR_RECEIVING_TEAM);
     }
   },
   getSavedTrades({ commit }) {
@@ -64,24 +82,34 @@ const mutations = {
   [types.RECEIVE_TRADES](stateObj, { savedTrades }) {
     stateObj.savedTrades = savedTrades;
   },
-  [types.ADD_PICK_TO_TEAM_A](stateObj, pick) {
-    stateObj.teamAPicks.push(pick);
+  [types.ADD_GIVING_TEAM_PICK](stateObj, pick) {
+    stateObj.current.givingPicks.push(pick);
   },
-  [types.ADD_PICK_TO_TEAM_B](stateObj, pick) {
-    stateObj.teamBPicks.push(pick);
+  [types.ADD_RECEIVING_TEAM_PICK](stateObj, pick) {
+    stateObj.current.receivingPicks.push(pick);
   },
-  [types.REMOVE_PICK_FROM_TEAM_A](stateObj, pick) {
-    stateObj.teamAPicks.splice(stateObj.teamAPicks.indexOf(pick), 1);
+  [types.REMOVE_GIVING_TEAM_PICK](stateObj, pick) {
+    stateObj.current.givingPicks = stateObj.current.givingPicks.filter(p =>
+      p.overall !== pick.overall,
+    );
   },
-  [types.REMOVE_PICK_FROM_TEAM_B](stateObj, pick) {
-    stateObj.teamBPicks.splice(stateObj.teamBPicks.indexOf(pick), 1);
+  [types.REMOVE_RECEIVING_TEAM_PICK](stateObj, pick) {
+    stateObj.current.receivingPicks = stateObj.current.receivingPicks.filter(p =>
+      p.overall !== pick.overall,
+    );
   },
   // eslint-disable-next-line no-unused-vars
   [types.CLEAR_TRADE](stateObj) {
-    stateObj.temp = {};
+    stateObj.current = {};
   },
-  [types.CREATE_TRADE](stateObj, { tradeProps }) {
-    stateObj.temp = new Trade(tradeProps);
+  [types.CLEAR_RECEIVING_TEAM](stateObj) {
+    stateObj.current.receivingTeam = null;
+  },
+  [types.CHANGE_RECEIVING_TEAM](stateObj, team) {
+    stateObj.current.receivingTeam = team;
+  },
+  [types.CREATE_TRADE](stateObj, { data }) {
+    stateObj.current = new Trade(data);
   },
   [types.LOAD_TRADE](stateObj, { trade }) {
     stateObj.current = trade;
