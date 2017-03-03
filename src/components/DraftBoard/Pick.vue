@@ -4,7 +4,8 @@
     :class="[{
       'is-selected' : isSelected,
       'is-available' : isAvailable,
-      'is-in-trade' : isInTrade,
+      'is-receiving' : isReceiving,
+      'is-giving' : isGiving,
     }, playerPositionClass ]"
     @click="onPickClick"
   >
@@ -43,8 +44,13 @@
       isSelected() {
         return this.pick.team === this.selectedTeam;
       },
-      isInTrade() {
+      isReceiving() {
         return this.currentTrade.id && this.currentTrade.receivingPicks.find(pick =>
+          this.pick.overall === pick.overall,
+        );
+      },
+      isGiving() {
+        return this.currentTrade.id && this.currentTrade.givingPicks.find(pick =>
           this.pick.overall === pick.overall,
         );
       },
@@ -153,10 +159,19 @@
     color: $grey-darker;
   }
 
-  .is-in-trade {
-    background-color: $yellow;
-    color: $grey-darker;
+  .is-receiving,
+  .is-giving {
     transform: scale(1.03);
     z-index: 2,
+  }
+
+  .is-receiving {
+    background-color: $green;
+    color: $grey-darker;
+  }
+
+  .is-giving {
+    background-color: $yellow;
+    color: $grey-darker;
   }
 </style>

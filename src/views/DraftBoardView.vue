@@ -22,18 +22,12 @@
               :index="key"
               :round="round"
               :boardView="boardView"
-              @onPickClick="handleClickPick">
+              @onPickClick="$emit('onPickClick')">
             </round>
           </section>
         </div>
       </div>
     </template>
-    <transition name="fade">
-      <pick-modal
-        v-if="showPickModal"
-        @close="showPickModal = false"
-      />
-    </transition>
   </section>
 </template>
 
@@ -70,11 +64,6 @@ export default {
     dataLoaded() {
       // we've got all the data we want
       return this.selectedDraft && this.picksByRound && this.players.length && this.adp.length;
-    },
-  },
-  methods: {
-    handleClickPick() {
-      this.showPickModal = true;
     },
   },
   created() {

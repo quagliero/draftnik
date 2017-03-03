@@ -1,4 +1,5 @@
 import store from '../store';
+import { calculateDoddsTradeValue } from './dodds-calculator';
 
 export const roundPicksMap = (rounds, picks) => {
   const map = {};
@@ -59,9 +60,38 @@ export const getPlayersInRange = (pick) => {
   return adpChunk.map(p => p.player.name.split(', ').reverse().join(' ')).join(', ');
 };
 
+export const calculateBayesianTradeValue = (trade) => {
+  function getTotal(picks) {
+    return picks.reduce((total, pick) => {
+      const bayesianPick = store.getters.bayesianValues.find(p => p.overall === pick.overall);
+      return total + bayesianPick.value;
+    }, 0);
+  }
+
+  function getDifference(giving, receiving) {
+    if (giving > 0 && receiving > 0) {
+      return ((receiving / giving) - 1) * 100;
+    }
+
+    return 0;
+  }
+
+  const givingValue = getTotal(trade.givingPicks);
+  const receivingValue = getTotal(trade.receivingPicks);
+  const difference = getDifference(givingValue, receivingValue);
+
+
+  return {
+    givingValue,
+    receivingValue,
+    difference,
+  };
+};
+
 export default {
   roundPicksMap,
   getTeamById,
   getPickValue,
   getPlayersInRange,
+  calculateDoddsTradeValue,
 };

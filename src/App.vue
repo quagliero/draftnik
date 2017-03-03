@@ -1,20 +1,33 @@
 <template>
   <div id="app">
     <site-header></site-header>
-    <router-view></router-view>
-    <trade-dock></trade-dock>
+    <router-view @onPickClick="showPickModal = true"></router-view>
+    <trade-dock @onDockPickClick="showPickModal = true"></trade-dock>
+    <transition name="fade">
+      <pick-modal
+        v-if="showPickModal"
+        @close="showPickModal = false"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
 import SiteHeader from './components/Header.vue';
 import TradeDock from './components/TradeDock.vue';
+import PickModal from './components/Modals/PickModal.vue';
 
 export default {
   name: 'app',
+  data() {
+    return {
+      showPickModal: false,
+    };
+  },
   components: {
     SiteHeader,
     TradeDock,
+    PickModal,
   },
 };
 </script>
