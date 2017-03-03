@@ -4,6 +4,7 @@ import * as types from '../mutations';
 // initial state
 const state = {
   all: [],
+  givingTeam: 2, // hard coded for now, this will be the logged in user id
   selectedTeam: null,
   receivingTeam: null,
 };
@@ -13,6 +14,7 @@ const getters = {
   teams: stateObj => stateObj.all,
   selectedTeam: stateObj => stateObj.selectedTeam,
   receivingTeam: stateObj => stateObj.receivingTeam,
+  givingTeam: stateObj => stateObj.givingTeam,
 };
 
 // actions

@@ -11,18 +11,19 @@
         class="button is-primary"
         @click="handleTradePickClick"
       >
-        Trade for this pick
+        Trade {{(this.isOwnPick) ? '' : 'for'}} this pick
       </button>
       <button
         v-if="existingTrade && !(newTrade) && !(pickAlreadyIncluded)"
         @click="handleAddPickClick"
-        class="button is-primary"
+        class="button is-success"
+        :class="{ 'is-warning' : isOwnPick }"
       >
         Add to trade
       </button>
       <button
         v-if="existingTrade && pickAlreadyIncluded"
-        class="button is-warning"
+        class="button is-danger"
         @click="handleRemovePickClick"
       >
         Remove this pick
@@ -46,6 +47,7 @@
     computed: {
       ...mapGetters([
         'selectedPick',
+        'givingTeam',
         'bayesianMaxValue',
         'currentTrade',
       ]),
@@ -53,13 +55,27 @@
         return this.currentTrade.id !== undefined;
       },
       newTrade() {
-        const notAllowed = [this.currentTrade.receivingTeam, this.currentTrade.givingTeam];
+        const notAllowed = [
+          this.currentTrade.receivingTeam,
+          this.currentTrade.givingTeam,
+        ];
+
         // there is no existing trade and the pick doesn't belong to us or them
         return !(this.existingTrade) || notAllowed.indexOf(this.selectedPick.team) === -1;
       },
       pickAlreadyIncluded() {
-        return this.currentTrade.receivingPicks.find(
+        const isReceiving = this.currentTrade.receivingPicks.find(
           pick => pick.overall === this.selectedPick.overall);
+
+        if (isReceiving) {
+          return true;
+        }
+
+        return this.currentTrade.givingPicks.find(
+          pick => pick.overall === this.selectedPick.overall);
+      },
+      isOwnPick() {
+        return this.selectedPick.team === this.givingTeam;
       },
       team() {
         return getTeamById(this.selectedPick.team);
@@ -87,13 +103,19 @@
         SELECT_RECEIVING_TEAM,
       }),
       handleTradePickClick() {
-        // business logic to ween out illegal picks
+        const receivingTeam = (this.team.id === this.givingTeam) ? null : this.team.id;
         this.createNewTrade({
-          givingTeam: 2,
-          receivingTeam: this.team.id,
+          givingTeam: this.givingTeam,
+          receivingTeam,
           pick: this.selectedPick,
+          // keep our picks stored in case we just want to trial out
+          // different trade partners with the same set of our picks
+          givingPicks: this.currentTrade.givingPicks,
         });
-        this.SELECT_RECEIVING_TEAM(this.team.id);
+        // can't be your own partner
+        if (this.isOwnPick === false) {
+          this.SELECT_RECEIVING_TEAM(this.team.id);
+        }
         this.$emit('close');
       },
       handleAddPickClick() {

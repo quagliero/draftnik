@@ -52,6 +52,7 @@ export const getPickValue = (pickNumber) => {
 };
 
 export const getPlayersInRange = (pick) => {
+  pick = (pick >= 2) ? pick : 2;
   // map players by IDs and find the 3 players around the current pick in the format
   // n-1, n, n+1
   const adpChunk = store.getters.adp.slice(pick - 2, pick + 2);

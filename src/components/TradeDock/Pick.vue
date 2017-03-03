@@ -1,13 +1,13 @@
 <template>
   <span @click="$emit('click', pick)">
-    {{pick.round}}.{{pick.pickInRound}} (#{{pick.overall}})
+    {{pick.round}}.{{pick.pickInRound}} (#{{pick.overall}})<slot></slot>
   </span>
 </template>
 
 <script>
   export default {
     name: 'trade-dock-pick',
-    props: ['pick'],
+    props: ['pick', 'isLast'],
   };
 </script>
 

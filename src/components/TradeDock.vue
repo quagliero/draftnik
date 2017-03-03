@@ -2,52 +2,48 @@
   <div v-if="hasTrade" class="trade-dock">
     <div class="container">
       <div class="level">
-        <div class="level-left">
+
           <div class="level-item">
             <div class="trade-dock__picks">
-              <div>
-                <b v-if="currentTrade.givingPicks.length">You send:&nbsp;</b>
-                <span v-if="currentGivingPicks.length">
-                  <trade-dock-pick
-                    v-for="pick in currentGivingPicks"
-                    :pick="pick"
-                     @click="onDockPickClick"
-                  ></trade-dock-pick>
-                </span>
+              <div class="trade-dock__giving" v-if="currentTrade.givingPicks.length">
+                <b>You send:&nbsp;</b>
+                <trade-dock-pick
+                  v-for="(pick, i) in currentGivingPicks"
+                  :pick="pick"
+                   @click="onDockPickClick"
+                >{{ (i !== currentGivingPicks.length - 1) ? ',' : ''}}
+                </trade-dock-pick>
               </div>
-              <div  @onDockPickClick="onDockPickClick">
+              <div class="trade-dock__receiving" v-if="currentReceivingPicks.length">
                 <b v-if="receivingTeam">{{ receivingTeam.name }} sends:&nbsp;</b>
-                <span v-if="currentReceivingPicks.length">
-                  <trade-dock-pick
-                    v-for="pick in currentReceivingPicks"
-                    :pick="pick"
-                     @click="onDockPickClick"
-                  ></trade-dock-pick>
-                </span>
+                <trade-dock-pick
+                  v-for="(pick, i) in currentReceivingPicks"
+                  :key="pick.overall"
+                  :pick="pick"
+                   @click="onDockPickClick"
+                >{{ (i !== currentReceivingPicks.length - 1) ? ',' : ''}}
+                </trade-dock-pick>
               </div>
             </div>
           </div>
+
           <div class="level-item">
             <div class="trade-dock__calc">
-              <img v-if="BayesianTradeCalculator" width="40" height="40" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
-              <div v-html="BayesianTradeCalculator"></div>
+              <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
+              <span v-html="BayesianTradeCalculator"></span>
             </div>
-          </div>
-          <div class="level-item">
             <div class="trade-dock__calc trade-dock__calc--doddsy">
-              <img v-if="DoddsTradeCalculator" width="40" height="40" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
+              <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
               <span v-html="DoddsTradeCalculator"></span>
             </div>
           </div>
-        </div>
-        <div class="level-right">
-          <div class="level-item">
+          <div class="level-item" style="text-align: right;">
             <button v-if="canMakeOffer" class="button is-outlined is-primary is-inverted">
               Make Offer
             </button>
           </div>
           <!-- <button class="delete"></button> -->
-        </div>
+
       </div>
     </div>
   </div>
@@ -82,22 +78,10 @@
                 this.currentTrade.receivingPicks.length;
       },
       currentGivingPicks() {
-        const givingPicks = this.currentTrade.givingPicks.slice(0);
-
-        if (givingPicks.length) {
-          return this.sortPicks(givingPicks);
-        }
-
-        return [];
+        return this.sortPicks(this.currentTrade.givingPicks.slice(0));
       },
       currentReceivingPicks() {
-        const receivingPicks = this.currentTrade.receivingPicks.slice(0);
-
-        if (receivingPicks.length) {
-          return this.sortPicks(receivingPicks);
-        }
-
-        return [];
+        return this.sortPicks(this.currentTrade.receivingPicks.slice(0));
       },
       receivingTeam() {
         return getTeamById(this.currentTrade.receivingTeam);
@@ -109,7 +93,7 @@
           return '';
         }
 
-        return `${doddsCalc.difference.toFixed(2)}%<br />&ldquo;${doddsCalc.verdict}&rdquo;`;
+        return `${doddsCalc.difference.toFixed(2)}% &ndash; <small><em>&ldquo;${doddsCalc.verdict}&rdquo;</em></small>`;
       },
       BayesianTradeCalculator() {
         const bayesianCalc = calculateBayesianTradeValue(this.currentTrade);
@@ -142,8 +126,7 @@
   .trade-dock {
     position: relative;
     z-index: 3;
-    padding-top: $size-7;
-    padding-bottom: $size-7;
+    padding: 5px 20px 5px;
     width: 100%;
     position: fixed;
     bottom: 0;
@@ -159,10 +142,21 @@
     flex-direction: column;
   }
 
+  .trade-dock__giving,
+  .trade-dock__receiving,
   .trade-dock__calc {
-    margin-left: 2rem;
-    display: flex;
-    align-items: flex-start;
+    line-height: 2;
+  }
+
+  .trade-dock__giving {
+    // margin-bottom: 5px;
+  }
+  .trade-dock__receiving {
+    // margin-top: 5px;
+  }
+
+  .trade-dock__calc {
+    align-items: center;
     font-size: 1.2rem;
     font-weight: bold;
   }
@@ -175,8 +169,9 @@
   .trade-dock__img {
     border-radius: 100%;
     margin-right: 10px;
-    width: 40px;
-    height: 40px;
+    vertical-align: middle !important;
+    width: 25px;
+    height: 25px;
     border: 2px solid $white-ter;
   }
 

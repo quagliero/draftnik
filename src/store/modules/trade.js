@@ -7,8 +7,8 @@ const Trade = (tradeProps) => {
     id: tradeProps.id,
     givingTeam: tradeProps.givingTeam,
     receivingTeam: tradeProps.receivingTeam,
-    givingPicks: [],
-    receivingPicks: [],
+    givingPicks: tradeProps.givingPicks || [],
+    receivingPicks: tradeProps.receivingPicks || [],
   };
 };
 
@@ -28,6 +28,7 @@ const getters = {
 const actions = {
   createNewTrade({ commit }, data) {
     data.id = +new Date();
+
     commit(types.CREATE_TRADE, { data });
     if (data.pick.team === data.givingTeam) {
       commit(types.ADD_GIVING_TEAM_PICK, data.pick);
@@ -69,6 +70,11 @@ const actions = {
     // but leave our picks in place (if we have any)
     if (state.current.receivingPicks.length === 0) {
       commit(types.CLEAR_RECEIVING_TEAM);
+
+      // have also removed all of our own picks
+      if (state.current.givingPicks.length === 0) {
+        commit(types.CLEAR_TRADE);
+      }
     }
   },
   getSavedTrades({ commit }) {
