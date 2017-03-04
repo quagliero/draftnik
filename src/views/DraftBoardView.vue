@@ -82,11 +82,8 @@ export default {
 @import "~bulma/variables";
 
 .board-wrapper {
-  // stretch the board full screen on mobile
-  // @media screen and (max-width: 768px) {
-    padding-left: 0;
-    padding-right: 0;
-  // }
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .scroll-container {
@@ -94,6 +91,7 @@ export default {
   overflow-x: scroll;
   margin: 2rem auto;
   width: 100%;
+  -webkit-overflow-scrolling: touch; /* lets it scroll smoothly */
 
   @media screen and (max-width: 1200px) {
     box-shadow: inset -3px -2px 5px rgba(0,0,0,.1), inset 3px -2px 5px rgba(0,0,0,.1);
