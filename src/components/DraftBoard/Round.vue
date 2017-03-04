@@ -1,5 +1,5 @@
 <template>
-  <div class="columns is-mobile is-gapless is-multiline">
+  <div class="columns is-mobile is-gapless">
     <div class="column" v-for="pick in checkRound" >
       <pick :pick="pick" :boardView="boardView" @onPickClick="$emit('onPickClick')"></pick>
     </div>

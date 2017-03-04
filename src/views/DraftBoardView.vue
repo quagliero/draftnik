@@ -1,16 +1,17 @@
 <template>
-  <section class="section">
+  <section class="section board-wrapper">
     <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
       <template v-if="dataLoaded">
         <div class="content">
+          <p><em>Demo, logged in as Tobias</em></p>
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
         </div>
         <div class="scroll-container">
           <div class="board container">
           <section>
-            <div class="columns is-mobile is-gapless is-multiline">
+            <div class="columns is-mobile is-gapless">
               <div class="column" v-for="team in teams">
                 <team :team="team"></team>
               </div>
@@ -80,30 +81,33 @@ export default {
 <style lang="scss">
 @import "~bulma/variables";
 
+.board-wrapper {
+  // stretch the board full screen on mobile
+  // @media screen and (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+  // }
+}
+
 .scroll-container {
   padding: 1px 0;
   overflow-x: scroll;
   margin: 2rem auto;
   width: 100%;
 
-  @media screen and (max-width: 850px) {
+  @media screen and (max-width: 1200px) {
     box-shadow: inset -3px -2px 5px rgba(0,0,0,.1), inset 3px -2px 5px rgba(0,0,0,.1);
-    border-right: 2px dashed $grey-light;
-    border-left: 2px dashed $grey-light;
+    border-right: 1px solid $grey-light;
+    border-left: 1px solid $grey-light;
   }
 }
 
 .board {
-  min-width: 800px;
+  min-width: 1200px; // 12 picks at 1
   width: 100%;
-  padding: 1px; // prevent box-shadow clipping
-  @media screen and (max-width: 850px) {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
 
   .columns {
-    margin-bottom: 1rem !important;
+    margin-bottom: 0 !important;
   }
 }
 </style>

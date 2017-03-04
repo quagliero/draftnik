@@ -1,7 +1,7 @@
 <template>
   <span class="logo">
     <span class="logo__icon">d</span>
-    <span class="logo__text">draftnik</span>
+    <span class="logo__text">draftnik <small>(pre-alpha)</small></span>
   </span>
 </template>
 

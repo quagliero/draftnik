@@ -11,9 +11,23 @@
 </template>
 
 <script>
+/* global document */
   export default {
     name: 'modal',
     props: ['showModal', 'modalContent'],
+    methods: {
+      triggerClose(event) {
+        if (event.keyCode === 27) {
+          this.$emit('close');
+        }
+      },
+    },
+    mounted() {
+      document.addEventListener('keydown', this.triggerClose);
+    },
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.triggerClose);
+    },
   };
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="card is-fullwidth" :class="{ 'is-selected' : isSelected }">
+  <div class="team is-fullwidth" :class="{ 'is-selected' : isSelected }">
     <b @click="handleClick(team.id)">{{ team.name }}</b>
   </div>
 </template>
@@ -37,8 +37,10 @@
 <style lang="scss" scoped>
   @import "~bulma/variables";
 
-  .card {
+  .team {
     cursor: pointer;
+    width: 100px;
+    border: 1px solid $grey-lighter;
   }
 
   .is-selected {

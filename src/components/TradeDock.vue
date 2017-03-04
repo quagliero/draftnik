@@ -10,27 +10,29 @@
         </div>
       </div>
     </transition>
-    <div class="container trade-dock__inner">
+    <div class="trade-dock__inner">
       <div class="level">
         <div class="level-item">
           <div class="trade-dock__picks">
-            <div class="trade-dock__giving" v-if="currentTrade.givingPicks.length">
-              <b>You send:&nbsp;</b>
-              <trade-dock-pick
-                v-for="(pick, i) in givingPicks"
-                :pick="pick"
-                 @click="onDockPickClick"
-              >{{ (i !== givingPicks.length - 1) ? ',' : ''}}
-              </trade-dock-pick>
-            </div>
-            <div class="trade-dock__receiving" v-if="receivingPicks.length">
-              <b v-if="receivingTeam">{{ receivingTeam.name }} sends:&nbsp;</b>
+            <div class="trade-dock__giving" v-if="currentTrade.receivingPicks.length">
+              <b>You get:&nbsp;</b>
               <trade-dock-pick
                 v-for="(pick, i) in receivingPicks"
                 :key="pick.overall"
                 :pick="pick"
                  @click="onDockPickClick"
               >{{ (i !== receivingPicks.length - 1) ? ',' : ''}}
+              </trade-dock-pick>
+            </div>
+            <div class="trade-dock__receiving" v-if="givingPicks.length">
+              <b v-if="receivingTeam">{{ receivingTeam.name }} gets:&nbsp;</b>
+              <b v-else="receivingTeam">They get:&nbsp;</b>
+              <trade-dock-pick
+                v-for="(pick, i) in givingPicks"
+                :key="pick.overall"
+                :pick="pick"
+                 @click="onDockPickClick"
+              >{{ (i !== givingPicks.length - 1) ? ',' : ''}}
               </trade-dock-pick>
             </div>
           </div>
@@ -47,17 +49,24 @@
           </div>
         </div>
         <div class="level-item">
-          <div class="trade-dock__action">
+          <div class="trade-dock__action" v-if="canMakeOffer">
+            <button class="button is-white is-inverted is-outlined">
+              <span class="icon is-small">
+                <i class="fa fa-save"></i>
+              </span>
+              <span>Save</span>
+            </button>
             <button
-              v-if="canMakeOffer"
-              class="button is-medium is-outlined is-primary is-inverted"
+              class="button is-outlined is-primary is-inverted"
               @click="onMakeOfferClick"
             >
-              Make Offer
+            <span class="icon is-small">
+              <i class="fa fa-paper-plane"></i>
+            </span>
+              <span>Make Offer</span>
             </button>
           </div>
         </div>
-          <!-- <button class="delete"></button> -->
 
       </div>
     </div>
@@ -114,7 +123,7 @@
           return '';
         }
 
-        return `${doddsCalc.difference.toFixed(2)}% &ndash; <small><em>&ldquo;${doddsCalc.verdict}&rdquo;</em></small>`;
+        return `${doddsCalc.difference.toFixed(2)}% <small><em>&ldquo;${doddsCalc.verdict}&rdquo;</em></small>`;
       },
       BayesianTradeCalculator() {
         const bayesianCalc = calculateBayesianTradeValue(this.currentTrade);
@@ -137,22 +146,11 @@
         this.SELECT_PICK({ pick });
         this.$emit('onDockPickClick');
       },
-      onMakeOfferClick(event) {
+      onMakeOfferClick() {
         if (this.givingPicks.length !== this.receivingPicks.length) {
           this.showTradeValidation = true;
-          return;
         }
-
-        event.target.classList.add('is-loading');
-        event.target.disabled = true;
-        event.target.classList.remove('is-inverted');
-
-        // make trade offer
-        setTimeout(() => {
-          event.target.classList.remove('is-loading');
-          event.target.disabled = false;
-          event.target.classList.add('is-inverted', 'is-outlined');
-        }, 1000);
+        // @TODO make trade request
       },
     },
   };
@@ -216,12 +214,26 @@
   .trade-dock__action {
     text-align: right;
 
-    .button {
-      @media screen and (max-width: 769px) {
-        margin: 20px auto;
-        width: 100%;
-        max-width: 360px;
-        display: block;
+    @media screen and (max-width: 769px) {
+      display: flex;
+      justify-content: center;
+      margin-right: -10px;
+      margin-bottom: 10px;
+
+      .button {
+        flex: 1;
+        margin-right: 10px;
+        font-size: 1.25rem;
+        line-height: 1.5;
+        height: 2.285em;
+
+        .fa {
+          vertical-align: middle;
+        }
+      }
+
+      .is-primary {
+        flex: 2;
       }
     }
   }
