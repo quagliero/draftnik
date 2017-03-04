@@ -26,7 +26,10 @@ module.exports = {
       'vue$': 'vue/dist/vue.runtime.common.js',
       'src': path.resolve(__dirname, '../src'),
       'assets': path.resolve(__dirname, '../src/assets'),
-      'components': path.resolve(__dirname, '../src/components')
+      'components': path.resolve(__dirname, '../src/components'),
+      'utils': path.resolve(__dirname, '../src/utils'),
+      'store': path.resolve(__dirname, '../src/store'),
+      'bulma': path.resolve(__dirname, '../node_modules/bulma/sass/utilities'),
     }
   },
   resolveLoader: {

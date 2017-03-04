@@ -1,7 +1,7 @@
 <template>
-  <div class="columns is-mobile is-gapless is-multiline">
-    <div class="column" v-for="pick in displayRound">
-      <pick :pick="pick" :boardView="boardView" @click="handleClick"></pick>
+  <div class="columns is-mobile is-gapless">
+    <div class="column" v-for="pick in checkRound" >
+      <pick :pick="pick" :boardView="boardView" @onPickClick="$emit('onPickClick')"></pick>
     </div>
   </div>
 </template>
@@ -37,11 +37,6 @@
       checkRound() {
         // odd numbered rounds should print like a snake
         return (this.index % 2 === 0) ? this.displayRound.reverse() : this.displayRound;
-      },
-    },
-    methods: {
-      handleClick(pick) {
-        this.$emit('click', pick);
       },
     },
   };

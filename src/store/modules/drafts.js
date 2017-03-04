@@ -1,20 +1,20 @@
 import api from '../../api';
 import * as types from '../mutations';
-import roundPicksMap from '../../utils/utils';
+import { roundPicksMap } from '../../utils';
 
 // initial state
 const state = {
   all: [],
-  selectedTeam: null,
   selectedDraft: null,
   picksByRound: {},
+  selectedPick: {},
 };
 
 // getters
 const getters = {
   allDrafts: stateObj => stateObj.all,
   selectedDraft: stateObj => stateObj.selectedDraft,
-  selectedTeam: stateObj => stateObj.selectedTeam,
+  selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
 };
 
@@ -37,8 +37,8 @@ const mutations = {
     stateObj.all = response.data.drafts;
     stateObj.selectedDraft = response.data.drafts[response.data.drafts.length - 1];
   },
-  [types.SELECT_TEAM](stateObj, { teamId }) {
-    stateObj.selectedTeam = teamId;
+  [types.SELECT_PICK](stateObj, { pick }) {
+    stateObj.selectedPick = pick;
   },
   [types.SELECT_DRAFT](stateObj, { draftId }) {
     stateObj.selectedDraft = draftId;

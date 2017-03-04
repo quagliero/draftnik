@@ -1,5 +1,13 @@
 {
   "presets": ["es2015", "stage-2"],
-  "plugins": ["transform-runtime"],
-  "comments": false
+  "plugins": [
+    "transform-runtime",
+    ["module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "utils": "./utils",
+      },
+    }],
+  ],
+  "comments": false,
 }

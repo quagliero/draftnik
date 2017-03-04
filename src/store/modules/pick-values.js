@@ -4,11 +4,13 @@ import * as types from '../mutations';
 // initial state
 const state = {
   bayesian: [],
+  bayesianMaxValue: null,
 };
 
 // getters
 const getters = {
   bayesianValues: stateObj => stateObj.bayesian,
+  bayesianMaxValue: stateObj => stateObj.bayesianMaxValue,
 };
 
 // actions
@@ -28,6 +30,7 @@ const actions = {
 const mutations = {
   [types.RECEIVE_PICK_VALUES_BAYESIAN](stateObj, { response }) {
     stateObj.bayesian = response.data;
+    stateObj.bayesianMaxValue = response.data[0].value;
   },
 };
 
