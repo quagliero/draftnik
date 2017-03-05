@@ -4,7 +4,6 @@
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
       <template v-if="dataLoaded">
         <div class="content">
-          <p><em>Demo, logged in as Tobias</em></p>
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
         </div>
