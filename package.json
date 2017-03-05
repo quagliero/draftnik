@@ -8,6 +8,7 @@
     "dev": "npm run data && node build/dev-server.js",
     "build": "npm run data && node build/build.js",
     "data": "node build/get-player-and-adp.js",
+    "deploy": "npm run build && firebase deploy",
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
