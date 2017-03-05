@@ -1,6 +1,20 @@
 import axios from 'axios';
+import { auth } from '../database';
 
 export default {
+  login(credentials, cb) {
+    auth.signInWithEmailAndPassword(
+      credentials.email,
+      credentials.password,
+    ).catch((error) => {
+      cb(error);
+    });
+  },
+  logout(cb) {
+    auth.signOut().then(
+      response => cb(response),
+    );
+  },
   getTeams(cb) {
     axios.get(`${process.env.API_URL}/users`)
     .then(response => cb(response));

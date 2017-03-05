@@ -29,6 +29,9 @@ export default {
     TradeDock,
     PickModal,
   },
+  beforeCreate() {
+    this.$store.dispatch('checkAuth');
+  },
 };
 </script>
 

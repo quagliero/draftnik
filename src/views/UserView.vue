@@ -1,10 +1,21 @@
 <template>
-  <h1>Hi user</h1>
+  <div class="section">
+    <section class="container">
+      <h1 class="title">Hi {{ currentUser.email }}</h1>
+    </section>
+  </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
+
   export default {
     name: 'user-view',
+    computed: {
+      ...mapGetters([
+        'currentUser',
+      ]),
+    },
   };
 </script>
 

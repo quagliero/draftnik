@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import auth from './modules/auth';
 import teams from './modules/teams';
 import drafts from './modules/drafts';
 import players from './modules/players';
@@ -11,9 +12,9 @@ Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
 
-
 export default new Vuex.Store({
   modules: {
+    auth,
     teams,
     drafts,
     players,

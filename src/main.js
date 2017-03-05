@@ -2,6 +2,8 @@ import Vue from 'vue';
 import AsyncComputed from 'vue-async-computed';
 import { sync } from 'vuex-router-sync';
 import App from './App.vue';
+// eslint-disable-next-line
+import database from './database';
 import store from './store';
 import router from './router';
 
@@ -17,4 +19,7 @@ new Vue({
   store,
   router,
   render: h => h(App),
+  firebase: {
+    // drafts: firebaseApp.db.ref(''),
+  },
 });
