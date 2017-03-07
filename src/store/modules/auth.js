@@ -7,12 +7,8 @@ import router from '../../router';
 // initial state
 const state = {
   authenticated: null,
+  currentUser: null,
   authMessages: [],
-  user: {
-    email: null,
-    displayName: null,
-    uid: null,
-  },
 };
 
 // getters
@@ -27,10 +23,7 @@ const actions = {
   checkAuth({ commit }) {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is signed in.
         commit(types.CREATE_SESSION, { user });
-        // send them to 'me'
-        router.push('me');
       } else {
         // No user is signed in.
         commit(types.DESTROY_SESSION);
@@ -64,8 +57,7 @@ const mutations = {
       displayName,
     } = user;
 
-    stateObj.authenticated = true;
-    stateObj.user = {
+    stateObj.currentUser = {
       email,
       uid,
       displayName,
@@ -73,7 +65,7 @@ const mutations = {
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.authenticated = false;
-    stateObj.user = {
+    stateObj.currentUser = {
       email: null,
       displayName: null,
       uid: null,
@@ -85,6 +77,9 @@ const mutations = {
   },
   [types.CLEAR_AUTH_MESSAGES](stateObj) {
     stateObj.authMessages = [];
+  },
+  [types.RECEIVE_USERS](stateObj, users) {
+
   },
 };
 

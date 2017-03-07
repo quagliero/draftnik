@@ -1,10 +1,9 @@
-import api from '../../api';
 import * as types from '../mutations';
 
 // initial state
 const state = {
   all: [],
-  givingTeam: 2, // hard coded for now, this will be the logged in user id
+  givingTeam: null,
   selectedTeam: null,
   receivingTeam: null,
 };
@@ -19,17 +18,15 @@ const getters = {
 
 // actions
 const actions = {
-  getAllTeams({ commit }) {
-    api.getTeams(response => {
-      commit(types.RECEIVE_TEAMS, { response });
-    });
-  },
 };
 
 // mutations
 const mutations = {
-  [types.RECEIVE_DRAFTS](stateObj, { response }) {
-    stateObj.all = response.data.drafts[response.data.drafts.length - 1].users;
+  [types.CREATE_SESSION](stateObj, { user }) {
+    stateObj.givingTeam = user.uid;
+  },
+  [types.RECEIVE_DRAFTS](stateObj, response) {
+    stateObj.all = response[Object.keys(response)[0]].teams;
   },
   [types.SELECT_TEAM](stateObj, { teamId }) {
     // unset if same team given again

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { auth } from '../database';
+import { auth, db } from '../database';
 
 export default {
   login(credentials, cb) {
@@ -15,13 +15,15 @@ export default {
       response => cb(response),
     );
   },
-  getTeams(cb) {
-    axios.get(`${process.env.API_URL}/users`)
-    .then(response => cb(response));
+  getUsers(cb) {
+    db.ref('users').once('value', (snapshot) => {
+      cb(snapshot.val());
+    });
   },
   getDrafts(cb) {
-    axios.get('/static/data/drafts.json')
-    .then(response => cb(response));
+    db.ref('drafts').once('value', (snapshot) => {
+      cb(snapshot.val());
+    });
   },
   getPickValuesBayesian(cb) {
     axios.get('/static/data/pick-values-bayesian.json')

@@ -5,26 +5,27 @@ import { roundPicksMap } from '../../utils';
 // initial state
 const state = {
   all: [],
-  selectedDraft: null,
-  picksByRound: {},
+  selectedDraft: {},
   selectedPick: {},
+  picksByRound: {},
 };
 
 // getters
 const getters = {
   allDrafts: stateObj => stateObj.all,
   selectedDraft: stateObj => stateObj.selectedDraft,
+  picks: stateObj => stateObj.selectedDraft.picks,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
 };
 
 // actions
 const actions = {
-  getAllDrafts({ commit }) {
+  getDrafts({ commit }) {
     // once we have them, don't bother again
     if (!(state.all.length)) {
-      api.getDrafts(response => {
-        commit(types.RECEIVE_DRAFTS, { response });
+      api.getDrafts((response) => {
+        commit(types.RECEIVE_DRAFTS, response);
         commit(types.MAP_PICKS);
       });
     }
@@ -33,9 +34,9 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_DRAFTS](stateObj, { response }) {
-    stateObj.all = response.data.drafts;
-    stateObj.selectedDraft = response.data.drafts[response.data.drafts.length - 1];
+  [types.RECEIVE_DRAFTS](stateObj, response) {
+    stateObj.all = response;
+    stateObj.selectedDraft = response[Object.keys(response)[0]];
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;
@@ -45,7 +46,6 @@ const mutations = {
   },
   [types.MAP_PICKS](stateObj) {
     stateObj.picksByRound = roundPicksMap(
-      stateObj.selectedDraft.rounds,
       stateObj.selectedDraft.picks,
     );
   },

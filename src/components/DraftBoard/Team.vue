@@ -1,6 +1,6 @@
 <template>
   <div class="team is-fullwidth" :class="{ 'is-selected' : isSelected }">
-    <b @click="handleClick(team.id)">{{ team.name }}</b>
+    <b @click="handleClick(teamId)">{{ team.displayName }}</b>
   </div>
 </template>
 
@@ -10,17 +10,21 @@
   export default {
     name: 'team',
     props: {
-      team: {
-        type: Object,
+      teamId: {
+        type: String,
         required: true,
       },
     },
     computed: {
       ...mapGetters([
         'selectedTeam',
+        'allUsers',
       ]),
       isSelected() {
-        return this.team.id === this.selectedTeam;
+        return this.teamId === this.selectedTeam;
+      },
+      team() {
+        return this.allUsers[this.teamId];
       },
     },
     methods: {
