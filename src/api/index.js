@@ -15,10 +15,10 @@ export default {
       response => cb(response),
     );
   },
-  getUsers(cb) {
+  getUsers(cb, error) {
     db.ref('users').once('value', (snapshot) => {
       cb(snapshot.val());
-    });
+    }, err => error(err));
   },
   getDrafts(cb) {
     db.ref('drafts').once('value', (snapshot) => {

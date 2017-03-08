@@ -4,18 +4,26 @@ import * as types from '../mutations';
 // initial state
 const state = {
   all: {},
+  currentUser: {},
 };
 
 // getters
 const getters = {
   allUsers: stateObj => stateObj.all,
+  currentUser: stateObj => stateObj.currentUser,
 };
 
 // actions
 const actions = {
   getUsers({ commit }) {
-    api.getUsers(response => {
-      commit(types.RECEIVE_USERS, response);
+    return new Promise((resolve, reject) => {
+      api.getUsers(
+        (response) => {
+          commit(types.RECEIVE_USERS, response);
+          resolve();
+        },
+        (response) => reject(response),
+      );
     });
   },
 };
@@ -25,9 +33,9 @@ const mutations = {
   [types.RECEIVE_USERS](stateObj, users) {
     stateObj.all = users;
   },
-  // [types.DESTROY_SESSION](stateObj) {
-  //   stateObj.currentUser = null;
-  // },
+  [types.CREATE_SESSION](stateObj, { user }) {
+    stateObj.currentUser = stateObj.all[user.uid];
+  },
 };
 
 export default {

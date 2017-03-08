@@ -7,15 +7,14 @@ import router from '../../router';
 // initial state
 const state = {
   authenticated: null,
-  currentUser: {},
   authMessages: [],
+  currentAuthenticatedUser: {},
 };
 
 // getters
 const getters = {
   authenticated: stateObj => stateObj.authenticated,
   authMessages: stateObj => stateObj.authMessages,
-  currentUser: stateObj => stateObj.currentUser,
 };
 
 // actions
@@ -23,11 +22,11 @@ const actions = {
   checkAuth({ commit }) {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        if (user.uid !== state.currentUser.uid) {
+        if (user.uid !== state.currentAuthenticatedUser.uid) {
           commit(types.CREATE_SESSION, { user });
           // we've logged in
           if (/login/i.test(window.location.hash)) {
-            router.push('me');
+            router.push({ name: 'me' });
           }
         }
       } else {
@@ -49,7 +48,7 @@ const actions = {
     api.logout((response) => {
       commit(types.DESTROY_SESSION, response);
       commit(types.CLEAR_AUTH_MESSAGES);
-      router.push('/login');
+      router.push({ name: 'login' });
     });
   },
 };
@@ -59,7 +58,7 @@ const mutations = {
   [types.CREATE_SESSION](stateObj, { user }) {
     stateObj.authenticated = true;
 
-    stateObj.currentUser = {
+    stateObj.currentAuthenticatedUser = {
       email: user.email,
       uid: user.uid,
       displayName: user.displayName,
@@ -67,7 +66,7 @@ const mutations = {
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.authenticated = false;
-    stateObj.currentUser = {};
+    stateObj.currentAuthenticatedUser = {};
   },
   [types.INVALID_SESSION](stateObj, error) {
     stateObj.authenticated = false;
@@ -75,9 +74,6 @@ const mutations = {
   },
   [types.CLEAR_AUTH_MESSAGES](stateObj) {
     stateObj.authMessages = [];
-  },
-  [types.RECEIVE_USERS](stateObj, users) {
-
   },
 };
 

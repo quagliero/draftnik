@@ -17,12 +17,14 @@ const checkAuth = (to, from, next) => {
         if (value === true) {
           next();
         } else {
-          next('/login');
+          next('login');
         }
       },
     );
-  } else {
+  } else if (store.state.auth.authenticated === true) {
     next();
+  } else {
+    next('login');
   }
 };
 
@@ -40,18 +42,18 @@ const router = new Router({
       component: LoginView,
       beforeEnter: (to, from, next) => {
         // check if user is logged in, if so, redirect
-        // awaiting state
+        //  - basically a one-off inverse of checkAuth
         if (store.state.auth.authenticated === null) {
           store.watch(
             (state) => state.auth.authenticated,
             (value) => {
               if (value === true) {
-                next('/me');
+                next('me');
               }
             },
           );
         } else if (store.state.auth.authenticated === true) {
-          next('/me');
+          next('me');
         } else {
           next();
         }

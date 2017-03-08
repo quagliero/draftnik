@@ -30,8 +30,10 @@ export default {
     PickModal,
   },
   beforeCreate() {
-    this.$store.dispatch('checkAuth');
-    this.$store.dispatch('getUsers');
+    // first off, fetch the teams, then trigger authentication checks
+    this.$store.dispatch('getUsers').then(() => {
+      this.$store.dispatch('checkAuth');
+    });
   },
 };
 </script>
