@@ -67,7 +67,6 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('getUsers');
     this.$store.dispatch('getDrafts');
     // this.$store.dispatch('getSavedTrades');
     this.$store.dispatch('getPickValuesBayesian');

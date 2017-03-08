@@ -31,6 +31,7 @@ export default {
   },
   beforeCreate() {
     this.$store.dispatch('checkAuth');
+    this.$store.dispatch('getUsers');
   },
 };
 </script>

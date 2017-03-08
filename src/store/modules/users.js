@@ -25,9 +25,9 @@ const mutations = {
   [types.RECEIVE_USERS](stateObj, users) {
     stateObj.all = users;
   },
-  [types.DESTROY_SESSION](stateObj) {
-    stateObj.currentUser = null;
-  },
+  // [types.DESTROY_SESSION](stateObj) {
+  //   stateObj.currentUser = null;
+  // },
 };
 
 export default {

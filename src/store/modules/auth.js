@@ -7,7 +7,7 @@ import router from '../../router';
 // initial state
 const state = {
   authenticated: null,
-  currentUser: null,
+  currentUser: {},
   authMessages: [],
 };
 
@@ -15,7 +15,7 @@ const state = {
 const getters = {
   authenticated: stateObj => stateObj.authenticated,
   authMessages: stateObj => stateObj.authMessages,
-  currentUser: stateObj => stateObj.user,
+  currentUser: stateObj => stateObj.currentUser,
 };
 
 // actions
@@ -23,7 +23,13 @@ const actions = {
   checkAuth({ commit }) {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        commit(types.CREATE_SESSION, { user });
+        if (user.uid !== state.currentUser.uid) {
+          commit(types.CREATE_SESSION, { user });
+          // we've logged in
+          if (/login/i.test(window.location.hash)) {
+            router.push('me');
+          }
+        }
       } else {
         // No user is signed in.
         commit(types.DESTROY_SESSION);
@@ -51,25 +57,17 @@ const actions = {
 // mutations
 const mutations = {
   [types.CREATE_SESSION](stateObj, { user }) {
-    const {
-      email,
-      uid,
-      displayName,
-    } = user;
+    stateObj.authenticated = true;
 
     stateObj.currentUser = {
-      email,
-      uid,
-      displayName,
+      email: user.email,
+      uid: user.uid,
+      displayName: user.displayName,
     };
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.authenticated = false;
-    stateObj.currentUser = {
-      email: null,
-      displayName: null,
-      uid: null,
-    };
+    stateObj.currentUser = {};
   },
   [types.INVALID_SESSION](stateObj, error) {
     stateObj.authenticated = false;

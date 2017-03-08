@@ -7,21 +7,62 @@ import store from '../store';
 
 Vue.use(Router);
 
+const checkAuth = (to, from, next) => {
+ // we must wait for the store to be initialized
+  if (store.state.auth.authenticated === null) {
+    // watch the authenticated prop
+    store.watch(
+      (state) => state.auth.authenticated,
+      (value) => {
+        if (value === true) {
+          next();
+        } else {
+          next('/login');
+        }
+      },
+    );
+  } else {
+    next();
+  }
+};
+
 const router = new Router({
-  mode: 'history', // use html5 history API instead of /#!/ hashing URL routes
   routes: [
     { path: '/', redirect: '/board' },
-    { path: '/board', component: DraftBoardView },
+    {
+      name: 'board',
+      path: '/board',
+      component: DraftBoardView,
+    },
     {
       path: '/login',
+      name: 'login',
       component: LoginView,
+      beforeEnter: (to, from, next) => {
+        // check if user is logged in, if so, redirect
+        // awaiting state
+        if (store.state.auth.authenticated === null) {
+          store.watch(
+            (state) => state.auth.authenticated,
+            (value) => {
+              if (value === true) {
+                next('/me');
+              }
+            },
+          );
+        } else if (store.state.auth.authenticated === true) {
+          next('/me');
+        } else {
+          next();
+        }
+      },
     },
     {
       name: 'me',
-      path: '/me',
+      path: '/my-draft',
       component: UserView,
-      meta: {
-        auth: true,
+      beforeEnter: (to, from, next) => {
+        checkAuth(to, from, next);
       },
     },
   ],
@@ -33,13 +74,8 @@ const router = new Router({
 // ... race condition stuff
 // store.dispatch('checkAuth');
 
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = store.getters.authenticated;
-  if (to.meta.auth && !isAuthenticated) {
-    next({ path: '/login' });
-  } else {
-    next();
-  }
-});
+// router.beforeEach((to, from, next) => {
+//
+// });
 
 export default router;
