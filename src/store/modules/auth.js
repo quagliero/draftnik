@@ -8,7 +8,7 @@ import router from '../../router';
 const state = {
   authenticated: null,
   authMessages: [],
-  currentAuthenticatedUser: {},
+  authUid: null,
 };
 
 // getters
@@ -22,7 +22,7 @@ const actions = {
   checkAuth({ commit }) {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        if (user.uid !== state.currentAuthenticatedUser.uid) {
+        if (user.uid !== state.authUid) {
           commit(types.CREATE_SESSION, { user });
           // we've logged in
           if (/login/i.test(window.location.hash)) {
@@ -57,16 +57,11 @@ const actions = {
 const mutations = {
   [types.CREATE_SESSION](stateObj, { user }) {
     stateObj.authenticated = true;
-
-    stateObj.currentAuthenticatedUser = {
-      email: user.email,
-      uid: user.uid,
-      displayName: user.displayName,
-    };
+    stateObj.authUid = user.uid;
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.authenticated = false;
-    stateObj.currentAuthenticatedUser = {};
+    stateObj.authUid = null;
   },
   [types.INVALID_SESSION](stateObj, error) {
     stateObj.authenticated = false;

@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import DraftBoardView from '../views/DraftBoardView.vue';
 import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
+import AdminView from '../views/AdminView.vue';
 import store from '../store';
 
 Vue.use(Router);
@@ -65,6 +66,18 @@ const router = new Router({
       component: UserView,
       beforeEnter: (to, from, next) => {
         checkAuth(to, from, next);
+      },
+    },
+    {
+      name: 'admin',
+      path: '/admin',
+      component: AdminView,
+      beforeEnter: (to, from, next) => {
+        if (store.state.users.currentUser.isAdmin === true) {
+          next();
+        } else {
+          next(from.path);
+        }
       },
     },
   ],

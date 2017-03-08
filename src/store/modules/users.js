@@ -11,6 +11,7 @@ const state = {
 const getters = {
   allUsers: stateObj => stateObj.all,
   currentUser: stateObj => stateObj.currentUser,
+  isAdmin: stateObj => stateObj.currentUser.isAdmin === true,
 };
 
 // actions
