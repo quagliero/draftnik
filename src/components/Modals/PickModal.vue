@@ -1,7 +1,7 @@
 <template>
   <modal @close="$emit('close')">
     <h3 class="title">Pick ({{ pickAndRound }})</h3>
-    <p>Currently owned by: {{ team.name }}</p>
+    <p>Currently owned by: {{ team.displayName }}</p>
     <p>draftpicktradecalculator.com value: <strong>{{ bayesianValue }}</strong></p>
     <progress class="progress" :value="percentageValue" max="100">{{percentageValue}}</progress>
     <p>Players in this range: {{ playersInRange }}</p>
@@ -47,7 +47,7 @@
     computed: {
       ...mapGetters([
         'selectedPick',
-        'givingTeam',
+        'currentUser',
         'bayesianMaxValue',
         'currentTrade',
       ]),
@@ -75,7 +75,7 @@
           pick => pick.overall === this.selectedPick.overall);
       },
       isOwnPick() {
-        return this.selectedPick.team === this.givingTeam;
+        return this.selectedPick.team === this.currentUser.id;
       },
       team() {
         return getTeamById(this.selectedPick.team);
@@ -103,9 +103,9 @@
         SELECT_RECEIVING_TEAM,
       }),
       handleTradePickClick() {
-        const receivingTeam = (this.team.id === this.givingTeam) ? null : this.team.id;
+        const receivingTeam = (this.team.id === this.currentUser.id) ? null : this.team.id;
         this.createNewTrade({
-          givingTeam: this.givingTeam,
+          givingTeam: this.currentUser.id,
           receivingTeam,
           pick: this.selectedPick,
           // keep our picks stored in case we just want to trial out
@@ -122,7 +122,7 @@
         // business logic to ween out illegal picks
         this.addPickToTrade({
           id: this.currentTrade.id,
-          givingTeam: 2,
+          givingTeam: this.currentUser.id,
           receivingTeam: this.team.id,
           pick: this.selectedPick,
         });
@@ -132,7 +132,7 @@
         // business logic to ween out illegal picks
         this.removePickFromTrade({
           id: this.currentTrade.id,
-          givingTeam: 2,
+          givingTeam: this.currentUser.id,
           receivingTeam: this.team.id,
           pick: this.selectedPick,
         });

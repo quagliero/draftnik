@@ -4,7 +4,8 @@ import { calculateDoddsTradeValue } from './dodds-calculator';
 export const roundPicksMap = (picks) => {
   const map = {};
 
-  picks.forEach((pick) => {
+  Object.keys(picks).forEach((p) => {
+    const pick = picks[p];
     if (Array.isArray(map[pick.round])) {
       map[pick.round].push(pick);
     } else {

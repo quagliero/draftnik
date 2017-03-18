@@ -8,6 +8,7 @@ const state = {
   selectedDraft: {},
   selectedPick: {},
   picksByRound: {},
+  order: {},
 };
 
 // getters
@@ -15,6 +16,7 @@ const getters = {
   allDrafts: stateObj => stateObj.all,
   selectedDraft: stateObj => stateObj.selectedDraft,
   picks: stateObj => stateObj.selectedDraft.picks,
+  draftOrder: stateObj => stateObj.order,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
 };
@@ -37,6 +39,7 @@ const mutations = {
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
     stateObj.selectedDraft = response[Object.keys(response)[0]];
+    stateObj.order = stateObj.selectedDraft.order.filter(a => a);
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;

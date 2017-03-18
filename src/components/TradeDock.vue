@@ -25,7 +25,7 @@
               </trade-dock-pick>
             </div>
             <div class="trade-dock__receiving" v-if="givingPicks.length">
-              <b v-if="receivingTeam">{{ receivingTeam.name }} gets:&nbsp;</b>
+              <b v-if="receivingTeam">{{ receivingTeam.displayName }} gets:&nbsp;</b>
               <b v-else="receivingTeam">They get:&nbsp;</b>
               <trade-dock-pick
                 v-for="(pick, i) in givingPicks"
@@ -39,23 +39,25 @@
         </div>
 
         <div class="level-item">
-          <div class="trade-dock__calc">
-            <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
-            <span v-html="BayesianTradeCalculator"></span>
-          </div>
-          <div class="trade-dock__calc">
-            <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
-            <span v-html="DoddsTradeCalculator"></span>
+          <div class="trade-dock__calcs">
+            <div class="trade-dock__calc">
+              <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
+              <span v-html="BayesianTradeCalculator"></span>
+            </div>
+            <div class="trade-dock__calc">
+              <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
+              <span v-html="DoddsTradeCalculator"></span>
+            </div>
           </div>
         </div>
         <div class="level-item">
           <div class="trade-dock__action" v-if="canMakeOffer">
-            <button class="button is-white is-inverted is-outlined">
+            <!-- <button class="button is-white is-inverted is-outlined">
               <span class="icon is-small">
                 <i class="fa fa-save"></i>
               </span>
               <span>Save</span>
-            </button>
+            </button> -->
             <button
               class="button is-outlined is-primary is-inverted"
               @click="onMakeOfferClick"
@@ -194,6 +196,12 @@
   }
   .trade-dock__receiving {
     // margin-top: 5px;
+  }
+
+  .trade-dock__calcs {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .trade-dock__calc {

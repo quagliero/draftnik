@@ -76,7 +76,7 @@ const router = new Router({
         if (store.state.users.currentUser.isAdmin === true) {
           next();
         } else {
-          next(from.path);
+          next('login');
         }
       },
     },

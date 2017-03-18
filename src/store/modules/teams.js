@@ -24,6 +24,7 @@ const actions = {
 const mutations = {
   [types.CREATE_SESSION](stateObj, { user }) {
     stateObj.givingTeam = user.uid;
+    stateObj.selectedTeam = user.uid;
   },
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response[Object.keys(response)[0]].teams;
