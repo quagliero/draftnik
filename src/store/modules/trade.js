@@ -85,6 +85,9 @@ const actions = {
 
 // mutations
 const mutations = {
+  [types.SELECT_GIVING_TEAM](stateObj, userId) {
+    stateObj.givingTeam = userId;
+  },
   [types.RECEIVE_TRADES](stateObj, { savedTrades }) {
     stateObj.savedTrades = savedTrades;
   },

@@ -3,5 +3,5 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  API_URL: '"//draftnik.app"'
+  API_URL: '"https://draftnik-cc54e.firebaseio.com"'
 })

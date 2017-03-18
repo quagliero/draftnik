@@ -14,7 +14,7 @@ function getPlayerData() {
 }
 
 function getAdpData() {
-  return axios.get(`${mflUrl}adp`);
+  return axios.get(`${mflUrl}adp&FRANCHISES=12&IS_KEEPER=0&IS_MOCK=0`);
 }
 
 axios.all([getPlayerData(), getAdpData()])

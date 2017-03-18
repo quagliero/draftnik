@@ -29,6 +29,12 @@ export default {
     TradeDock,
     PickModal,
   },
+  beforeCreate() {
+    // first off, fetch the teams, then trigger authentication checks
+    this.$store.dispatch('getUsers').then(() => {
+      this.$store.dispatch('checkAuth');
+    });
+  },
 };
 </script>
 

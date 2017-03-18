@@ -4,7 +4,6 @@
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
       <template v-if="dataLoaded">
         <div class="content">
-          <p><em>Demo, logged in as Tobias</em></p>
           <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
           <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
         </div>
@@ -12,8 +11,8 @@
           <div class="board container">
           <section>
             <div class="columns is-mobile is-gapless">
-              <div class="column" v-for="team in teams">
-                <team :team="team"></team>
+              <div class="column" v-for="(team, uid) in teams">
+                <team :teamId="uid"></team>
               </div>
             </div>
           </section>
@@ -60,7 +59,7 @@ export default {
       'players',
     ]),
     teams() {
-      return this.selectedDraft.users;
+      return this.selectedDraft.teams;
     },
     dataLoaded() {
       // we've got all the data we want
@@ -68,12 +67,16 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('getAllDrafts');
+    this.$store.dispatch('getDrafts');
+    // this.$store.dispatch('getSavedTrades');
     this.$store.dispatch('getPickValuesBayesian');
     this.$store.dispatch('getPlayers');
     this.$store.dispatch('getAdp');
-    this.$store.dispatch('getSavedTrades');
   },
+  // updated() {
+  //   if (this.boardView === 'adp') {
+  //   }
+  // },
 };
 
 </script>

@@ -1,13 +1,29 @@
 import axios from 'axios';
+import { auth, db } from '../database';
 
 export default {
-  getTeams(cb) {
-    axios.get(`${process.env.API_URL}/users`)
-    .then(response => cb(response));
+  login(credentials, cb) {
+    auth.signInWithEmailAndPassword(
+      credentials.email,
+      credentials.password,
+    ).catch((error) => {
+      cb(error);
+    });
+  },
+  logout(cb) {
+    auth.signOut().then(
+      response => cb(response),
+    );
+  },
+  getUsers(cb, error) {
+    db.ref('users').once('value', (snapshot) => {
+      cb(snapshot.val());
+    }, err => error(err));
   },
   getDrafts(cb) {
-    axios.get('/static/data/drafts.json')
-    .then(response => cb(response));
+    db.ref('drafts').once('value', (snapshot) => {
+      cb(snapshot.val());
+    });
   },
   getPickValuesBayesian(cb) {
     axios.get('/static/data/pick-values-bayesian.json')

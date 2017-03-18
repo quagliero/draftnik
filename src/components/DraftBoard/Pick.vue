@@ -14,13 +14,12 @@
       <b class="pick__overall">{{ pick.overall }}</b>
       <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
     </div>
-    <div class="pick__team">{{ teamInfo.name }}</div>
+    <!-- <div class="pick__team">{{ teamInfo.displayName }}</div> -->
     <div v-if="boardView === 'adp'" class="pick__player">
       <span class="player-forename" v-html="playerInfo.forename"></span>
       <span class="player-surname" v-html="playerInfo.surname"></span>
     </div>
     <div class="pick__flags">
-      <i class="fa fa-gavel" v-if="pick.onTheBlock"></i>
     </div>
   </div>
 </template>
@@ -28,6 +27,7 @@
 <script>
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
+  import { getTeamById } from '../../utils';
 
   export default {
     name: 'pick',
@@ -45,7 +45,7 @@
         'selectedTeam',
         'currentTrade',
         'receivingTeam',
-        'selectedDraft',
+        'allUsers',
         'adp',
       ]),
       isSelected() {
@@ -78,13 +78,12 @@
       teamInfo: {
         get() {
           return new Promise(resolve => {
-            const team = this.selectedDraft.users.find(user => user.id === this.pick.team);
+            const team = getTeamById(this.pick.team);
             resolve(team);
           });
         },
         default: {
-          name: '',
-          position: '',
+          displayName: '',
         },
       },
       playerInfo: {
