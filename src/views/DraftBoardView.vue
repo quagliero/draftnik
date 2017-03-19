@@ -2,29 +2,29 @@
   <section class="section board-wrapper">
     <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
-      <template v-if="dataLoaded">
-        <div class="content">
-          <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
-          <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
-        </div>
-        <div class="scroll-container">
-          <div class="board container">
-          <section>
-            <div class="columns is-mobile is-gapless">
-              <div class="column" v-for="(team, uid) in teams">
-                <team :teamId="uid"></team>
-              </div>
-            </div>
-          </section>
-          <section>
-            <round v-if="picksByRound" v-for="(round, key) in picksByRound"
-              :key="key"
-              :index="key"
-              :round="round"
-              :boardView="boardView"
-              @onPickClick="$emit('onPickClick')">
-            </round>
-          </section>
+    <template v-if="dataLoaded">
+      <div class="content">
+        <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
+        <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
+      </div>
+      <div class="scroll-container">
+        <div class="board container">
+          <table class="board__table">
+            <thead>
+              <tr>
+                <team v-for="(team, uid) in teams" :teamId="uid"></team>
+              </tr>
+            </thead>
+            <tbody>
+              <round v-if="picksByRound" v-for="(round, key) in picksByRound"
+                :key="key"
+                :index="key"
+                :round="round"
+                :boardView="boardView"
+                @onPickClick="$emit('onPickClick')">
+              </round>
+            </tbody>
+          </table>
         </div>
       </div>
     </template>
@@ -104,11 +104,16 @@ export default {
 }
 
 .board {
-  min-width: 1200px; // 12 picks at 1
+  min-width: 1200px; // 12 picks at 100
+  max-width: 1600px;
   width: 100%;
 
   .columns {
     margin-bottom: 0 !important;
   }
+}
+
+.board__table {
+  table-layout: fixed;
 }
 </style>

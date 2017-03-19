@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
-    "bulma": "^0.3.2",
+    "bulma": "^0.4.0",
     "firebase": "^3.7.0",
     "url-loader": "^0.5.8",
     "vue": "^2.2.1",

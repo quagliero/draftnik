@@ -41,12 +41,16 @@
         <div class="level-item">
           <div class="trade-dock__calcs">
             <div class="trade-dock__calc">
-              <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
-              <span v-html="BayesianTradeCalculator"></span>
+              <a href="http://www.draftpicktradecalculator.com/" target="_blank">
+                <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
+                <span v-html="BayesianTradeCalculator"></span>
+              </a>
             </div>
             <div class="trade-dock__calc">
-              <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
-              <span v-html="DoddsTradeCalculator"></span>
+              <a href="https://footballguys.com/pickvalue.htm" target="_blank">
+                <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
+                <span v-html="DoddsTradeCalculator"></span>
+              </a>
             </div>
           </div>
         </div>
@@ -125,7 +129,7 @@
           return '';
         }
 
-        return `${doddsCalc.difference.toFixed(2)}% <small><em>&ldquo;${doddsCalc.verdict}&rdquo;</em></small>`;
+        return `${doddsCalc.difference.toFixed(2)}%`;
       },
       BayesianTradeCalculator() {
         const bayesianCalc = calculateBayesianTradeValue(this.currentTrade);
@@ -163,7 +167,7 @@
 
   .trade-dock {
     position: relative;
-    z-index: 3;
+    z-index: 5;
     width: 100%;
     position: fixed;
     bottom: 0;
@@ -177,7 +181,7 @@
   .trade-dock__inner {
     background-color: $dark;
     padding: 5px 20px 5px;
-    z-index: 3;
+    z-index: 5;
   }
 
   .trade-dock__picks {
@@ -200,22 +204,31 @@
 
   .trade-dock__calcs {
     display: flex;
-    flex-direction: column;
+    // flex-direction: column;
     align-items: flex-start;
   }
 
   .trade-dock__calc {
+    padding-right: 20px;
     align-items: center;
     font-size: 1.2rem;
     font-weight: bold;
+
+    a {
+      color: white;
+
+      &:hover, &:focus {
+        text-decoration: underline;
+      }
+    }
   }
 
   .trade-dock__img {
     border-radius: 100%;
-    margin-right: 10px;
+    margin-right: 5px;
     vertical-align: middle !important;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     border: 2px solid $white-ter;
   }
 
@@ -252,7 +265,7 @@
     margin-bottom: 10px;
     left: 20px;
     right: 20px;
-    z-index: 2;
+    z-index: 4;
   }
 
   .slide-up-enter-active, .slide-up-leave-active {

@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="pick is-fullwidth"
+  <td
+    class="pick"
     :class="[{
       'is-selected' : isSelected,
       'is-available' : isAvailable,
@@ -10,18 +10,18 @@
     }, `pick--${playerPositionClass}` ]"
     @click="onPickClick"
   >
-    <div class="pick__numbers">
-      <b class="pick__overall">{{ pick.overall }}</b>
-      <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
+    <div class="pick__inner">
+      <div class="pick__numbers">
+        <b class="pick__overall">{{ pick.overall }}</b>
+        <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
+      </div>
+      <!-- <div class="pick__team">{{ teamInfo.displayName }}</div> -->
+      <div v-if="boardView === 'adp'" class="pick__player">
+        <span class="player-forename" v-html="playerInfo.forename"></span>
+        <span class="player-surname" v-html="playerInfo.surname"></span>
+      </div>
     </div>
-    <!-- <div class="pick__team">{{ teamInfo.displayName }}</div> -->
-    <div v-if="boardView === 'adp'" class="pick__player">
-      <span class="player-forename" v-html="playerInfo.forename"></span>
-      <span class="player-surname" v-html="playerInfo.surname"></span>
-    </div>
-    <div class="pick__flags">
-    </div>
-  </div>
+  </td>
 </template>
 
 <script>
@@ -123,16 +123,17 @@
   .pick {
     cursor: pointer;
     position: relative;
-    z-index: 1;
+    z-index: inherit;
     height: 100%;
-    min-height: 80px;
-    width: 100px;
+    text-align: center;
     word-break: break-word;
     padding: 0.2em 0.3em;
-    border: 1px solid $white-ter;
-    transition: background-color 0.2s ease-in-out,
+    border: 2px solid $white-ter;
+    transition:
+      background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
-      transform 0.2s ease-in-out;
+      transform 0.2s ease-in-out,
+      border-color 0.2s ease-in-out;
 
     &--rb {
       background-color: mix(white, $green, 50%);
@@ -157,6 +158,10 @@
     &--def {
       background-color: mix(white, $orange, 30%);
     }
+  }
+
+  .pick__inner {
+    min-height: 80px;
   }
 
   .pick__numbers {
@@ -194,23 +199,30 @@
 
   .is-player {
     min-height: 110px;
+
+    .pick__inner {
+      min-height: 100px;
+    }
   }
 
   .is-selected {
     background-color: $grey-dark;
+    border-top-color: $grey-dark;
+    border-bottom-color: $grey-dark;
     color: white;
   }
 
   .is-available {
     background-color: $white-ter;
+    border-color: $white-ter;
     color: $grey-darker;
   }
 
   .is-receiving,
   .is-giving {
-    transform: scale(1.05);
-    z-index: 2;
-    box-shadow: 0 0 1px rgba(0,0,0,.3);
+    transform: scale(1.1);
+    z-index: 1;
+    box-shadow: 0 2px 1px rgba(0,0,0,.1);
   }
 
   .is-receiving {
