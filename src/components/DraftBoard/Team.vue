@@ -1,7 +1,11 @@
 <template>
-  <div class="team is-fullwidth" :class="{ 'is-selected' : isSelected }">
-    <b @click="handleClick(teamId)">{{ team.displayName }}</b>
-  </div>
+  <th
+    class="team"
+    :class="{ 'is-selected' : isSelected }"
+    @click="handleClick(teamId)"
+  >
+    <b>{{ team.displayName }}</b>
+  </th>
 </template>
 
 <script>
@@ -43,12 +47,24 @@
 
   .team {
     cursor: pointer;
-    width: 100px;
-    border: 1px solid $grey-lighter;
+    min-width: 100px;
+    background-color: $white;
+    border-left: 2px solid $white-ter;
+    border-right: 2px solid $white-ter;
+    border-top: 2px solid $white-ter;
+    border-bottom: 2px solid $white-ter;
+    padding: 5px;
+    text-align: center;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out,
+      border-color 0.2s ease-in-out;
   }
 
   .is-selected {
     background-color: $grey-dark;
+    border-top-color: $grey-dark;
+    border-bottom-color: $grey-dark;
     color: white;
   }
 </style>

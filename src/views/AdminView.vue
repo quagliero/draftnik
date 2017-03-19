@@ -17,25 +17,27 @@
                   <div
                     v-for="(team, pick) in draftOrder"
                     v-if="team"
-                    class="control is-horizontal"
+                    class="field is-horizontal"
                   >
-                    <div class="control-label">
+                    <div class="field-label">
                       <label class="label">Pick {{ pick + 1}}</label>
                     </div>
-                    <div class="control">
-                      <div class="select is-fullwidth">
-                        <select
-                          @change="handleChange(pick, $event.target.value)"
-                        >
-                          <option value=""></option>
-                          <option
-                            v-for="(user, key) in allUsers"
-                            :value="key"
-                            :selected="team === key"
+                    <div class="field-body">
+                      <div class="field">
+                        <div class="select is-fullwidth">
+                          <select
+                            @change="handleChange(pick, $event.target.value)"
                           >
-                            {{ user.displayName }}
-                          </option>
-                        </select>
+                            <option value=""></option>
+                            <option
+                              v-for="(user, key) in allUsers"
+                              :value="key"
+                              :selected="team === key"
+                            >
+                              {{ user.displayName }}
+                            </option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>

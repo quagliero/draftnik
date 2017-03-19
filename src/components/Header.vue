@@ -1,11 +1,9 @@
 <template>
   <header class="nav">
-    <div class="container">
-      <span class="nav-left">
-        <router-link to="/" exact><logo class="nav-item is-brand"></logo></router-link>
-      </span>
-      <site-nav class="nav-right"></site-nav>
+    <div class="nav-left">
+      <router-link to="/" exact><logo class="nav-item is-brand"></logo></router-link>
     </div>
+    <site-nav/>
   </header>
 </template>
 
@@ -21,7 +19,7 @@ export default {
   },
   data() {
     return {
-      title: 'boo',
+      isOpen: false,
     };
   },
 };
