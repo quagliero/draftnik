@@ -1,6 +1,18 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "drafts": {
+      ".read": true,
+      "$year": {
+        "picks": {
+          ".write": "root.child('admins').child(auth.uid).exists()",
+        }
+      }
+    },
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".write": "$uid === auth.uid",
+      }
+    }
   }
 }
