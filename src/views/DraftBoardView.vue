@@ -73,10 +73,6 @@ export default {
     this.$store.dispatch('getPlayers');
     this.$store.dispatch('getAdp');
   },
-  // updated() {
-  //   if (this.boardView === 'adp') {
-  //   }
-  // },
 };
 
 </script>
