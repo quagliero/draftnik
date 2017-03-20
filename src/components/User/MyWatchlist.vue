@@ -1,7 +1,7 @@
 <template>
   <nav class="panel">
     <p class="panel-heading">
-      My picks
+      My Watchlist
     </p>
     <!-- <div class="panel-block">
       <p class="control has-icon">
@@ -13,22 +13,22 @@
     </div> -->
     <p class="panel-tabs">
       <a
-        v-for="num in pickFilters"
-        @click="filterPickBy(num)"
-        :class="{ 'is-active' : selectedPickFilter === num }"
+        v-for="pos in playerFilters"
+        @click="filterPlayerBy(pos)"
+        :class="{ 'is-active' : selectedPlayerFilter === pos }"
       >
-        {{ num === 0 ? 'All' : `Top ${num}` }}
+        {{ pos }}
       </a>
     </p>
     <a
-      v-for="pick in filteredPicks"
-      v-if="filteredPicks.length"
+      v-for="player in filteredPlayers"
+      v-if="filteredPlayers.length"
       class="panel-block"
     >
       <span class="panel-icon">
         <i class="fa fa-book"></i>
       </span>
-      #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
+      {{ player.name }} {{ player.position }}
     </a>
     <!-- <a
       v-for="pick in filteredPicks"
@@ -49,31 +49,34 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
   import filter from 'lodash/filter';
 
   export default {
-    name: 'my-picks',
-    props: ['picks'],
+    name: 'my-watchlist',
     data() {
       return {
         // filteredPicks: this.computedFilteredPicks,
-        pickFilters: [0, 12, 24, 36, 50, 75],
-        selectedPickFilter: 0,
+        playerFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
+        selectedPlayerFilter: 'All',
       };
     },
     computed: {
-      filteredPicks() {
-        return this.filterPickBy(this.selectedPickFilter);
+      ...mapGetters([
+        'players',
+      ]),
+      filteredPlayers() {
+        return this.filterPlayerBy(this.selectedPlayerFilter);
       },
     },
     methods: {
-      filterPickBy(num) {
-        this.selectedPickFilter = num;
-        if (num === 0) {
-          return this.picks;
+      filterPlayerBy(pos) {
+        this.selectedPlayerFilter = pos;
+        if (pos === 'All') {
+          return this.players;
         }
 
-        return filter(this.picks, (p) => p.overall <= num);
+        return filter(this.players, (p) => p.position === pos);
       },
     },
   };

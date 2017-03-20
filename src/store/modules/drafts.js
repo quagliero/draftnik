@@ -1,3 +1,4 @@
+import filter from 'lodash/filter';
 import api from '../../api';
 import * as types from '../mutations';
 import { roundPicksMap } from '../../utils';
@@ -19,6 +20,7 @@ const getters = {
   draftOrder: stateObj => stateObj.order,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
+  picksByTeam: stateObj => (team) => filter(stateObj.selectedDraft.picks, (p) => p.team === team),
 };
 
 // actions

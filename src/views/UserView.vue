@@ -10,10 +10,7 @@
           />
         </div>
         <div class="column">
-          <p class="title">My watchlist</p>
-          <div class="content">
-            <!-- Content -->
-          </div>
+          <my-watchlist/>
         </div>
       </div>
     </section>
@@ -22,21 +19,22 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import filter from 'lodash/filter';
   import MyPicks from '../components/User/MyPicks.vue';
+  import MyWatchlist from '../components/User/MyWatchlist.vue';
 
   export default {
     name: 'user-view',
     components: {
       MyPicks,
+      MyWatchlist,
     },
     computed: {
       ...mapGetters([
         'currentUser',
-        'picks',
+        'picksByTeam',
       ]),
       myPicks() {
-        return filter(this.picks, (p) => p.team === this.currentUser.id);
+        return this.picksByTeam(this.currentUser.id);
       },
     },
     created() {
