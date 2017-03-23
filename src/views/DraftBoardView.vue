@@ -63,14 +63,8 @@ export default {
     },
     dataLoaded() {
       // we've got all the data we want
-      return this.selectedDraft && this.picksByRound && this.players.length && this.adp.length;
+      return this.selectedDraft && this.picksByRound && this.players && this.adp.length;
     },
-  },
-  created() {
-    // this.$store.dispatch('getSavedTrades');
-    this.$store.dispatch('getPickValuesBayesian');
-    this.$store.dispatch('getPlayers');
-    this.$store.dispatch('getAdp');
   },
 };
 

@@ -4,7 +4,19 @@
     <p>Currently owned by: {{ team.displayName }}</p>
     <p>draftpicktradecalculator.com value: <strong>{{ bayesianValue }}</strong></p>
     <progress class="progress" :value="percentageValue" max="100">{{percentageValue}}</progress>
-    <p>Players in this range: {{ playersInRange }}</p>
+    <p>
+      <button class="add-to-watchlist button is-small is-white"
+        v-for="(player, i) in playersInRange"
+        :key="player.id"
+        @click="handleAddToWatchlist(player)"
+      >
+        <span class="icon is-small">
+          <i v-if="watchlist[player.id]" class="fa fa-check"></i>
+          <i v-else class="fa fa-plus"></i>
+        </span>
+        <span>{{ formatName(player.name) }}</span>
+      </button>
+    </p>
     <p>
       <button
         v-if="newTrade"
@@ -34,7 +46,12 @@
 
 <script>
   import { mapGetters, mapActions, mapMutations } from 'vuex';
-  import { getTeamById, getPickValue, getPlayersInRange } from '../../utils';
+  import {
+    getTeamById,
+    getPickValue,
+    getPlayersInRange,
+    formatPlayerName,
+  } from '../../utils';
   import { SELECT_RECEIVING_TEAM } from '../../store/mutations';
   import Modal from '../Modal.vue';
 
@@ -50,6 +67,7 @@
         'currentUser',
         'bayesianMaxValue',
         'currentTrade',
+        'watchlist',
       ]),
       existingTrade() {
         return this.currentTrade.id !== undefined;
@@ -98,10 +116,14 @@
         'createNewTrade',
         'addPickToTrade',
         'removePickFromTrade',
+        'addToWatchlist',
       ]),
       ...mapMutations({
         SELECT_RECEIVING_TEAM,
       }),
+      handleAddToWatchlist(player) {
+        this.addToWatchlist(player);
+      },
       handleTradePickClick() {
         const receivingTeam = (this.team.id === this.currentUser.id) ? null : this.team.id;
         this.createNewTrade({
@@ -138,10 +160,22 @@
         });
         this.$emit('close');
       },
+      formatName(name) {
+        return formatPlayerName(name);
+      },
+    },
+    mounted() {
+      this.$store.dispatch('getWatchlist');
     },
   };
 </script>
 
 <style lang="scss">
+  @import "~bulma/variables";
 
+  .add-to-watchlist {
+    .icon {
+      color: $green;
+    }
+  }
 </style>

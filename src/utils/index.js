@@ -36,6 +36,15 @@ export const getPickValue = (pickNumber) => {
   return pick.value;
 };
 
+export const getPlayerById = (playerId) => store.getters.players[playerId];
+
+/**
+ * formatPlayerName turns "Bell, Le'Veon" in "Le'Veon Bell"
+ * @param  {String} name The player name as it arrives from the MFL JSON
+ * @return {String}
+ */
+export const formatPlayerName = (name) => name.split(', ').reverse().join(' ');
+
 export const getPlayersInRange = (pick) => {
   pick = (pick >= 2) ? pick : 2;
   // map players by IDs and find the 3 players around the current pick in the format
@@ -43,7 +52,7 @@ export const getPlayersInRange = (pick) => {
   const adpChunk = store.getters.adp.slice(pick - 2, pick + 2);
 
   // format it
-  return adpChunk.map(p => p.player.name.split(', ').reverse().join(' ')).join(', ');
+  return adpChunk.map(p => getPlayerById(p.id));
 };
 
 export const calculateBayesianTradeValue = (trade) => {

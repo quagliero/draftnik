@@ -11,7 +11,7 @@
         </span>
       </p>
     </div> -->
-    <p class="panel-tabs">
+    <div class="panel-tabs">
       <a
         v-for="num in pickFilters"
         @click="filterPickBy(num)"
@@ -19,17 +19,22 @@
       >
         {{ num === 0 ? 'All' : `Top ${num}` }}
       </a>
-    </p>
-    <a
+    </div>
+    <div
       v-for="pick in filteredPicks"
       v-if="filteredPicks.length"
       class="panel-block"
     >
-      <span class="panel-icon">
-        <i class="fa fa-book"></i>
-      </span>
-      #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
-    </a>
+      <button
+        class="button is-white"
+        @click="onPickClick(pick)"
+      >
+        <span class="panel-icon">
+          <i class="fa fa-vcard"></i>
+        </span>
+        #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
+      </button>
+    </div>
     <!-- <a
       v-for="pick in filteredPicks"
       v-if="filteredPicks !== null"
@@ -49,7 +54,9 @@
 </template>
 
 <script>
+  import { mapMutations } from 'vuex';
   import filter from 'lodash/filter';
+  import { SELECT_PICK } from '../../store/mutations';
 
   export default {
     name: 'my-picks',
@@ -67,6 +74,9 @@
       },
     },
     methods: {
+      ...mapMutations([
+        SELECT_PICK,
+      ]),
       filterPickBy(num) {
         this.selectedPickFilter = num;
         if (num === 0) {
@@ -74,6 +84,10 @@
         }
 
         return filter(this.picks, (p) => p.overall <= num);
+      },
+      onPickClick(pick) {
+        this.SELECT_PICK({ pick });
+        this.$emit('onPickClick', pick);
       },
     },
   };

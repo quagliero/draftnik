@@ -1,4 +1,5 @@
 import filter from 'lodash/filter';
+import toArray from 'lodash/toArray';
 import api from '../../api';
 import * as types from '../mutations';
 import { roundPicksMap } from '../../utils';
@@ -17,6 +18,9 @@ const getters = {
   allDrafts: stateObj => stateObj.all,
   selectedDraft: stateObj => stateObj.selectedDraft,
   picks: stateObj => stateObj.selectedDraft.picks,
+  picksArray: stateObj => toArray(stateObj.selectedDraft.picks).sort(
+    (a, b) => a.overall - b.overall,
+  ),
   draftOrder: stateObj => stateObj.order,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,

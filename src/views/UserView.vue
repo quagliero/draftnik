@@ -7,10 +7,13 @@
         <div class="column">
           <my-picks
             :picks="myPicks"
+            @onPickClick="$emit('onPickClick')"
           />
         </div>
         <div class="column">
-          <my-watchlist/>
+          <my-watchlist
+            @onPickClick="$emit('onPickClick')"
+          />
         </div>
       </div>
     </section>

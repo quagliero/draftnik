@@ -1,23 +1,30 @@
+// Auth
 export const CREATE_SESSION = 'CREATE_SESSION';
 export const DESTROY_SESSION = 'DESTROY_SESSION';
 export const INVALID_SESSION = 'INVALID_SESSION';
 export const CLEAR_AUTH_MESSAGES = 'CLEAR_AUTH_MESSAGES';
 
+// Users (teams)
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 
+// Drafts
 export const RECEIVE_DRAFTS = 'RECEIVE_DRAFTS';
 export const SELECT_DRAFT = 'SELECT_DRAFT';
 export const MAP_PICKS = 'MAP_PICKS';
 export const RECEIVE_PICKS = 'RECEIVE_PICKS';
 export const SELECT_PICK = 'SELECT_PICK';
 
+// Bayesian pick values
 export const RECEIVE_PICK_VALUES_BAYESIAN = 'RECEIVE_PICK_VALUE_BAYESIAN';
 
+// Team currently highlighted on the site, purely used for UI
 export const SELECT_TEAM = 'SELECT_TEAM';
 
+// Player and ADP data
 export const RECEIVE_ADP = 'RECEIVE_ADP';
 export const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 
+// Trades
 export const SELECT_GIVING_TEAM = 'SELECT_RECEIVING_TEAM';
 export const SELECT_RECEIVING_TEAM = 'SELECT_RECEIVING_TEAM';
 export const RECEIVE_TRADES = 'RECEIVE_TRADES';
@@ -30,3 +37,8 @@ export const CLEAR_RECEIVING_TEAM = 'CLEAR_RECEIVING_TEAM';
 export const CLEAR_TRADE = 'CLEAR_TRADE';
 export const SAVE_TRADE = 'SAVE_TRADE';
 export const LOAD_TRADE = 'LOAD_TRADE';
+
+// watchlists
+export const RECEIVE_WATCHLIST = 'RECEIVE_WATCHLIST';
+export const ADDED_TO_WATCHLIST = 'ADDED_TO_WATCHLIST';
+export const REMOVED_FROM_WATCHLIST = 'REMOVED_FROM_WATCHLIST';

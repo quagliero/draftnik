@@ -1,9 +1,10 @@
+import reduce from 'lodash/reduce';
 import api from '../../api';
 import * as types from '../mutations';
 
 // initial state
 const state = {
-  all: [],
+  all: {},
   timestap: null,
 };
 
@@ -28,7 +29,10 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_PLAYERS](stateObj, { response }) {
-    stateObj.all = response.data.players.player;
+    stateObj.all = reduce(response.data.players.player, (acc, cur) => {
+      acc[cur.id] = cur;
+      return acc;
+    }, {});
     stateObj.timestap = Number(response.data.players.timestamp);
   },
 };
