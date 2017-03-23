@@ -65,12 +65,14 @@ const mutations = {
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
     stateObj.watchlist = watchlist;
   },
+  /*
   [types.ADDED_TO_WATCHLIST](stateObj, player) {
-    console.log(player);
+    //@TODO notify user? not sure as list autoupdates from firebase
   },
   [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
-    console.log(player);
+    //@TODO notify user? not sure as list autoupdates from firebase
   },
+  */
 };
 
 export default {
