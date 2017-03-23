@@ -13,6 +13,12 @@
       "$uid": {
         ".write": "$uid === auth.uid"
       }
+    },
+    "watchlists": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
     }
   }
 }

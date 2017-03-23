@@ -30,9 +30,14 @@ export default {
     PickModal,
   },
   beforeCreate() {
-    // first off, fetch the teams, then trigger authentication checks
+    // first off, fetch the teams
+    // then trigger authentication checks and pull in required data
     this.$store.dispatch('getUsers').then(() => {
       this.$store.dispatch('checkAuth');
+      this.$store.dispatch('getPlayers');
+      this.$store.dispatch('getDrafts');
+      this.$store.dispatch('getPickValuesBayesian');
+      this.$store.dispatch('getAdp');
     });
   },
 };

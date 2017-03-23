@@ -27,7 +27,7 @@
 <script>
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
-  import { getTeamById } from '../../utils';
+  import { getTeamById, getPlayerById } from '../../utils';
 
   export default {
     name: 'pick',
@@ -44,7 +44,6 @@
       ...mapGetters([
         'selectedTeam',
         'currentTrade',
-        'receivingTeam',
         'allUsers',
         'adp',
       ]),
@@ -62,7 +61,7 @@
         );
       },
       isAvailable() {
-        return this.pick.team === this.receivingTeam;
+        return this.pick.team === this.currentTrade.receivingTeam;
       },
       playerPositionClass() {
         if (this.boardView === 'adp') {
@@ -89,12 +88,13 @@
       playerInfo: {
         get() {
           return new Promise(resolve => {
-            const pick = this.adp[Number(this.pick.overall) - 1];
-            const playerName = pick.player.name.split(', ').reverse();
+            const adpInfo = this.adp[Number(this.pick.overall) - 1];
+            const player = getPlayerById(adpInfo.id);
+            const playerName = player.name.split(', ').reverse();
             resolve({
               forename: playerName[0],
               surname: playerName[1],
-              position: pick.player.position,
+              position: player.position,
             });
           });
         },

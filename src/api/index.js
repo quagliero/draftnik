@@ -25,6 +25,25 @@ export default {
       cb(snapshot.val());
     });
   },
+  getWatchlist(user, cb) {
+    db.ref(`watchlists/${user}`).on('value', (snapshot) => {
+      cb(snapshot.val());
+    });
+  },
+  addToWatchlist(user, player, cb) {
+    db.ref(`watchlists/${user}/${player.id}`).set(true, (err) => {
+      if (!err) {
+        cb(player);
+      }
+    });
+  },
+  removeFromWatchlist(user, player, cb) {
+    db.ref(`watchlists/${user}/${player.id}`).set(null, (err) => {
+      if (!err) {
+        cb(player);
+      }
+    });
+  },
   getPickValuesBayesian(cb) {
     axios.get('/static/data/pick-values-bayesian.json')
     .then(response => cb(response));

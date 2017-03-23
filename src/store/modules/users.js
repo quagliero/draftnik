@@ -5,6 +5,7 @@ import * as types from '../mutations';
 const state = {
   all: {},
   currentUser: {},
+  watchlist: {},
 };
 
 // getters
@@ -12,6 +13,7 @@ const getters = {
   allUsers: stateObj => stateObj.all,
   currentUser: stateObj => stateObj.currentUser,
   isAdmin: stateObj => stateObj.currentUser.isAdmin === true,
+  watchlist: stateObj => stateObj.watchlist,
 };
 
 // actions
@@ -27,6 +29,29 @@ const actions = {
       );
     });
   },
+  getWatchlist({ commit }) {
+    api.getWatchlist(state.currentUser.id, (response) => {
+      commit(types.RECEIVE_WATCHLIST, response);
+    });
+  },
+  addToWatchlist({ commit }, player) {
+    api.addToWatchlist(
+      state.currentUser.id,
+      player,
+      (response) => {
+        commit(types.ADDED_TO_WATCHLIST, response);
+      },
+    );
+  },
+  removeFromWatchlist({ commit }, player) {
+    api.removeFromWatchlist(
+      state.currentUser.id,
+      player,
+      (response) => {
+        commit(types.REMOVED_FROM_WATCHLIST, response);
+      },
+    );
+  },
 };
 
 // mutations
@@ -36,6 +61,15 @@ const mutations = {
   },
   [types.CREATE_SESSION](stateObj, { user }) {
     stateObj.currentUser = stateObj.all[user.uid];
+  },
+  [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
+    stateObj.watchlist = watchlist;
+  },
+  [types.ADDED_TO_WATCHLIST](stateObj, player) {
+    console.log(player);
+  },
+  [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
+    console.log(player);
   },
 };
 

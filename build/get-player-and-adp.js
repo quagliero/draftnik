@@ -40,12 +40,11 @@ axios.all([getPlayerData(), getAdpData()])
     const allowedPlayerList = playerData.players.player.filter((p) => allowedPos.test(p.position));
     // filter out all players not in the ADP data
     const playersBeingDrafted = allowedPlayerList.filter((p) => adpPlayerIds.indexOf(p.id) > -1);
-    // create player and adp Arrays containing data of player/adp within
-    // it's duplicating data but prevents constant lookups, filters and finds
+    // create player and adp Arrays containing only data of player/adp in use
     const playersWithAdp = playersBeingDrafted.forEach(player => {
       const adp = adpData.adp.player.find((adp) => adp.id === player.id);
       playerArray.push(Object.assign({}, player, { adp }));
-      adpArray.push(Object.assign({}, adp, { player }));
+      adpArray.push(Object.assign({}, adp));
     });
 
     // overwrite enormous player response with only players we want
@@ -58,7 +57,7 @@ axios.all([getPlayerData(), getAdpData()])
     JSON.stringify(adpData).to(`${staticDir}/adp.json`);
     JSON.stringify(playerData).to(`${staticDir}/players.json`);
 
-    spinner.text = 'adp and player JSON files created';
+    spinner.text = 'ADP and player JSON files created';
     spinner.succeed();
   }))
   .catch((err) => {
