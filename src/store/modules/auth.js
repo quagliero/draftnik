@@ -9,12 +9,14 @@ const state = {
   authenticated: null,
   authMessages: [],
   authUid: null,
+  passwordResetSent: null,
 };
 
 // getters
 const getters = {
   authenticated: stateObj => stateObj.authenticated,
   authMessages: stateObj => stateObj.authMessages,
+  passwordResetSent: stateObj => stateObj.passwordResetSent,
 };
 
 // actions
@@ -51,6 +53,11 @@ const actions = {
       router.push({ name: 'login' });
     });
   },
+  resetPassword({ commit }, email) {
+    api.resetPassword(email, (response) => {
+      commit(types.PASSWORD_RESET_EMAIL_SENT);
+    });
+  },
 };
 
 // mutations
@@ -62,6 +69,7 @@ const mutations = {
   [types.DESTROY_SESSION](stateObj) {
     stateObj.authenticated = false;
     stateObj.authUid = null;
+    stateObj.passwordResetSent = null;
   },
   [types.INVALID_SESSION](stateObj, error) {
     stateObj.authenticated = false;
@@ -69,6 +77,9 @@ const mutations = {
   },
   [types.CLEAR_AUTH_MESSAGES](stateObj) {
     stateObj.authMessages = [];
+  },
+  [types.PASSWORD_RESET_EMAIL_SENT](stateObj) {
+    stateObj.passwordResetSent = true;
   },
 };
 

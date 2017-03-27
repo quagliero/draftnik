@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import DraftBoardView from '../views/DraftBoardView.vue';
 import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
+import PasswordResetView from '../views/PasswordResetView.vue';
 import AdminView from '../views/AdminView.vue';
 import store from '../store';
 
@@ -59,6 +60,11 @@ const router = new Router({
           next();
         }
       },
+    },
+    {
+      name: 'reset',
+      path: '/password-reset',
+      component: PasswordResetView,
     },
     {
       name: 'me',

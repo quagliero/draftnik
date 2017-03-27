@@ -15,6 +15,13 @@ export default {
       response => cb(response),
     );
   },
+  resetPassword(email, cb) {
+    auth.sendPasswordResetEmail(email).then(() => {
+      cb(email);
+    }, (err) => {
+      cb(err);
+    });
+  },
   getUsers(cb, error) {
     db.ref('users').once('value', (snapshot) => {
       cb(snapshot.val());

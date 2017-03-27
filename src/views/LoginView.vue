@@ -37,7 +37,8 @@
             </p>
           </div>
           <p class="control">
-            <button class="button is-primary">Login</button>
+            <button type="submit" class="button is-primary">Login</button>
+            <router-link :to="{ name: 'reset' }" class="button is-small is-link">I forgot my password</router-link>
           </p>
         </div>
       </form>
