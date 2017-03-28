@@ -16,6 +16,7 @@
                   v-for="(team, uid) in teams"
                   :teamId="uid"
                   :key="uid"
+                  :boardView="boardView"
                 />
               </tr>
             </thead>

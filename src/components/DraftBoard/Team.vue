@@ -1,7 +1,10 @@
 <template>
   <th
     class="team"
-    :class="{ 'is-selected' : isSelected }"
+    :class="{
+      'is-selected' : isSelected,
+      'is-adp-view' : boardView === 'adp',
+    }"
     @click="handleClick(teamId)"
   >
     <b>{{ team.displayName }}</b>
@@ -15,6 +18,10 @@
     name: 'team',
     props: {
       teamId: {
+        type: String,
+        required: true,
+      },
+      boardView: {
         type: String,
         required: true,
       },
@@ -48,7 +55,7 @@
   .team {
     cursor: pointer;
     min-width: 100px;
-    background-color: $white;
+    background-color: $grey-lighter;
     border-left: 2px solid $white-ter;
     border-right: 2px solid $white-ter;
     border-top: 2px solid $white-ter;
@@ -61,10 +68,16 @@
       border-color 0.2s ease-in-out;
   }
 
+  .is-adp-view {
+    background-color: $white;
+    color: $grey-dark;
+  }
+
   .is-selected {
     background-color: $grey-dark;
     border-top-color: $grey-dark;
     border-bottom-color: $grey-dark;
     color: white;
   }
+
 </style>
