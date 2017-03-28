@@ -3,6 +3,7 @@
     <pick
       v-for="pick in checkRound"
       :pick="pick"
+      :key="pick.overall"
       :boardView="boardView"
       @onPickClick="$emit('onPickClick')"
     />

@@ -12,17 +12,23 @@
           <table class="board__table">
             <thead>
               <tr>
-                <team v-for="(team, uid) in teams" :teamId="uid"></team>
+                <team
+                  v-for="(team, uid) in teams"
+                  :teamId="uid"
+                  :key="uid"
+                />
               </tr>
             </thead>
             <tbody>
-              <round v-if="picksByRound" v-for="(round, key) in picksByRound"
+              <round
+                v-if="picksByRound"
+                v-for="(round, key) in picksByRound"
                 :key="key"
                 :index="key"
                 :round="round"
                 :boardView="boardView"
-                @onPickClick="$emit('onPickClick')">
-              </round>
+                @onPickClick="$emit('onPickClick')"
+              />
             </tbody>
           </table>
         </div>
