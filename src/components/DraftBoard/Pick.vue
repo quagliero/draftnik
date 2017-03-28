@@ -8,9 +8,11 @@
       'is-giving' : isGiving,
       'is-player' : boardView === 'adp',
     }, `pick--${playerPositionClass}` ]"
-    @click="onPickClick"
   >
-    <div class="pick__inner">
+    <a
+      class="pick__clickable"
+      @click.prevent="onPickClick"
+    >
       <div class="pick__numbers">
         <b class="pick__overall">{{ pick.overall }}</b>
         <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
@@ -20,7 +22,7 @@
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
       </div>
-    </div>
+    </a>
   </td>
 </template>
 
@@ -127,7 +129,6 @@
     height: 100%;
     text-align: center;
     word-break: break-word;
-    padding: 0.2em 0.3em;
     border: 2px solid $white-ter;
     transition:
       background-color 0.2s ease-in-out,
@@ -160,8 +161,12 @@
     }
   }
 
-  .pick__inner {
+  .pick__clickable {
     min-height: 80px;
+    padding: 0.2em 0.3em;
+    display: block;
+    width: 100%;
+    color: inherit;
   }
 
   .pick__numbers {
@@ -200,7 +205,7 @@
   .is-player {
     min-height: 110px;
 
-    .pick__inner {
+    .pick__clickable {
       min-height: 100px;
     }
   }
