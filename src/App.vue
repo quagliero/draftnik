@@ -44,7 +44,22 @@ export default {
 </script>
 
 <style lang="scss">
-@import './node_modules/bulma/bulma';
+@import "~bulma/utilities/_all";
+@import "~bulma/base/minireset";
+@import "~bulma/base/generic";
+@import "~bulma/base/helpers";
+@import "~bulma/grid/columns";
+@import "~bulma/layout/section";
+@import "~bulma/elements/button";
+@import "~bulma/elements/box";
+@import "~bulma/elements/title";
+@import "~bulma/elements/icon";
+@import "~bulma/elements/content";
+@import "~bulma/elements/form";
+@import "~bulma/elements/notification";
+@import "~bulma/components/nav";
+@import "~bulma/components/panel";
+@import "~bulma/components/level";
 
 #app {
   -webkit-font-smoothing: antialiased;

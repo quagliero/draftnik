@@ -118,7 +118,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "~bulma/variables";
+  @import "~bulma/utilities/variables";
 
   .pick {
     cursor: pointer;

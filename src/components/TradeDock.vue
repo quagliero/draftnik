@@ -163,7 +163,7 @@
 </script>
 
 <style lang="scss">
-  @import '~bulma/variables';
+  @import '~bulma/utilities/variables';
 
   .trade-dock {
     position: relative;

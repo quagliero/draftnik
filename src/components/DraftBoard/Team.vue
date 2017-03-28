@@ -43,7 +43,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "~bulma/variables";
+  @import "~bulma/utilities/variables";
 
   .team {
     cursor: pointer;

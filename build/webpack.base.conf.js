@@ -29,7 +29,7 @@ module.exports = {
       'components': path.resolve(__dirname, '../src/components'),
       'utils': path.resolve(__dirname, '../src/utils'),
       'store': path.resolve(__dirname, '../src/store'),
-      'bulma': path.resolve(__dirname, '../node_modules/bulma/sass/utilities'),
+      'bulma': path.resolve(__dirname, '../node_modules/bulma/sass'),
     }
   },
   resolveLoader: {

@@ -71,7 +71,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "~bulma/variables";
+@import "~bulma/utilities/variables";
 
 .board-wrapper {
   padding-left: 0;

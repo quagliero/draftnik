@@ -171,7 +171,9 @@
 </script>
 
 <style lang="scss">
-  @import "~bulma/variables";
+  @import "~bulma/utilities/_all";
+  @import "~bulma/components/modal";
+  @import "~bulma/elements/progress";
 
   .add-to-watchlist {
     .icon {
