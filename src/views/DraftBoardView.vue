@@ -3,9 +3,29 @@
     <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
     <template v-if="dataLoaded">
-      <div class="content">
-        <button @click="boardView = 'pick'" class="button" :class="{ 'is-primary is-active' : boardView === 'pick' }">Pick View</button>
-        <button @click="boardView = 'adp'" class="button" :class="{ 'is-primary is-active' : boardView === 'adp' }">ADP View</button>
+      <div class="board-toggle">
+        <div class="field has-addons">
+          <span class="control">
+            <button
+              @click="boardView = 'pick'"
+              :class="[{
+                'is-primary is-active' : boardView === 'pick'
+              }, 'button is-light']"
+            >
+              Pick View
+            </button>
+          </span>
+          <span class="control">
+            <button
+              @click="boardView = 'adp'"
+              :class="[{
+                'is-primary is-active' : boardView === 'adp'
+              }, 'button is-light']"
+            >
+              ADP View
+            </button>
+          </span>
+        </div>
       </div>
       <div class="scroll-container">
         <div class="board container">
@@ -111,5 +131,10 @@ export default {
 
 .board__table {
   table-layout: fixed;
+}
+
+.board-toggle {
+  margin: 0 auto;
+  display: inline-block;
 }
 </style>
