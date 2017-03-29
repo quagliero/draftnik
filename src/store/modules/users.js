@@ -1,10 +1,11 @@
+import get from 'lodash/get';
 import api from '../../api';
 import * as types from '../mutations';
 
 // initial state
 const state = {
   all: {},
-  currentUser: {},
+  currentUser: null,
   watchlist: {},
 };
 
@@ -12,7 +13,7 @@ const state = {
 const getters = {
   allUsers: stateObj => stateObj.all,
   currentUser: stateObj => stateObj.currentUser,
-  isAdmin: stateObj => stateObj.currentUser.isAdmin === true,
+  isAdmin: stateObj => get(stateObj.currentUser, 'isAdmin', false),
   watchlist: stateObj => stateObj.watchlist,
 };
 
@@ -62,15 +63,23 @@ const mutations = {
   [types.CREATE_SESSION](stateObj, { user }) {
     stateObj.currentUser = stateObj.all[user.uid];
   },
+  [types.DESTROY_SESSION](stateObj) {
+    stateObj.currentUser = null;
+    stateObj.watchlist = {};
+  },
+  [types.INVALID_SESSION](stateObj) {
+    stateObj.currentUser = null;
+    stateObj.watchlist = {};
+  },
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
     stateObj.watchlist = watchlist;
   },
   /*
   [types.ADDED_TO_WATCHLIST](stateObj, player) {
-    //@TODO notify user? not sure as list autoupdates from firebase
+    //notify user? not sure as list autoupdates from firebase
   },
   [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
-    //@TODO notify user? not sure as list autoupdates from firebase
+    //notify user? not sure as list autoupdates from firebase
   },
   */
 };

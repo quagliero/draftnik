@@ -4,43 +4,51 @@
     <p>Currently owned by: {{ team.displayName }}</p>
     <p>draftpicktradecalculator.com value: <strong>{{ bayesianValue }}</strong></p>
     <progress class="progress" :value="percentageValue" max="100">{{percentageValue}}</progress>
-    <p>
-      <button class="add-to-watchlist button is-small is-white"
-        v-for="(player, i) in playersInRange"
-        :key="player.id"
-        @click="handleAddToWatchlist(player)"
-      >
-        <span class="icon is-small">
-          <i v-if="watchlist[player.id]" class="fa fa-check"></i>
-          <i v-else class="fa fa-plus"></i>
-        </span>
-        <span>{{ formatName(player.name) }}</span>
-      </button>
-    </p>
-    <p>
-      <button
-        v-if="newTrade"
-        class="button is-primary"
-        @click="handleTradePickClick"
-      >
-        Trade {{(this.isOwnPick) ? '' : 'for'}} this pick
-      </button>
-      <button
-        v-if="existingTrade && !(newTrade) && !(pickAlreadyIncluded)"
-        @click="handleAddPickClick"
-        class="button is-success"
-        :class="{ 'is-warning' : isOwnPick }"
-      >
-        Add to trade
-      </button>
-      <button
-        v-if="existingTrade && pickAlreadyIncluded"
-        class="button is-danger"
-        @click="handleRemovePickClick"
-      >
-        Remove this pick
-      </button>
-    </p>
+    <div v-if="authenticated === true">
+      <p>
+        <button class="add-to-watchlist button is-small is-white"
+          v-for="(player, i) in playersInRange"
+          :key="player.id"
+          @click="handleAddToWatchlist(player)"
+        >
+          <span class="icon is-small">
+            <i v-if="watchlist[player.id]" class="fa fa-check"></i>
+            <i v-else class="fa fa-plus"></i>
+          </span>
+          <span>{{ formatName(player.name) }}</span>
+        </button>
+      </p>
+      <p>
+        <button
+          v-if="newTrade"
+          class="button is-primary"
+          @click="handleTradePickClick"
+        >
+          Trade {{(this.isOwnPick) ? '' : 'for'}} this pick
+        </button>
+        <button
+          v-if="existingTrade && !(newTrade) && !(pickAlreadyIncluded)"
+          @click="handleAddPickClick"
+          class="button is-success"
+          :class="{ 'is-warning' : isOwnPick }"
+        >
+          Add to trade
+        </button>
+        <button
+          v-if="existingTrade && pickAlreadyIncluded"
+          class="button is-danger"
+          @click="handleRemovePickClick"
+        >
+          Remove this pick
+        </button>
+      </p>
+    </div>
+    <div v-else>
+      <p>
+        <router-link :to="{ name: 'login' }" @click.native="$emit('close')">Login</router-link>
+        to trade picks and add players to your watchlist.
+      </p>
+    </div>
   </modal>
 </template>
 
@@ -63,6 +71,7 @@
     },
     computed: {
       ...mapGetters([
+        'authenticated',
         'selectedPick',
         'currentUser',
         'bayesianMaxValue',
@@ -165,7 +174,9 @@
       },
     },
     mounted() {
-      this.$store.dispatch('getWatchlist');
+      if (this.authenticated === true) {
+        this.$store.dispatch('getWatchlist');
+      }
     },
   };
 </script>
