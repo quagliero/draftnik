@@ -1,6 +1,6 @@
 <template>
   <section class="section board-wrapper">
-    <h1 class="title" v-if="selectedDraft">{{ selectedDraft.name }}</h1>
+    <h1 class="title" v-if="selectedDraft">{{ selectedDraft.displayName }}</h1>
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
     <template v-if="dataLoaded">
       <div class="board-toggle">
