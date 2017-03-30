@@ -2,8 +2,6 @@ import Vue from 'vue';
 import AsyncComputed from 'vue-async-computed';
 import { sync } from 'vuex-router-sync';
 import App from './App.vue';
-// eslint-disable-next-line
-import { db } from './database';
 import store from './store';
 import router from './router';
 

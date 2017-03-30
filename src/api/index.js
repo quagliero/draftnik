@@ -32,22 +32,88 @@ export default {
       cb(snapshot.val());
     });
   },
-  getWatchlist(user, cb) {
-    db.ref(`watchlists/${user}`).on('value', (snapshot) => {
+  getWatchlist(draft, user, cb) {
+    db.ref(`watchlists/${draft}/${user}/`).on('value', (snapshot) => {
       cb(snapshot.val());
     });
   },
-  addToWatchlist(user, player, cb) {
-    db.ref(`watchlists/${user}/${player.id}`).set(true, (err) => {
+  addToWatchlist(draft, user, player, cb) {
+    db.ref(`watchlists/${draft}/${user}/${player.id}`).set(true, (err) => {
       if (!err) {
         cb(player);
       }
     });
   },
-  removeFromWatchlist(user, player, cb) {
-    db.ref(`watchlists/${user}/${player.id}`).set(null, (err) => {
+  removeFromWatchlist(draft, user, player, cb) {
+    db.ref(`watchlists/${draft}/${user}/${player.id}`).set(null, (err) => {
       if (!err) {
         cb(player);
+      }
+    });
+  },
+  getTrade(draft, tradeId, cb) {
+    db.ref(`trades/${draft}/${tradeId}`).on('value', (snapshot) => {
+      cb(snapshot.val());
+    });
+  },
+  /* eslint-disable */
+  getUserTrades(draft, user, cb) {
+    const tradesRef = db.ref(`trades/${draft}`);
+    db.ref(`tradesUsersPivot/${draft}/${user}`).on('value', (snapshot) => {
+      const tradeIds = snapshot.val();
+      Promise.all(
+        Object.keys(tradeIds).map(
+          id => tradesRef.child(id).once('value').then((trade) => trade.val())
+        )
+      ).then((values) => cb(values));
+    });
+
+    // cb(Promise.all(tradeIds.map()))
+    // .on('value', (snapshot) => {
+    //   console.log('inPivot', snapshot.val());
+    //   snapshot.forEach((trade) => {
+    //     console.log(trade);
+    //     tradesRef.child(trade.key).on('value', (snap) => {
+    //       console.log('in trade');
+    //       cb(snap);
+    //     });
+    //   });
+    // });
+  },
+  proposeTrade(draft, trade, cb) {
+    const tradeKey = db.ref('trades').push().key;
+    // create references to this trade on the user first
+    // so we can use firebase rules to restrict access
+    db.ref(`trades/${draft}/${tradeKey}`).set({
+      id: tradeKey,
+      givingTeam: trade.givingTeam,
+      receivingTeam: trade.receivingTeam,
+      givingPicks: trade.givingPicks,
+      receivingPicks: trade.receivingPicks,
+      isAccepted: false,
+      seen: false,
+    }, (error) => {
+      if (!error) {
+        db.ref(`tradesUsersPivot/${draft}/${trade.givingTeam}/${tradeKey}`).set(true);
+        db.ref(`tradesUsersPivot/${draft}/${trade.receivingTeam}/${tradeKey}`).set(true);
+        cb(trade);
+      }
+    });
+  },
+  counterTrade(draft, trade, cb) {
+    const tradeKey = db.ref('trades').push().key;
+    db.ref(`trades/${draft}/${tradeKey}`).set({
+      id: tradeKey,
+      givingTeam: trade.givingTeam,
+      receivingTeam: trade.receivingTeam,
+      givingPicks: trade.givingPicks,
+      receivingPicks: trade.receivingPicks,
+      isAccepted: false,
+      seen: false,
+      counters: trade.id,
+    }, (err) => {
+      if (!err) {
+        cb(trade);
       }
     });
   },

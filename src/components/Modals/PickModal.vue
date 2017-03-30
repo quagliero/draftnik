@@ -12,7 +12,7 @@
           @click="handleAddToWatchlist(player)"
         >
           <span class="icon is-small">
-            <i v-if="watchlist[player.id]" class="fa fa-check"></i>
+            <i v-if="isInWatchlist(player.id)" class="fa fa-check"></i>
             <i v-else class="fa fa-plus"></i>
           </span>
           <span>{{ formatName(player.name) }}</span>
@@ -130,6 +130,9 @@
       ...mapMutations({
         SELECT_RECEIVING_TEAM,
       }),
+      isInWatchlist(playerId) {
+        return this.watchlist && this.watchlist[playerId];
+      },
       handleAddToWatchlist(player) {
         this.addToWatchlist(player);
       },

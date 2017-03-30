@@ -1,5 +1,6 @@
 import get from 'lodash/get';
 import api from '../../api';
+import drafts from './drafts';
 import * as types from '../mutations';
 
 // initial state
@@ -7,6 +8,7 @@ const state = {
   all: {},
   currentUser: null,
   watchlist: {},
+  trades: {},
 };
 
 // getters
@@ -15,6 +17,7 @@ const getters = {
   currentUser: stateObj => stateObj.currentUser,
   isAdmin: stateObj => get(stateObj.currentUser, 'isAdmin', false),
   watchlist: stateObj => stateObj.watchlist,
+  trades: stateObj => stateObj.trades,
 };
 
 // actions
@@ -31,12 +34,26 @@ const actions = {
     });
   },
   getWatchlist({ commit }) {
-    api.getWatchlist(state.currentUser.id, (response) => {
-      commit(types.RECEIVE_WATCHLIST, response);
-    });
+    api.getWatchlist(
+      drafts.state.currentDraft.id,
+      state.currentUser.id,
+      (response) => {
+        commit(types.RECEIVE_WATCHLIST, response);
+      },
+    );
+  },
+  getUserTrades({ commit }) {
+    api.getUserTrades(
+      drafts.state.currentDraft.id,
+      state.currentUser.id,
+      (response) => {
+        commit(types.RECEIVE_USER_TRADES, response);
+      },
+    );
   },
   addToWatchlist({ commit }, player) {
     api.addToWatchlist(
+      drafts.state.currentDraft.id,
       state.currentUser.id,
       player,
       (response) => {
@@ -46,6 +63,7 @@ const actions = {
   },
   removeFromWatchlist({ commit }, player) {
     api.removeFromWatchlist(
+      drafts.state.currentDraft.id,
       state.currentUser.id,
       player,
       (response) => {
@@ -74,14 +92,12 @@ const mutations = {
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
     stateObj.watchlist = watchlist;
   },
-  /*
   [types.ADDED_TO_WATCHLIST](stateObj, player) {
-    //notify user? not sure as list autoupdates from firebase
+    console.log(player);
   },
   [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
-    //notify user? not sure as list autoupdates from firebase
+    console.log(player);
   },
-  */
 };
 
 export default {

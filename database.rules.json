@@ -2,11 +2,7 @@
   "rules": {
     "drafts": {
       ".read": true,
-      "$year": {
-        "picks": {
-          ".write": "root.child('admins').child(auth.uid).exists()"
-        }
-      }
+      ".write": "root.child('admins').child(auth.uid).exists()"
     },
     "users": {
       ".read": true,
@@ -15,9 +11,36 @@
       }
     },
     "watchlists": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+      "$draft": {
+        "$uid": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        }
+      }
+    },
+    "trades": {
+      "$draft": {
+        "$trade": {
+          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists() && !data.exists()",
+          ".read": "data.child('receivingTeam').val() === auth.uid || data.child('givingTeam').val() === auth.uid",
+        }
+      }
+    },
+    "tradesUsersPivot": {
+      "$draft": {
+        "$uid": {
+          ".read": "$uid === auth.uid",
+          ".write": "!data.exists() && $uid === auth.uid ||
+            !data.exists() && root.child('trades').child($draft).child(data.child('id').val()).child('givingTeam').val() === auth.uid"
+        }
+      }
+    },
+    "tradesAccepted": {
+      ".read": true,
+      "$draft": {
+        "$trade": {
+          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists() && !data.exists()",
+        }
       }
     }
   }

@@ -81,7 +81,8 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapGetters, mapActions, mapMutations } from 'vuex';
+  import reduce from 'lodash/reduce';
   import { SELECT_PICK } from '../store/mutations';
   import TradeDockPick from './TradeDock/Pick.vue';
   import {
@@ -103,6 +104,8 @@
     computed: {
       ...mapGetters([
         'currentTrade',
+        'currentUser',
+        'currentDraft',
       ]),
       hasTrade() {
         return this.currentTrade.id &&
@@ -145,6 +148,9 @@
       ...mapMutations({
         SELECT_PICK,
       }),
+      ...mapActions([
+        'proposeTrade',
+      ]),
       sortPicks(picks) {
         return picks.sort((a, b) => a.overall - b.overall);
       },
@@ -156,7 +162,21 @@
         if (this.givingPicks.length !== this.receivingPicks.length) {
           this.showTradeValidation = true;
         }
-        // @TODO make trade request
+
+        const trade = {
+          givingTeam: this.currentTrade.givingTeam,
+          receivingTeam: this.currentTrade.receivingTeam,
+          givingPicks: reduce(this.currentTrade.givingPicks, (acc, cur) => {
+            acc[cur.id] = true;
+            return acc;
+          }, {}),
+          receivingPicks: reduce(this.currentTrade.receivingPicks, (acc, cur) => {
+            acc[cur.id] = true;
+            return acc;
+          }, {}),
+        };
+
+        this.proposeTrade({ draft: this.currentDraft.id, trade });
       },
     },
   };
@@ -269,11 +289,13 @@
   }
 
   .slide-up-enter-active, .slide-up-leave-active {
-    transition: bottom .2s ease-in-out;
+    opacity: 1;
+    transition: opacity .3s ease-in-out, bottom .3s ease-in-out;
   }
 
   .slide-up-enter, .slide-up-leave-active {
-    bottom: 0%;
+    opacity: 0;
+    bottom: -50%;
   }
 
 </style>

@@ -57,6 +57,7 @@ export default {
 @import "~bulma/elements/content";
 @import "~bulma/elements/form";
 @import "~bulma/elements/notification";
+@import "~bulma/elements/other";
 @import "~bulma/components/nav";
 @import "~bulma/components/panel";
 @import "~bulma/components/level";

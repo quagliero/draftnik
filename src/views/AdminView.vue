@@ -122,7 +122,9 @@
           // eslint-disable-next-line
           teamsArray.forEach((team, p) => {
             overall += 1;
-            db.ref('/drafts/2017/picks/').push({
+            const pickKey = db.ref('/drafts/2017/picks/').push().key;
+            db.ref(`/drafts/2017/picks/${pickKey}`).set({
+              id: pickKey,
               overall,
               round: r,
               pickInRound: p + 1,

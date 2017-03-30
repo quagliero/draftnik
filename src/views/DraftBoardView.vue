@@ -1,6 +1,6 @@
 <template>
   <section class="section board-wrapper">
-    <h1 class="title" v-if="selectedDraft">{{ selectedDraft.displayName }}</h1>
+    <h1 class="title" v-if="currentDraft">{{ currentDraft.displayName }}</h1>
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
     <template v-if="dataLoaded">
       <div class="board-toggle">
@@ -80,17 +80,17 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'selectedDraft',
+      'currentDraft',
       'picksByRound',
       'adp',
       'players',
     ]),
     teams() {
-      return this.selectedDraft.teams;
+      return this.currentDraft.teams;
     },
     dataLoaded() {
       // we've got all the data we want
-      return this.selectedDraft && this.picksByRound && this.players && this.adp.length;
+      return this.currentDraft && this.picksByRound && this.players && this.adp.length;
     },
   },
 };

@@ -1,4 +1,5 @@
 import * as types from '../mutations';
+import api from '../../api';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
@@ -15,13 +16,13 @@ const Trade = (tradeProps) => {
 // initial state
 const state = {
   current: {},
-  savedTrades: [],
+  userTrades: [],
 };
 
 // getters
 const getters = {
   currentTrade: stateObj => stateObj.current,
-  savedTrades: stateObj => stateObj.savedTrades,
+  userTrades: stateObj => stateObj.userTrades,
 };
 
 // actions
@@ -77,9 +78,15 @@ const actions = {
       }
     }
   },
-  getSavedTrades({ commit }) {
-    const savedTrades = JSON.parse(window.localStorage.getItem('draftnik_saved_trades')) || [];
-    commit(types.RECEIVE_TRADES, { savedTrades });
+  getTrade({ commit }, data) {
+    api.getTrade(data.draft, data.tradeId, (response) => {
+      commit(types.RECEIVED_TRADE, response);
+    });
+  },
+  proposeTrade({ commit }, data) {
+    api.proposeTrade(data.draft, data.trade, (response) => {
+      commit(types.PROPOSED_TRADE, response);
+    });
   },
 };
 
@@ -87,9 +94,6 @@ const actions = {
 const mutations = {
   [types.SELECT_GIVING_TEAM](stateObj, userId) {
     stateObj.givingTeam = userId;
-  },
-  [types.RECEIVE_TRADES](stateObj, { savedTrades }) {
-    stateObj.savedTrades = savedTrades;
   },
   [types.ADD_GIVING_TEAM_PICK](stateObj, pick) {
     stateObj.current.givingPicks.push(pick);
@@ -107,7 +111,6 @@ const mutations = {
       p.overall !== pick.overall,
     );
   },
-  // eslint-disable-next-line no-unused-vars
   [types.CLEAR_TRADE](stateObj) {
     stateObj.current = {};
   },
@@ -123,10 +126,18 @@ const mutations = {
   [types.LOAD_TRADE](stateObj, { trade }) {
     stateObj.current = trade;
   },
+  [types.RECEIVE_USER_TRADES](stateObj, trades) {
+    stateObj.userTrades = trades;
+  },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
 
     window.localStorage.set('draftnik_saved_trades', stateObj.savedTrades);
+  },
+
+  [types.DESTROY_SESSION](stateObj) {
+    stateObj.userTrades = [];
+    stateObj.currentTrade = {};
   },
 };
 
