@@ -72,6 +72,7 @@
     computed: {
       ...mapGetters([
         'authenticated',
+        'currentDraft',
         'selectedPick',
         'currentUser',
         'bayesianMaxValue',
@@ -134,7 +135,11 @@
         return this.watchlist && this.watchlist[playerId];
       },
       handleAddToWatchlist(player) {
-        this.addToWatchlist(player);
+        this.addToWatchlist({
+          player,
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       },
       handleTradePickClick() {
         const receivingTeam = (this.team.id === this.currentUser.id) ? null : this.team.id;
@@ -178,7 +183,10 @@
     },
     mounted() {
       if (this.authenticated === true) {
-        this.$store.dispatch('getWatchlist');
+        this.$store.dispatch('getWatchlist', {
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       }
     },
   };

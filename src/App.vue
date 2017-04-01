@@ -1,8 +1,12 @@
 <template>
   <div id="app">
-    <site-header></site-header>
-    <router-view @onPickClick="showPickModal = true"></router-view>
-    <trade-dock @onDockPickClick="showPickModal = true"></trade-dock>
+    <site-header/>
+    <router-view
+      @onPickClick="showPickModal = true"
+    />
+    <trade-dock
+      @onDockPickClick="showPickModal = true"
+    />
     <transition name="fade">
       <pick-modal
         v-if="showPickModal"

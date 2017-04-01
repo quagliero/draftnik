@@ -76,6 +76,8 @@
         'adp',
         'watchlist',
         'picksArray',
+        'currentUser',
+        'currentDraft',
       ]),
       filteredWatchlist() {
         return this.filterWatchlistBy(this.selectedWatchlistFilter);
@@ -102,10 +104,18 @@
         return filter(this.watchlistPlayers, (p) => p.position === pos);
       },
       addToWatchlistClick(player) {
-        this.addToWatchlist(player);
+        this.addToWatchlist({
+          player,
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       },
       removeFromWatchlistClick(player) {
-        this.removeFromWatchlist(player);
+        this.removeFromWatchlist({
+          player,
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       },
       onPlayerClick(player) {
         const adpSlot = findIndex(this.adp, (pick) => pick.id === player.id);
@@ -123,7 +133,12 @@
       },
     },
     created() {
-      this.$store.dispatch('getWatchlist');
+      this.$store.dispatch('getDrafts').then(() => {
+        this.$store.dispatch('getWatchlist', {
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
+      });
     },
   };
 </script>

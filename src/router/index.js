@@ -45,12 +45,14 @@ const router = new Router({
       beforeEnter: (to, from, next) => {
         // check if user is logged in, if so, redirect
         //  - basically a one-off inverse of checkAuth
-        if (store.state.auth.authenticated === null) {
+        if (store.state.auth.authenticated == null) {
           store.watch(
             (state) => state.auth.authenticated,
             (value) => {
               if (value === true) {
                 next('me');
+              } else {
+                next();
               }
             },
           );

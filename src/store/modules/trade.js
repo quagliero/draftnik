@@ -1,5 +1,7 @@
+import castArray from 'lodash/castArray';
 import * as types from '../mutations';
 import api from '../../api';
+import { db } from '../../database';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
@@ -16,7 +18,7 @@ const Trade = (tradeProps) => {
 // initial state
 const state = {
   current: {},
-  userTrades: [],
+  userTrades: null,
 };
 
 // getters
@@ -78,14 +80,35 @@ const actions = {
       }
     }
   },
+  getUserTrades({ commit }, data) {
+    api.getUserTrades(data.draft, data.user, userTrades => {
+      const tradeIds = Object.keys(userTrades);
+      const ref = db.ref(`trades/${data.draft}`);
+
+      Promise.all(
+        tradeIds.map(id => ref.child(id).once('value').then(trade => trade.val())),
+      ).then(trades => {
+        commit(types.RECEIVE_USER_TRADES, trades);
+      });
+    });
+  },
   getTrade({ commit }, data) {
-    api.getTrade(data.draft, data.tradeId, (response) => {
+    api.getTrade(data.draft, data.tradeId).then(response => {
       commit(types.RECEIVED_TRADE, response);
+    }).catch(error => {
+      console.error(error);
     });
   },
   proposeTrade({ commit }, data) {
-    api.proposeTrade(data.draft, data.trade, (response) => {
-      commit(types.PROPOSED_TRADE, response);
+    const tradeKey = db.ref('trades').push().key;
+    const users = [data.trade.givingTeam, data.trade.receivingTeam];
+
+    api.proposeTrade(data.draft, data.trade, tradeKey).then(response => {
+      Promise.all(
+        users.map(user => api.addTradeToUser(data.draft, user, tradeKey)),
+      ).then(() => {
+        commit(types.PROPOSED_TRADE, response);
+      });
     });
   },
 };
@@ -127,17 +150,14 @@ const mutations = {
     stateObj.current = trade;
   },
   [types.RECEIVE_USER_TRADES](stateObj, trades) {
-    stateObj.userTrades = trades;
+    stateObj.userTrades = castArray(trades);
   },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
-
-    window.localStorage.set('draftnik_saved_trades', stateObj.savedTrades);
   },
-
   [types.DESTROY_SESSION](stateObj) {
     stateObj.userTrades = [];
-    stateObj.currentTrade = {};
+    stateObj.current = {};
   },
 };
 

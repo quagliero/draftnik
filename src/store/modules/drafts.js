@@ -6,7 +6,7 @@ import { roundPicksMap } from '../../utils';
 
 // initial state
 const state = {
-  all: [],
+  all: null,
   currentDraft: {},
   selectedPick: {},
   picksByRound: {},
@@ -31,12 +31,20 @@ const getters = {
 const actions = {
   getDrafts({ commit }) {
     // once we have them, don't bother again
-    if (!(state.all.length)) {
-      api.getDrafts((response) => {
-        commit(types.RECEIVE_DRAFTS, response);
-        commit(types.MAP_PICKS);
-      });
-    }
+    return new Promise((resolve, reject) => {
+      if (state.all === null) {
+        api.getDrafts().then(snapshot => {
+          commit(types.RECEIVE_DRAFTS, snapshot.val());
+          commit(types.MAP_PICKS);
+          resolve();
+        }).catch(err => {
+          console.log(err);
+          reject();
+        });
+      } else {
+        resolve();
+      }
+    });
   },
 };
 

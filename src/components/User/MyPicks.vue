@@ -54,13 +54,12 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
+  import { mapMutations, mapGetters } from 'vuex';
   import filter from 'lodash/filter';
   import { SELECT_PICK } from '../../store/mutations';
 
   export default {
     name: 'my-picks',
-    props: ['picks'],
     data() {
       return {
         // filteredPicks: this.computedFilteredPicks,
@@ -71,6 +70,14 @@
     computed: {
       filteredPicks() {
         return this.filterPickBy(this.selectedPickFilter);
+      },
+      ...mapGetters([
+        'currentUser',
+        'currentDraft',
+        'picksByTeam',
+      ]),
+      picks() {
+        return this.picksByTeam(this.currentUser.id);
       },
     },
     methods: {

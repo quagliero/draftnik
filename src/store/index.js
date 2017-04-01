@@ -8,6 +8,7 @@ import players from './modules/players';
 import adp from './modules/adp';
 import pickValues from './modules/pick-values';
 import trade from './modules/trade';
+import watchlist from './modules/watchlist';
 
 Vue.use(Vuex);
 
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     adp,
     pickValues,
     trade,
+    watchlist,
   },
   strict: debug,
 });

@@ -6,7 +6,6 @@
       <div class="columns">
         <div class="column">
           <my-picks
-            :picks="myPicks"
             @onPickClick="$emit('onPickClick')"
           />
         </div>
@@ -16,17 +15,7 @@
           />
         </div>
         <div class="column">
-          <div class="panel">
-            <p class="panel-heading">My Trades</p>
-            <div class="panel-block">
-              <ul>
-                <li v-for="trade in userTrades">
-                  <i class="fa fa-arrow-right"></i>
-                  {{ getTeamById(trade.receivingTeam).displayName }}
-                </li>
-              </ul>
-            </div>
-          </div>
+          <my-trades/>
         </div>
       </div>
     </section>
@@ -37,31 +26,19 @@
   import { mapGetters } from 'vuex';
   import MyPicks from '../components/User/MyPicks.vue';
   import MyWatchlist from '../components/User/MyWatchlist.vue';
-  import { getTeamById } from '../utils';
+  import MyTrades from '../components/User/MyTrades.vue';
 
   export default {
     name: 'user-view',
     components: {
       MyPicks,
       MyWatchlist,
+      MyTrades,
     },
     computed: {
       ...mapGetters([
         'currentUser',
-        'picksByTeam',
-        'userTrades',
       ]),
-      myPicks() {
-        return this.picksByTeam(this.currentUser.id);
-      },
-    },
-    created() {
-      this.$store.dispatch('getUserTrades');
-    },
-    methods: {
-      getTeamById(id) {
-        return getTeamById(id);
-      },
     },
   };
 </script>
