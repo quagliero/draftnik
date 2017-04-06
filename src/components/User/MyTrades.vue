@@ -6,7 +6,7 @@
       {{ getTeamById(userProposed(trade) ? trade.receivingTeam : trade.givingTeam).displayName }}
       <ul>
         <li v-for="(pick, key) in (userProposed(trade) ? trade.receivingPicks : trade.givingPicks)">
-          {{ key }}
+          <router-link :to="{ name: 'trade', params: { id: key }}">Trade {{ key }}</router-link>
         </li>
       </ul>
     </div>

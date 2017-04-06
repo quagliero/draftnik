@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
 import PasswordResetView from '../views/PasswordResetView.vue';
 import AdminView from '../views/AdminView.vue';
+import TradeView from '../views/TradeView.vue';
 import store from '../store';
 
 Vue.use(Router);
@@ -72,6 +73,14 @@ const router = new Router({
       name: 'me',
       path: '/my-draft',
       component: UserView,
+      beforeEnter: (to, from, next) => {
+        checkAuth(to, from, next);
+      },
+    },
+    {
+      name: 'trade',
+      path: '/trades/:id',
+      component: TradeView,
       beforeEnter: (to, from, next) => {
         checkAuth(to, from, next);
       },
