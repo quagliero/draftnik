@@ -1,8 +1,6 @@
 <template>
   <nav class="panel">
-    <p class="panel-heading">
-      My picks
-    </p>
+    <p class="panel-heading">Picks</p>
     <!-- <div class="panel-block">
       <p class="control has-icon">
         <input class="input is-small" type="text" placeholder="Search">
@@ -94,7 +92,7 @@
       },
       onPickClick(pick) {
         this.SELECT_PICK({ pick });
-        this.$emit('onPickClick', pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
   };

@@ -1,4 +1,3 @@
-import castArray from 'lodash/castArray';
 import * as types from '../mutations';
 import api from '../../api';
 import { db } from '../../database';
@@ -18,13 +17,14 @@ const Trade = (tradeProps) => {
 // initial state
 const state = {
   current: {},
-  userTrades: null,
+  userTrades: {},
 };
 
 // getters
 const getters = {
   currentTrade: stateObj => stateObj.current,
   userTrades: stateObj => stateObj.userTrades,
+  getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
 
 // actions
@@ -87,7 +87,12 @@ const actions = {
 
       Promise.all(
         tradeIds.map(id => ref.child(id).once('value').then(trade => trade.val())),
-      ).then(trades => {
+      ).then(tradesArray => {
+        const trades = tradesArray.reduce((acc, cur) => {
+          acc[cur.id] = cur;
+          return acc;
+        }, {});
+
         commit(types.RECEIVE_USER_TRADES, trades);
       });
     });
@@ -150,7 +155,7 @@ const mutations = {
     stateObj.current = trade;
   },
   [types.RECEIVE_USER_TRADES](stateObj, trades) {
-    stateObj.userTrades = castArray(trades);
+    stateObj.userTrades = trades;
   },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);

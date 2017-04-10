@@ -11,6 +11,19 @@ Vue.use(AsyncComputed);
 // this registers `store.state.route`
 sync(store, router);
 
+
+// Create a global Event Bus
+const EventBus = new Vue();
+
+// Add to Vue properties by exposing a getter for $bus
+Object.defineProperties(Vue.prototype, {
+  $bus: {
+    get() {
+      return EventBus;
+    },
+  },
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

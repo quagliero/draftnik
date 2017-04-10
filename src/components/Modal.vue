@@ -1,24 +1,31 @@
 <template>
-  <div class="modal is-active">
-    <div class="modal-background"></div>
-    <div class="modal-content">
-      <div class="box content">
-        <slot></slot>
+  <transition name="fade">
+    <div class="modal is-active">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box content">
+          <slot></slot>
+        </div>
       </div>
+      <button class="modal-close" @click="close"></button>
     </div>
-    <button class="modal-close" @click="$emit('close')"></button>
-  </div>
+  </transition>
 </template>
 
 <script>
 /* global document */
   export default {
     name: 'modal',
-    props: ['showModal', 'modalContent'],
+    data() {
+      return {
+        showModal: false,
+      };
+    },
+    props: ['close'],
     methods: {
       triggerClose(event) {
         if (event.keyCode === 27) {
-          this.$emit('close');
+          this.close();
         }
       },
     },

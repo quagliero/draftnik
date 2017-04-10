@@ -3,9 +3,10 @@ import Router from 'vue-router';
 import DraftBoardView from '../views/DraftBoardView.vue';
 import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
+import UserHome from '../components/User/Home.vue';
+import UserTrade from '../components/User/Trade.vue';
 import PasswordResetView from '../views/PasswordResetView.vue';
 import AdminView from '../views/AdminView.vue';
-import TradeView from '../views/TradeView.vue';
 import store from '../store';
 
 Vue.use(Router);
@@ -76,14 +77,18 @@ const router = new Router({
       beforeEnter: (to, from, next) => {
         checkAuth(to, from, next);
       },
-    },
-    {
-      name: 'trade',
-      path: '/trades/:id',
-      component: TradeView,
-      beforeEnter: (to, from, next) => {
-        checkAuth(to, from, next);
-      },
+      children: [
+        {
+          path: '',
+          component: UserHome,
+        },
+        {
+          name: 'trade',
+          path: 'trades/:id',
+          component: UserTrade,
+          props: true,
+        },
+      ],
     },
     {
       name: 'admin',

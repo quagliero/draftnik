@@ -113,7 +113,7 @@
       }),
       onPickClick() {
         this.SELECT_PICK({ pick: this.pick });
-        this.$emit('onPickClick', this.pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
   };

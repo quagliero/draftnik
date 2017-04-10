@@ -1,18 +1,9 @@
 <template>
   <div id="app">
     <site-header/>
-    <router-view
-      @onPickClick="showPickModal = true"
-    />
-    <trade-dock
-      @onDockPickClick="showPickModal = true"
-    />
-    <transition name="fade">
-      <pick-modal
-        v-if="showPickModal"
-        @close="showPickModal = false"
-      />
-    </transition>
+    <router-view/>
+    <trade-dock/>
+    <pick-modal/>
   </div>
 </template>
 

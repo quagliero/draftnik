@@ -1,16 +1,6 @@
 <template>
   <nav class="panel">
-    <p class="panel-heading">
-      My Watchlist
-    </p>
-    <!-- <div class="panel-block">
-      <p class="control has-icon">
-        <input class="input is-small" type="text" placeholder="Search">
-        <span class="icon is-small">
-          <i class="fa fa-search"></i>
-        </span>
-      </p>
-    </div> -->
+    <p class="panel-heading">Watchlist</p>
     <p class="panel-tabs">
       <a
         v-for="pos in watchlistFilters"
@@ -38,7 +28,6 @@
           </button>
         </div>
         <div class="level-right">
-          <!-- @click="addToWatchlistClick(player)" -->
           <button
             class="button is-small is-danger"
             @click="removeFromWatchlistClick(player)"
@@ -129,7 +118,7 @@
         }
 
         this.SELECT_PICK({ pick });
-        this.$emit('onPickClick', pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
     created() {

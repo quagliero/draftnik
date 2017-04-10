@@ -1,44 +1,71 @@
 <template>
   <div class="panel">
-    <p class="panel-heading">My Trades</p>
-    <div class="panel-block" v-for="trade in userTrades">
-      <i :class="['fa', userProposed(trade) ? 'fa-arrow-right' : 'fa-arrow-left']"></i>
-      {{ getTeamById(userProposed(trade) ? trade.receivingTeam : trade.givingTeam).displayName }}
-      <ul>
-        <li v-for="(pick, key) in (userProposed(trade) ? trade.receivingPicks : trade.givingPicks)">
-          <router-link :to="{ name: 'trade', params: { id: key }}">Trade {{ key }}</router-link>
-        </li>
-      </ul>
-    </div>
+    <p class="panel-heading">Trades</p>
+    <p class="panel-tabs">
+      <a
+        v-for="filter in tradeFilters"
+        @click="filterTradesBy(filter)"
+        :class="{ 'is-active' : selectedTradeFilter === filter }"
+      >
+        {{ filter }}
+      </a>
+    </p>
+    <trade-panel
+      v-for="trade in filteredTradees"
+      :trade="trade"
+      :currentUser="currentUser"
+      :key="trade.id"
+    />
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import { getTeamById } from '../../utils';
+  import filter from 'lodash/filter';
+  import TradePanel from './MyTrades/TradePanel.vue';
 
   export default {
     name: 'my-trades',
+    components: {
+      TradePanel,
+    },
+    data() {
+      return {
+        tradeFilters: ['All', 'Offered', 'Received', 'Accepted', 'Rejected'],
+        selectedTradeFilter: 'All',
+      };
+    },
     computed: {
       ...mapGetters([
         'currentDraft',
         'currentUser',
         'userTrades',
       ]),
+      filteredTradees() {
+        return this.filterTradesBy(this.selectedTradeFilter);
+      },
     },
     methods: {
-      getTeamById(id) {
-        return getTeamById(id);
-      },
-      renderPicks(picks) {
-        return Object.keys(picks).map(k => k);
-      },
-      userProposed(trade) {
-        if (trade.givingTeam === this.currentUser.id) {
-          return true;
+      filterTradesBy(option) {
+        this.selectedTradeFilter = option;
+
+        if (option === 'Offered') {
+          return filter(this.userTrades, (t) => t.givingTeam === this.currentUser.id);
         }
 
-        return false;
+        if (option === 'Received') {
+          return filter(this.userTrades, (t) => t.receivingTeam === this.currentUser.id);
+        }
+
+        if (option === 'Accepted') {
+          return filter(this.userTrades, (t) => t.isAccepted === true);
+        }
+
+        if (option === 'Rejected') {
+          return filter(this.userTrades, (t) => t.isRejected === true);
+        }
+
+        return this.userTrades;
       },
     },
     created() {

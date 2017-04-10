@@ -1,5 +1,8 @@
 <template>
-  <modal @close="$emit('close')">
+  <modal
+    :close="() => this.$bus.$emit('pickModal.close')"
+    v-if="showPickModal === true"
+  >
     <h3 class="title">Pick ({{ pickAndRound }})</h3>
     <p>Currently owned by: {{ team.displayName }}</p>
     <p>draftpicktradecalculator.com value: <strong>{{ bayesianValue }}</strong></p>
@@ -66,6 +69,11 @@
   export default {
     name: 'pick-modal',
     props: [],
+    data() {
+      return {
+        showPickModal: false,
+      };
+    },
     components: {
       Modal,
     },
@@ -182,6 +190,14 @@
       },
     },
     mounted() {
+      this.$bus.$on('pickModal.open', () => {
+        this.showPickModal = true;
+      });
+
+      this.$bus.$on('pickModal.close', () => {
+        this.showPickModal = false;
+      });
+
       if (this.authenticated === true) {
         this.$store.dispatch('getWatchlist', {
           draft: this.currentDraft.id,

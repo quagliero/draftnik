@@ -5,7 +5,6 @@
       :pick="pick"
       :key="pick.overall"
       :boardView="boardView"
-      @onPickClick="$emit('onPickClick')"
     />
   </tr>
 </template>
