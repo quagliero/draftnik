@@ -50,6 +50,7 @@ export default {
 @import "~bulma/elements/title";
 @import "~bulma/elements/icon";
 @import "~bulma/elements/content";
+@import "~bulma/elements/tag";
 @import "~bulma/elements/form";
 @import "~bulma/elements/notification";
 @import "~bulma/elements/other";

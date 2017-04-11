@@ -16,11 +16,6 @@
 /* global document */
   export default {
     name: 'modal',
-    data() {
-      return {
-        showModal: false,
-      };
-    },
     props: ['close'],
     methods: {
       triggerClose(event) {

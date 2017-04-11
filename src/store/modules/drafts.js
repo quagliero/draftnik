@@ -25,10 +25,7 @@ const getters = {
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
   picksByTeam: stateObj => (team) => filter(stateObj.currentDraft.picks, (p) => p.team === team),
-  pickById: stateObj => (pickId) => {
-    debugger;
-    return stateObj.currentDraft.picks[pickId];
-  },
+  pickById: stateObj => (pickId) => stateObj.currentDraft.picks[pickId],
 };
 
 // actions
