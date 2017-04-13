@@ -1,10 +1,19 @@
 <template>
-  <header class="nav">
-    <div class="nav-left">
-      <router-link to="/" exact><logo class="nav-item is-brand"></logo></router-link>
-    </div>
-    <site-nav/>
-  </header>
+  <div class="container">
+    <header class="nav">
+      <div class="nav-left">
+        <router-link
+          class="nav-item"
+          style="padding-left: 0"
+          to="/"
+          exact
+        >
+          <logo class="is-brand"/>
+        </router-link>
+      </div>
+      <site-nav/>
+    </header>
+  </div>
 </template>
 
 <script>

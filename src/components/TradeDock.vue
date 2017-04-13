@@ -56,12 +56,6 @@
         </div>
         <div class="level-item">
           <div class="trade-dock__action" v-if="canMakeOffer">
-            <!-- <button class="button is-white is-inverted is-outlined">
-              <span class="icon is-small">
-                <i class="fa fa-save"></i>
-              </span>
-              <span>Save</span>
-            </button> -->
             <button
               class="button is-outlined is-primary is-inverted"
               @click="onMakeOfferClick"
@@ -88,8 +82,8 @@
   import {
     getTeamById,
     calculateBayesianTradeValue,
+    calculateDoddsTradeValue,
   } from '../utils';
-  import { calculateDoddsTradeValue } from '../utils/dodds-calculator';
 
   export default {
     name: 'trade-dock',

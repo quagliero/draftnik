@@ -57,11 +57,11 @@ export default {
 @import "~bulma/components/nav";
 @import "~bulma/components/panel";
 @import "~bulma/components/level";
+@import "~bulma/components/message";
 
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: $text;
 }
 

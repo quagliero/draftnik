@@ -103,6 +103,7 @@ export default {
 .board-wrapper {
   padding-left: 0;
   padding-right: 0;
+  text-align: center;
 }
 
 .scroll-container {

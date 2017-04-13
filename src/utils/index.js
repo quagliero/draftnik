@@ -1,6 +1,9 @@
 import get from 'lodash/get';
+import reduce from 'lodash/reduce';
 import store from '../store';
-import { calculateDoddsTradeValue } from './dodds-calculator';
+import doddsCalculator from './dodds-calculator';
+
+export const calculateDoddsTradeValue = doddsCalculator;
 
 export const roundPicksMap = (picks) => {
   const map = {};
@@ -61,7 +64,7 @@ export const getPlayersInRange = (pick, range) => {
 
 export const calculateBayesianTradeValue = (trade) => {
   function getTotal(picks) {
-    return picks.reduce((total, pick) => {
+    return reduce(picks, (total, pick) => {
       const bayesianPick = store.getters.bayesianValues.find(p => p.overall === pick.overall);
       return total + bayesianPick.value;
     }, 0);
@@ -92,5 +95,6 @@ export default {
   getTeamById,
   getPickValue,
   getPlayersInRange,
+  calculateBayesianTradeValue,
   calculateDoddsTradeValue,
 };

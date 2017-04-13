@@ -71,7 +71,6 @@ const router = new Router({
       component: PasswordResetView,
     },
     {
-      name: 'me',
       path: '/my-draft',
       component: UserView,
       beforeEnter: (to, from, next) => {
@@ -79,6 +78,7 @@ const router = new Router({
       },
       children: [
         {
+          name: 'me',
           path: '',
           component: UserHome,
         },

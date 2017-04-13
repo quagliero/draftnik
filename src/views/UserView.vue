@@ -1,7 +1,8 @@
 <template>
   <div class="section">
     <section class="container">
-      <h1 class="title" v-if="currentUser">{{ currentUser.teamName }}</h1>
+      <h1 class="title">War Room</h1>
+      <h2 class="subtitle" v-if="currentUser">{{ currentUser.teamName }}</h2>
       <br />
       <router-view/>
     </section>

@@ -1,17 +1,28 @@
 <template>
   <div>
-    <h3>Trade {{ id }}</h3>
-    <h4>{{ currentTrade }}</h4>
-    <hr/>
+    <trade-offer
+      v-if="tradeStatus === TradeStatus.OFFERED"
+      :trade="currentTrade"
+    />
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
+  import TradeOffer from '../Trade/Offer.vue';
+  import { TradeStatus } from '../../constants';
 
   export default {
     name: 'trade-view',
     props: ['id'],
+    components: {
+      TradeOffer,
+    },
+    data() {
+      return {
+        TradeStatus,
+      };
+    },
     computed: {
       ...mapGetters([
         'currentDraft',
@@ -20,6 +31,17 @@
       ]),
       currentTrade() {
         return this.getTradeById(this.id);
+      },
+      tradeStatus() {
+        if (this.currentTrade.isAccepted) {
+          return TradeStatus.ACCEPTED;
+        }
+
+        if (this.currentTrade.isRejected) {
+          return TradeStatus.REJECTED;
+        }
+
+        return TradeStatus.OFFERED;
       },
     },
     created() {

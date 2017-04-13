@@ -21,6 +21,8 @@ export default {
   color: #2c3e50;
   will-change: color;
   transition: .2s color ease;
+  display: inline-block;
+  line-height: 1.5;
 
   &:hover, &:focus {
     color: #00d1b2;
@@ -32,6 +34,7 @@ export default {
   display: inline-block;
   font-weight: 900;
   font-size: 2rem;
+  vertical-align: middle;
   text-shadow:
    -0.3rem -0.3rem 0 #42b983,
    0.3rem -0.3rem 0 #5c9079,

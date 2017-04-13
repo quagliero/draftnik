@@ -6,7 +6,6 @@
         <router-link
           :to="{ name: 'trade', params: { id: trade.id }}"
           class="button is-small is-info pull-right"
-          disabled
         >
           View trade
         </router-link>
@@ -18,8 +17,8 @@
         </strong>
       </div>
       <div>
-        <ul class="trade-panel__picks" v-html="renderPickList('get')"/>
         <ul class="trade-panel__picks" v-html="renderPickList('give')"/>
+        <ul class="trade-panel__picks" v-html="renderPickList('get')"/>
       </div>
     </div>
   </div>
@@ -52,10 +51,12 @@
         return getTeamById(this.trade.receivingTeam);
       },
       givingPicks() {
-        return map(keys(this.trade.givingPicks), pick => this.pickById(pick));
+        const picks = (this.userProposed) ? this.trade.givingPicks : this.trade.receivingPicks;
+        return map(keys(picks), pick => this.pickById(pick));
       },
       receivingPicks() {
-        return map(keys(this.trade.receivingPicks), pick => this.pickById(pick));
+        const picks = (this.userProposed) ? this.trade.receivingPicks : this.trade.givingPicks;
+        return map(keys(picks), pick => this.pickById(pick));
       },
       userProposed() {
         return (this.trade.givingTeam === this.currentUser.id);
