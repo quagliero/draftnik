@@ -33,15 +33,7 @@
         return this.getTradeById(this.id);
       },
       tradeStatus() {
-        if (this.currentTrade.isAccepted) {
-          return TradeStatus.ACCEPTED;
-        }
-
-        if (this.currentTrade.isRejected) {
-          return TradeStatus.REJECTED;
-        }
-
-        return TradeStatus.OFFERED;
+        return TradeStatus[this.currentTrade] || TradeStatus.OFFERED;
       },
     },
     created() {

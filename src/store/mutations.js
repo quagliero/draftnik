@@ -5,6 +5,9 @@ export const INVALID_SESSION = 'INVALID_SESSION';
 export const CLEAR_AUTH_MESSAGES = 'CLEAR_AUTH_MESSAGES';
 export const PASSWORD_RESET_EMAIL_SENT = 'PASSWORD_RESET_EMAIL_SENT';
 
+// Generic
+export const CAUGHT_ERROR = 'CAUGHT_ERROR';
+
 // Users (teams)
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 
@@ -39,6 +42,9 @@ export const CLEAR_TRADE = 'CLEAR_TRADE';
 export const SAVE_TRADE = 'SAVE_TRADE';
 export const LOAD_TRADE = 'LOAD_TRADE';
 export const PROPOSED_TRADE = 'PROPOSED_TRADE';
+export const REJECTED_TRADE = 'REJECTED_TRADE';
+export const WITHDRAWN_TRADE = 'WITHDRAWN_TRADE';
+export const ACCEPTED_TRADE = 'ACCEPTED_TRADE';
 
 // watchlists
 export const RECEIVE_WATCHLIST = 'RECEIVE_WATCHLIST';

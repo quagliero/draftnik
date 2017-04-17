@@ -23,6 +23,7 @@
   import { mapGetters } from 'vuex';
   import filter from 'lodash/filter';
   import TradePanel from './MyTrades/TradePanel.vue';
+  import { TradeStatus } from '../../constants';
 
   export default {
     name: 'my-trades',
@@ -31,8 +32,8 @@
     },
     data() {
       return {
-        tradeFilters: ['All', 'Offered', 'Received', 'Accepted', 'Rejected'],
-        selectedTradeFilter: 'All',
+        tradeFilters: ['All', 'Open', 'Accepted', 'Rejected'],
+        selectedTradeFilter: 'Open',
       };
     },
     computed: {
@@ -49,20 +50,19 @@
       filterTradesBy(option) {
         this.selectedTradeFilter = option;
 
-        if (option === 'Offered') {
-          return filter(this.userTrades, (t) => t.givingTeam === this.currentUser.id);
-        }
-
-        if (option === 'Received') {
-          return filter(this.userTrades, (t) => t.receivingTeam === this.currentUser.id);
+        if (option === 'Open') {
+          return filter(this.userTrades, (t) => t.status === TradeStatus.OFFERED);
         }
 
         if (option === 'Accepted') {
-          return filter(this.userTrades, (t) => t.isAccepted === true);
+          return filter(this.userTrades, (t) => t.status === TradeStatus.ACCEPTED);
         }
 
         if (option === 'Rejected') {
-          return filter(this.userTrades, (t) => t.isRejected === true);
+          return filter(
+            this.userTrades,
+            (t) => t.status === TradeStatus.REJECTED || t.status === TradeStatus.WITHDRAWN,
+          );
         }
 
         return this.userTrades;

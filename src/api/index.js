@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { auth, db } from '../database';
+import { TradeStatus } from '../constants';
 
 const listenForValueEvents = (url, cb) => {
   db.ref(url).on('value', snapshot => {
@@ -50,12 +51,30 @@ export default {
       receivingTeam: trade.receivingTeam,
       givingPicks: trade.givingPicks,
       receivingPicks: trade.receivingPicks,
-      isAccepted: false,
+      status: TradeStatus.OFFERED,
       seen: false,
     });
   },
   addTradeToUser(draft, user, tradeKey) {
     return db.ref(`tradesUsersPivot/${draft}/${user}/${tradeKey}`).set(true);
+  },
+  rejectTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.REJECTED,
+    });
+  },
+  withdrawTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.WITHDRAWN,
+    });
+  },
+  acceptTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.ACCEPTED,
+    });
+  },
+  addTradeToAccepted({ draft, trade }) {
+    return db.ref(`tradesAccepted/${draft}/${trade}`).set(true);
   },
   counterTrade(draft, trade, cb) {
     const tradeKey = db.ref('trades').push().key;
@@ -65,7 +84,7 @@ export default {
       receivingTeam: trade.receivingTeam,
       givingPicks: trade.givingPicks,
       receivingPicks: trade.receivingPicks,
-      isAccepted: false,
+      status: TradeStatus.OFFERED,
       seen: false,
       counters: trade.id,
     }, (err) => {

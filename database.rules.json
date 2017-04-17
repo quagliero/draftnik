@@ -21,7 +21,7 @@
     "trades": {
       "$draft": {
         "$trade": {
-          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists() && !data.exists()",
+          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists()",
           ".read": "data.child('receivingTeam').val() === auth.uid || data.child('givingTeam').val() === auth.uid",
         }
       }

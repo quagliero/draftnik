@@ -7,4 +7,5 @@ export const TradeStatus = {
   OFFERED: 'OFFERED',
   ACCEPTED: 'ACCEPTED',
   REJECTED: 'REJECTED',
+  WITHDRAWN: 'WITHDRAWN',
 };

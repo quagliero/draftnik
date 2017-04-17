@@ -84,15 +84,16 @@ const actions = {
     api.getUserTrades(data.draft, data.user, userTrades => {
       const tradeIds = Object.keys(userTrades);
       const ref = db.ref(`trades/${data.draft}`);
+      const trades = {};
 
       Promise.all(
-        tradeIds.map(id => ref.child(id).once('value').then(trade => trade.val())),
-      ).then(tradesArray => {
-        const trades = tradesArray.reduce((acc, cur) => {
-          acc[cur.id] = cur;
-          return acc;
-        }, {});
-
+        tradeIds.map((id) => new Promise((resolve) => {
+          ref.child(id).on('value', trade => {
+            trades[id] = trade.val();
+            resolve();
+          });
+        })),
+      ).then(() => {
         commit(types.RECEIVE_USER_TRADES, trades);
       });
     });
@@ -104,15 +105,40 @@ const actions = {
       console.error(error);
     });
   },
-  proposeTrade({ commit }, data) {
+  proposeTrade({ commit }, { trade, draft }) {
     const tradeKey = db.ref('trades').push().key;
-    const users = [data.trade.givingTeam, data.trade.receivingTeam];
+    const users = [trade.givingTeam, trade.receivingTeam];
 
-    api.proposeTrade(data.draft, data.trade, tradeKey).then(response => {
+    api.proposeTrade(draft, trade, tradeKey).then(response => {
       Promise.all(
-        users.map(user => api.addTradeToUser(data.draft, user, tradeKey)),
+        users.map(user => api.addTradeToUser(draft, user, tradeKey)),
       ).then(() => {
         commit(types.PROPOSED_TRADE, response);
+      });
+    });
+  },
+  rejectTrade({ commit }, { trade, draft }) {
+    api.rejectTrade({ trade, draft }).then(() => {
+      commit(types.REJECTED_TRADE, trade);
+    }).catch(error => {
+      console.error(error);
+    });
+  },
+  withdrawTrade({ commit }, { trade, draft }) {
+    api.withdrawTrade({ trade, draft }).then(() => {
+      commit(types.WITHDRAWN_TRADE, trade);
+    }).catch(error => {
+      console.error(error);
+    });
+  },
+  acceptTrade({ commit }, { trade, draft }) {
+    api.acceptTrade({ trade, draft }).then(() => {
+      Promise.all([
+        api.addTradeToAccepted({ trade, draft }),
+        //@TODO handle the exchanging of pick ownership in firebase
+        // api.exchangePicks({ })
+      ]).then(() => {
+        commit(types.ACCEPTED_TRADE, trade);
       });
     });
   },
@@ -159,6 +185,18 @@ const mutations = {
   },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
+  },
+  [types.PROPOSED_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.REJECTED_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.WITHDRAWN_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.ACCEPTED_TRADE](stateObj, trade) {
+    console.log(trade);
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.userTrades = [];

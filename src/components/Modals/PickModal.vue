@@ -163,7 +163,7 @@
         if (this.isOwnPick === false) {
           this.SELECT_RECEIVING_TEAM(this.team.id);
         }
-        this.$emit('close');
+        this.$bus.$emit('pickModal.close');
       },
       handleAddPickClick() {
         // business logic to ween out illegal picks
@@ -173,7 +173,7 @@
           receivingTeam: this.team.id,
           pick: this.selectedPick,
         });
-        this.$emit('close');
+        this.$bus.$emit('pickModal.close');
       },
       handleRemovePickClick() {
         // business logic to ween out illegal picks
@@ -183,7 +183,7 @@
           receivingTeam: this.team.id,
           pick: this.selectedPick,
         });
-        this.$emit('close');
+        this.$bus.$emit('pickModal.close');
       },
       formatName(name) {
         return formatPlayerName(name);

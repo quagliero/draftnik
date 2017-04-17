@@ -2,7 +2,11 @@
   <div class="panel-block">
     <div class="trade-panel">
       <div>
-        <span class="tag is-warning">{{ tradeStatus }}</span>
+        <span
+          :class="['tag', tradeStatusClass]"
+        >
+          {{ tradeStatus }}
+        </span>
         <router-link
           :to="{ name: 'trade', params: { id: trade.id }}"
           class="button is-small is-info pull-right"
@@ -30,6 +34,7 @@
   import keys from 'lodash/keys';
   import reduce from 'lodash/reduce';
   import { getTeamById } from '../../../utils';
+  import { TradeStatus } from '../../../constants';
 
   export default {
     name: 'trade-panel',
@@ -62,14 +67,32 @@
         return (this.trade.givingTeam === this.currentUser.id);
       },
       tradeStatus() {
-        if (this.trade.isAccepted === true) {
-          return 'Accepted';
+        switch (this.trade.status) {
+          case TradeStatus.OFFERED:
+            return 'Offer';
+          case TradeStatus.ACCEPTED:
+            return 'Accepted';
+          case TradeStatus.REJECTED:
+            return 'Rejected';
+          case TradeStatus.WITHDRAWN:
+            return 'Withdrawn';
+          default:
+            return 'Offer';
         }
-        if (this.trade.isRejected === true) {
-          return 'Rejected';
+      },
+      tradeStatusClass() {
+        switch (this.trade.status) {
+          case TradeStatus.OFFERED:
+            return 'is-primary';
+          case TradeStatus.ACCEPTED:
+            return 'is-success';
+          case TradeStatus.REJECTED:
+            return 'is-danger';
+          case TradeStatus.WITHDRAWN:
+            return 'is-danger';
+          default:
+            return 'is-info';
         }
-
-        return 'Offer';
       },
     },
     methods: {

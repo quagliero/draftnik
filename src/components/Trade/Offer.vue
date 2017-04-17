@@ -7,7 +7,7 @@
       Trade offer {{ userProposed ? 'to' : 'from' }} {{ otherTeam.displayName }}
     </h3>
     <br/>
-    <div class="columns has-text-centered">
+    <div class="columns is-mobile has-text-centered">
       <div class="column">
         <h4 class="title is-4">You give</h4>
         <ul>
@@ -36,19 +36,55 @@
     </div>
     <div class="columns">
       <div class="column has-text-centered">
-        <button class="button is-large is-danger">
-          <span class="icon is-medium">
-            <i class="fa fa-remove"></i>
-          </span>
-          <span>Reject</span>
-        </button>
-        <span class="spacer"></span>
-        <button class="button is-large is-primary">
-          <span class="icon is-medium">
-            <i class="fa fa-handshake-o"></i>
-          </span>
-          <span>Accept</span>
-        </button>
+        <template v-if="trade.status === TradeStatus.OFFERED">
+          <div v-if="userProposed === false">
+            <button
+              @click="handleRejectTrade"
+              class="button is-large is-danger"
+            >
+              <span class="icon is-medium">
+                <i class="fa fa-remove"></i>
+              </span>
+              <span>Reject</span>
+            </button>
+            <span class="spacer"></span>
+            <button
+              @click="handleAcceptTrade"
+              class="button is-large is-success"
+            >
+              <span class="icon is-medium">
+                <i class="fa fa-handshake-o"></i>
+              </span>
+              <span>Accept</span>
+            </button>
+          </div>
+          <div v-if="userProposed === true">
+            <button
+              @click="handleWithdrawTrade"
+              class="button is-large is-danger"
+            >
+              <span class="icon is-medium">
+                <i class="fa fa-remove"></i>
+              </span>
+              <span>Withdraw Offer</span>
+            </button>
+          </div>
+        </template>
+        <div v-if="trade.status === TradeStatus.REJECTED">
+          <div class="notification is-danger">
+            <span class="title is-5">This offer was rejected</span>
+          </div>
+        </div>
+        <div v-if="trade.status === TradeStatus.WITHDRAWN">
+          <div class="notification is-danger">
+            <span class="title is-5">This offer was withdrawn</span>
+          </div>
+        </div>
+        <div v-if="trade.status === TradeStatus.ACCEPTED">
+          <div class="notification is-success">
+            <span class="title is-5">This trade was accepted</span>
+          </div>
+        </div>
       </div>
     </div>
     <hr/>
@@ -57,7 +93,7 @@
         <h6>draftpicktradecalculator.com</h6>
       </div>
       <div class="message-body">
-        <div class="columns is-gapless has-text-centered">
+        <div class="columns is-mobile is-gapless has-text-centered">
           <div class="column">
             {{ bayesianValue.givingValue.toFixed(2) }}
           </div>
@@ -75,7 +111,7 @@
         <h6>footballguys.com</h6>
       </div>
       <div class="message-body">
-        <div class="columns is-gapless has-text-centered">
+        <div class="columns is-mobile is-gapless has-text-centered">
           <div class="column">
             {{ doddsValue.givingValue.toFixed(2) }}
           </div>
@@ -92,7 +128,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapActions } from 'vuex';
   import map from 'lodash/map';
   import keys from 'lodash/keys';
   import {
@@ -100,13 +136,20 @@
     calculateDoddsTradeValue,
     calculateBayesianTradeValue,
   } from '../../utils';
+  import { TradeStatus } from '../../constants';
 
   export default {
     name: 'trade-offer',
     props: ['trade'],
+    data() {
+      return {
+        TradeStatus,
+      };
+    },
     computed: {
       ...mapGetters([
         'currentUser',
+        'currentDraft',
         'pickById',
       ]),
       otherTeam() {
@@ -129,6 +172,9 @@
       userProposed() {
         return (this.trade.givingTeam === this.currentUser.id);
       },
+      userCanRespond() {
+        return this.trade.status === TradeStatus.OFFERED && this.userProposed === false;
+      },
       bayesianValue() {
         return calculateBayesianTradeValue({
           givingPicks: this.givingPicks,
@@ -139,6 +185,30 @@
         return calculateDoddsTradeValue({
           givingPicks: this.givingPicks,
           receivingPicks: this.receivingPicks,
+        });
+      },
+    },
+    methods: {
+      ...mapActions([
+        'rejectTrade',
+        'withdrawTrade',
+      ]),
+      handleRejectTrade() {
+        this.rejectTrade({
+          draft: this.currentDraft.id,
+          trade: this.trade.id,
+        });
+      },
+      handleWithdrawTrade() {
+        this.withdrawTrade({
+          draft: this.currentDraft.id,
+          trade: this.trade.id,
+        });
+      },
+      handleAcceptTrade() {
+        this.acceptTrade({
+          draft: this.currentDraft.id,
+          trade: this.trade.id,
         });
       },
     },
