@@ -76,6 +76,9 @@ export default {
   addTradeToAccepted({ draft, trade }) {
     return db.ref(`tradesAccepted/${draft}/${trade}`).set(true);
   },
+  changePickOwner({ draft, pick, team }) {
+    return db.ref(`drafts/${draft}/picks/${pick}/team`).set(team);
+  },
   counterTrade(draft, trade, cb) {
     const tradeKey = db.ref('trades').push().key;
     db.ref(`trades/${draft}/${tradeKey}`).set({

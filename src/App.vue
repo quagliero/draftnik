@@ -63,6 +63,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $text;
+  padding-bottom: 100px;
 }
 
 </style>

@@ -11,7 +11,7 @@
       <div class="column">
         <h4 class="title is-4">You give</h4>
         <ul>
-          <li v-for="pick in givingPicks">
+          <li v-for="pick in givingPicks" style="margin-bottom: 0.5rem;">
             <span class="title is-5">
               {{ pick.round }}.{{ pick.pickInRound }} (#{{ pick.overall }})
             </span>
@@ -26,7 +26,7 @@
       <div class="column">
         <h4 class="title is-4">You get</h4>
         <ul>
-          <li v-for="pick in receivingPicks">
+          <li v-for="pick in receivingPicks" style="margin-bottom: 0.5rem;">
             <span class="title is-5">
               {{ pick.round }}.{{ pick.pickInRound }} (#{{ pick.overall }})
             </span>
@@ -88,7 +88,7 @@
       </div>
     </div>
     <hr/>
-    <div class="message is-info">
+    <div class="message">
       <div class="message-header">
         <h6>draftpicktradecalculator.com</h6>
       </div>
@@ -192,6 +192,7 @@
       ...mapActions([
         'rejectTrade',
         'withdrawTrade',
+        'acceptTrade',
       ]),
       handleRejectTrade() {
         this.rejectTrade({
@@ -209,6 +210,10 @@
         this.acceptTrade({
           draft: this.currentDraft.id,
           trade: this.trade.id,
+          givingTeam: this.trade.givingTeam,
+          givingPicks: this.trade.givingPicks,
+          receivingTeam: this.trade.receivingTeam,
+          receivingPicks: this.trade.receivingPicks,
         });
       },
     },

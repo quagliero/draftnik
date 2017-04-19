@@ -155,6 +155,7 @@
       onMakeOfferClick() {
         if (this.givingPicks.length !== this.receivingPicks.length) {
           this.showTradeValidation = true;
+          return false;
         }
 
         const trade = {
@@ -171,6 +172,7 @@
         };
 
         this.proposeTrade({ draft: this.currentDraft.id, trade });
+        return true;
       },
     },
   };

@@ -1,3 +1,5 @@
+import keys from 'lodash/keys';
+import map from 'lodash/map';
 import * as types from '../mutations';
 import api from '../../api';
 import { db } from '../../database';
@@ -109,11 +111,11 @@ const actions = {
     const tradeKey = db.ref('trades').push().key;
     const users = [trade.givingTeam, trade.receivingTeam];
 
-    api.proposeTrade(draft, trade, tradeKey).then(response => {
+    api.proposeTrade(draft, trade, tradeKey).then(() => {
       Promise.all(
         users.map(user => api.addTradeToUser(draft, user, tradeKey)),
       ).then(() => {
-        commit(types.PROPOSED_TRADE, response);
+        commit(types.PROPOSED_TRADE, tradeKey);
       });
     });
   },
@@ -131,14 +133,33 @@ const actions = {
       console.error(error);
     });
   },
-  acceptTrade({ commit }, { trade, draft }) {
+  acceptTrade({ commit }, payload) {
+    const {
+      trade,
+      draft,
+      givingTeam,
+      givingPicks,
+      receivingTeam,
+      receivingPicks,
+    } = payload;
+
     api.acceptTrade({ trade, draft }).then(() => {
       Promise.all([
         api.addTradeToAccepted({ trade, draft }),
-        //@TODO handle the exchanging of pick ownership in firebase
-        // api.exchangePicks({ })
+        ...map(keys(givingPicks), (pick) => api.changePickOwner({
+          pick,
+          draft,
+          team: receivingTeam,
+        })),
+        ...map(keys(receivingPicks), (pick) => api.changePickOwner({
+          pick,
+          draft,
+          team: givingTeam,
+        })),
       ]).then(() => {
         commit(types.ACCEPTED_TRADE, trade);
+      }).catch((error) => {
+        console.error(error);
       });
     });
   },
