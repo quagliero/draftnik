@@ -2,7 +2,14 @@
   "rules": {
     "drafts": {
       ".read": true,
-      ".write": "root.child('admins').child(auth.uid).exists()"
+      "$draft": {
+        "order": {
+          ".write": "root.child('admins').child(auth.uid).exists()"
+        },
+        "picks": {
+          ".write": "auth != null"
+        }
+      }
     },
     "users": {
       ".read": true,
@@ -30,8 +37,11 @@
       "$draft": {
         "$uid": {
           ".read": "$uid === auth.uid",
-          ".write": "!data.exists() && $uid === auth.uid ||
-            !data.exists() && root.child('trades').child($draft).child(data.child('id').val()).child('givingTeam').val() === auth.uid"
+          ".write": "!data.exists() && $uid === auth.uid",
+          "$trade": {
+            ".write": "root.child('trades').child($draft).child($trade).child('receivingTeam').val() === auth.uid ||
+            root.child('trades').child($draft).child($trade).child('givingTeam').val() === auth.uid "
+          }
         }
       }
     },

@@ -11,7 +11,7 @@
       </a>
     </p>
     <trade-panel
-      v-for="trade in filteredTradees"
+      v-for="trade in filteredTrades"
       :trade="trade"
       :currentUser="currentUser"
       :key="trade.id"
@@ -42,7 +42,7 @@
         'currentUser',
         'userTrades',
       ]),
-      filteredTradees() {
+      filteredTrades() {
         return this.filterTradesBy(this.selectedTradeFilter);
       },
     },

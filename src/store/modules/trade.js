@@ -1,8 +1,11 @@
 import keys from 'lodash/keys';
 import map from 'lodash/map';
+import filter from 'lodash/filter';
+import some from 'lodash/some';
 import * as types from '../mutations';
 import api from '../../api';
 import { db } from '../../database';
+import { TradeStatus } from '../../constants';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
@@ -84,7 +87,7 @@ const actions = {
   },
   getUserTrades({ commit }, data) {
     api.getUserTrades(data.draft, data.user, userTrades => {
-      const tradeIds = Object.keys(userTrades);
+      const tradeIds = keys(userTrades);
       const ref = db.ref(`trades/${data.draft}`);
       const trades = {};
 
@@ -157,6 +160,29 @@ const actions = {
           team: givingTeam,
         })),
       ]).then(() => {
+        // tidy up any potential conflicting open offers
+        const openOffers = filter(state.userTrades, (userTrade) => {
+          if (userTrade.id !== trade && userTrade.status === TradeStatus.OFFERED) {
+            return true;
+          }
+          return false;
+        });
+
+        Promise.all([
+          ...map(openOffers, (offer) => {
+            if (some([
+              some(keys(offer.givingPicks), pick => givingPicks[pick]),
+              some(keys(offer.receivingPicks), pick => givingPicks[pick]),
+              some(keys(offer.givingPicks), pick => receivingPicks[pick]),
+              some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
+            ])) {
+              return api.withdrawTrade({ trade: offer.id, draft });
+            }
+
+            return null;
+          }),
+        ]);
+
         commit(types.ACCEPTED_TRADE, trade);
       }).catch((error) => {
         console.error(error);

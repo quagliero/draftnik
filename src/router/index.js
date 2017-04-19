@@ -95,7 +95,7 @@ const router = new Router({
       path: '/admin',
       component: AdminView,
       beforeEnter: (to, from, next) => {
-        if (store.state.users.currentUser.isAdmin === true) {
+        if (store.getters.isAdmin === true) {
           next();
         } else {
           next('login');
