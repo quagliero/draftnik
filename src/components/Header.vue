@@ -4,7 +4,6 @@
       <div class="nav-left">
         <router-link
           class="nav-item"
-          style="padding-left: 0"
           to="/"
           exact
         >
