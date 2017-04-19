@@ -103,7 +103,7 @@
           const suffix = (max >= 1 && i < max) ? ', ' : '';
           acc += `<li>${cur.round}.${cur.pickInRound} (${cur.overall})${suffix}&nbsp;</li>`;
           return acc;
-        }, `<li>You ${type}:&nbsp;</li>`);
+        }, `<li style="display: block; text-decoration: underline;"><small>You ${type}:</small></li>`);
       },
     },
   };
