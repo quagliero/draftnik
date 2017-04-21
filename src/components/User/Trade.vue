@@ -4,6 +4,18 @@
       v-if="tradeStatus === TradeStatus.OFFERED"
       :trade="currentTrade"
     />
+    <trade-rejected
+      v-if="tradeStatus === TradeStatus.REJECTED"
+      :trade="currentTrade"
+    />
+    <trade-withdrawn
+      v-if="tradeStatus === TradeStatus.WITHDRAWN"
+      :trade="currentTrade"
+    />
+    <trade-accepted
+      v-if="tradeStatus === TradeStatus.ACCEPTED"
+      :trade="currentTrade"
+    />
   </div>
   <div v-else>
     <span class="icon">
@@ -16,6 +28,9 @@
 <script>
   import { mapGetters } from 'vuex';
   import TradeOffer from '../Trade/Offer.vue';
+  import TradeRejected from '../Trade/Rejected.vue';
+  import TradeWithdrawn from '../Trade/Withdrawn.vue';
+  import TradeAccepted from '../Trade/Accepted.vue';
   import { TradeStatus } from '../../constants';
 
   export default {
@@ -23,6 +38,9 @@
     props: ['id'],
     components: {
       TradeOffer,
+      TradeRejected,
+      TradeWithdrawn,
+      TradeAccepted,
     },
     data() {
       return {
@@ -39,7 +57,11 @@
         return this.getTradeById(this.id);
       },
       tradeStatus() {
-        return TradeStatus[this.currentTrade] || TradeStatus.OFFERED;
+        if (this.currentTrade) {
+          return TradeStatus[this.currentTrade.status];
+        }
+
+        return TradeStatus[this.currentTrade.status] || TradeStatus.OFFERED;
       },
     },
     created() {
