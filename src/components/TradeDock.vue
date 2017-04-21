@@ -11,8 +11,8 @@
       </div>
     </transition>
     <div class="trade-dock__inner">
-      <div class="level">
-        <div class="level-item">
+      <div class="columns">
+        <div class="column">
           <div class="trade-dock__picks">
             <div class="trade-dock__giving" v-if="currentTrade.receivingPicks.length">
               <b>You get:&nbsp;</b>
@@ -25,8 +25,8 @@
               </trade-dock-pick>
             </div>
             <div class="trade-dock__receiving" v-if="givingPicks.length">
-              <b v-if="receivingTeam">{{ receivingTeam.displayName }} gets:&nbsp;</b>
-              <b v-else="receivingTeam">They get:&nbsp;</b>
+              <b v-if="receivingTeam.displayName">{{ receivingTeam.displayName }} gets:&nbsp;</b>
+              <b v-else>They get:&nbsp;</b>
               <trade-dock-pick
                 v-for="(pick, i) in givingPicks"
                 :key="pick.overall"
@@ -55,15 +55,24 @@
           </div>
         </div>
         <div class="level-item">
-          <div class="trade-dock__action" v-if="canMakeOffer">
+          <div class="trade-dock__action">
             <button
-              class="button is-outlined is-primary is-inverted"
+              v-if="canMakeOffer"
+              :class="['button is-outlined is-primary is-inverted', {
+                'is-loading': processing === true,
+              }]"
               @click="onMakeOfferClick"
+              :disabled="processing === true"
             >
             <span class="icon is-small">
               <i class="fa fa-paper-plane"></i>
             </span>
               <span>Make Offer</span>
+            </button>
+            <button
+              @click="clearTrade"
+              class="trade-dock__clear delete is-medium"
+            >
             </button>
           </div>
         </div>
@@ -77,7 +86,7 @@
 <script>
   import { mapGetters, mapActions, mapMutations } from 'vuex';
   import reduce from 'lodash/reduce';
-  import { SELECT_PICK } from '../store/mutations';
+  import { SELECT_PICK, CLEAR_TRADE, CLEAR_RECEIVING_TEAM } from '../store/mutations';
   import TradeDockPick from './TradeDock/Pick.vue';
   import {
     getTeamById,
@@ -93,6 +102,7 @@
     data() {
       return {
         showTradeValidation: false,
+        processing: false,
       };
     },
     computed: {
@@ -141,6 +151,8 @@
     methods: {
       ...mapMutations({
         SELECT_PICK,
+        CLEAR_TRADE,
+        CLEAR_RECEIVING_TEAM,
       }),
       ...mapActions([
         'proposeTrade',
@@ -152,11 +164,17 @@
         this.SELECT_PICK({ pick });
         this.$emit('onDockPickClick');
       },
+      clearTrade() {
+        this.CLEAR_TRADE();
+        this.CLEAR_RECEIVING_TEAM();
+      },
       onMakeOfferClick() {
         if (this.givingPicks.length !== this.receivingPicks.length) {
           this.showTradeValidation = true;
           return false;
         }
+
+        this.processing = true;
 
         const trade = {
           givingTeam: this.currentTrade.givingTeam,
@@ -200,9 +218,13 @@
     z-index: 5;
   }
 
+  .level-item--picks {
+    max-width: 50%;
+  }
   .trade-dock__picks {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .trade-dock__giving,
@@ -250,6 +272,11 @@
 
   .trade-dock__action {
     text-align: right;
+    width: 100%;
+
+    .button {
+      vertical-align: middle;
+    }
 
     @media screen and (max-width: 769px) {
       display: flex;
@@ -268,11 +295,12 @@
           vertical-align: middle;
         }
       }
-
-      .is-primary {
-        flex: 2;
-      }
     }
+  }
+
+  .trade-dock__clear {
+    margin-left: 1rem;
+    vertical-align: middle;
   }
 
   .trade-dock__notifications {

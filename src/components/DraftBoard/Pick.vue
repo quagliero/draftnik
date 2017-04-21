@@ -2,12 +2,13 @@
   <td
     class="pick"
     :class="[{
+      'is-muted': isMuted,
       'is-selected' : isSelected,
       'is-available' : isAvailable,
       'is-receiving' : isReceiving,
       'is-giving' : isGiving,
       'is-player' : boardView === 'adp',
-    }, `pick--${playerPositionClass}` ]"
+    }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
   >
     <a
       class="pick__clickable"
@@ -21,6 +22,11 @@
       <div v-if="boardView === 'adp'" class="pick__player">
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
+        <div>
+          <span class="icon is-small">
+            <i class="fa fa-exchange" v-if="isGiving || isReceiving"></i>
+          </span>
+        </div>
       </div>
     </a>
   </td>
@@ -46,11 +52,16 @@
       ...mapGetters([
         'selectedTeam',
         'currentTrade',
+        'currentUser',
         'allUsers',
         'adp',
       ]),
       isSelected() {
         return this.pick.team === this.selectedTeam;
+      },
+      isMuted() {
+        return this.currentTrade.id && this.currentTrade.receivingPicks.length > 0 &&
+          !(this.isAvailable || this.isOwnPick);
       },
       isReceiving() {
         return this.currentTrade.id && this.currentTrade.receivingPicks.find(pick =>
@@ -64,6 +75,9 @@
       },
       isAvailable() {
         return this.pick.team === this.currentTrade.receivingTeam;
+      },
+      isOwnPick() {
+        return this.pick.team === this.currentTrade.givingTeam;
       },
       playerPositionClass() {
         if (this.boardView === 'adp') {
@@ -215,6 +229,10 @@
     border-top-color: $grey-dark;
     border-bottom-color: $grey-dark;
     color: white;
+  }
+
+  .is-muted {
+    opacity: 0.8;
   }
 
   .is-available {

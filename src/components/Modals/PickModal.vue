@@ -166,11 +166,12 @@
         this.$bus.$emit('pickModal.close');
       },
       handleAddPickClick() {
+        const receivingTeam = (this.team.id === this.currentUser.id) ? null : this.team.id;
         // business logic to ween out illegal picks
         this.addPickToTrade({
           id: this.currentTrade.id,
           givingTeam: this.currentUser.id,
-          receivingTeam: this.team.id,
+          receivingTeam,
           pick: this.selectedPick,
         });
         this.$bus.$emit('pickModal.close');
