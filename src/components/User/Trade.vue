@@ -1,9 +1,15 @@
 <template>
-  <div>
+  <div v-if="currentTrade">
     <trade-offer
       v-if="tradeStatus === TradeStatus.OFFERED"
       :trade="currentTrade"
     />
+  </div>
+  <div v-else>
+    <span class="icon">
+      <i class="fa fa-spin fa-spinner"></i>
+    </span>
+    Fetching trade details...
   </div>
 </template>
 

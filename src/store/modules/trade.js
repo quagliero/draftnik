@@ -9,7 +9,6 @@ import { TradeStatus } from '../../constants';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
-
   return {
     id: tradeProps.id,
     givingTeam: tradeProps.givingTeam,
