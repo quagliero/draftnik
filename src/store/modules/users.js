@@ -14,6 +14,7 @@ const getters = {
   allUsers: stateObj => stateObj.all,
   currentUser: stateObj => getUserById(stateObj.currentUser),
   isAdmin: stateObj => get(getUserById(stateObj.currentUser), 'isAdmin', false),
+  getUserById: stateObj => id => stateObj.all[id],
 };
 
 // actions

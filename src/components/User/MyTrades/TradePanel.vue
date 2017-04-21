@@ -44,7 +44,7 @@
     ],
     computed: {
       ...mapGetters([
-        'pickById',
+        'getPickById',
       ]),
       otherTeam() {
         return (this.userProposed) ? this.receivingTeam : this.givingTeam;
@@ -57,11 +57,11 @@
       },
       givingPicks() {
         const picks = (this.userProposed) ? this.trade.givingPicks : this.trade.receivingPicks;
-        return map(keys(picks), pick => this.pickById(pick));
+        return map(keys(picks), pick => this.getPickById(pick));
       },
       receivingPicks() {
         const picks = (this.userProposed) ? this.trade.receivingPicks : this.trade.givingPicks;
-        return map(keys(picks), pick => this.pickById(pick));
+        return map(keys(picks), pick => this.getPickById(pick));
       },
       userProposed() {
         return (this.trade.givingTeam === this.currentUser.id);
