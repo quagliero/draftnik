@@ -6,6 +6,7 @@
     <br/>
     <trade-details
       :trade="trade"
+      tense="past"
     />
     <trade-outcome
       status="is-success"

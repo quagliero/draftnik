@@ -1,6 +1,21 @@
 <template>
   <nav class="panel">
-    <p class="panel-heading">Picks</p>
+    <p class="panel-heading">
+      Picks
+      <button
+        class="button is-small pull-right"
+        @click="expanded = !expanded"
+      >
+        <span class="icon">
+          <i
+            :class="['fa', {
+              'fa-arrow-circle-up': expanded === true,
+              'fa-arrow-circle-down': expanded === false,
+            }]">
+          </i>
+        </span>
+      </button>
+    </p>
     <div class="panel-tabs">
       <a
         v-for="num in pickFilters"
@@ -12,7 +27,7 @@
     </div>
     <div
       v-for="pick in filteredPicks"
-      v-if="filteredPicks.length"
+      v-if="filteredPicks.length && expanded"
       class="panel-block"
     >
       <button
@@ -37,6 +52,7 @@
     name: 'my-picks',
     data() {
       return {
+        expanded: true,
         pickFilters: [0, 12, 24, 36, 50, 75, 100],
         selectedPickFilter: 0,
       };
@@ -59,6 +75,7 @@
         SELECT_PICK,
       ]),
       filterPickBy(num) {
+        this.expanded = true;
         this.selectedPickFilter = num;
         if (num === 0) {
           return this.picks;

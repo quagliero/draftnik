@@ -1,6 +1,21 @@
 <template>
   <nav class="panel">
-    <p class="panel-heading">Watchlist</p>
+    <p class="panel-heading">
+      Watchlist
+      <button
+        class="button is-small pull-right"
+        @click="expanded = !expanded"
+      >
+        <span class="icon">
+          <i
+            :class="['fa', {
+              'fa-arrow-circle-up': expanded === true,
+              'fa-arrow-circle-down': expanded === false,
+            }]">
+          </i>
+        </span>
+      </button>
+    </p>
     <p class="panel-tabs">
       <a
         v-for="pos in watchlistFilters"
@@ -12,10 +27,10 @@
     </p>
     <div
       v-for="player in filteredWatchlist"
-      v-if="filteredWatchlist.length"
+      v-if="expanded"
       class="panel-block"
     >
-      <div class="level">
+      <div class="level is-mobile">
         <div class="level-left">
           <button
             class="button is-white"
@@ -54,7 +69,7 @@
     name: 'my-watchlist',
     data() {
       return {
-        // filteredPicks: this.computedFilteredPicks,
+        expanded: true,
         watchlistFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
         selectedWatchlistFilter: 'All',
       };

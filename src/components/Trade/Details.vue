@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-mobile has-text-centered">
     <div class="column">
-      <h4 class="title is-4">You give</h4>
+      <h4 class="title is-4">You {{ tense === 'past' ? 'gave' : 'give' }}</h4>
       <ul>
         <li v-for="pick in givingPicks" style="margin-bottom: 0.5rem;">
           <span class="title is-5">
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="column">
-      <h4 class="title is-4">You get</h4>
+      <h4 class="title is-4">You {{ tense === 'past' ? 'got' : 'get' }}</h4>
       <ul>
         <li v-for="pick in receivingPicks" style="margin-bottom: 0.5rem;">
           <span class="title is-5">
@@ -35,7 +35,7 @@
 
   export default {
     name: 'trade-details',
-    props: ['trade'],
+    props: ['trade', 'tense'],
     computed: {
       ...mapGetters([
         'currentUser',

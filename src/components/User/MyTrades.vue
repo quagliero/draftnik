@@ -1,6 +1,21 @@
 <template>
   <div class="panel">
-    <p class="panel-heading">Trades</p>
+    <p class="panel-heading">
+      Trades
+      <button
+        class="button is-small pull-right"
+        @click="expanded = !expanded"
+      >
+        <span class="icon">
+          <i
+            :class="['fa', {
+              'fa-arrow-circle-up': expanded === true,
+              'fa-arrow-circle-down': expanded === false,
+            }]">
+          </i>
+        </span>
+      </button>
+    </p>
     <p class="panel-tabs">
       <a
         v-for="filter in tradeFilters"
@@ -32,6 +47,7 @@
     },
     data() {
       return {
+        expanded: true,
         tradeFilters: ['All', 'Open', 'Accepted', 'Rejected'],
         selectedTradeFilter: 'Open',
       };
