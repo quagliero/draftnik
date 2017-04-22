@@ -29,7 +29,7 @@
       "$draft": {
         "$trade": {
           ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists()",
-          ".read": "data.child('receivingTeam').val() === auth.uid || data.child('givingTeam').val() === auth.uid",
+          ".read": "data.child('receivingTeam').val() === auth.uid || data.child('givingTeam').val() === auth.uid"
         }
       }
     },
@@ -39,8 +39,7 @@
           ".read": "$uid === auth.uid",
           ".write": "!data.exists() && $uid === auth.uid",
           "$trade": {
-            ".write": "root.child('trades').child($draft).child($trade).child('receivingTeam').val() === auth.uid ||
-            root.child('trades').child($draft).child($trade).child('givingTeam').val() === auth.uid"
+            ".write": "root.child('trades').child($draft).child($trade).child('receivingTeam').val() === auth.uid || root.child('trades').child($draft).child($trade).child('givingTeam').val() === auth.uid"
           }
         }
       }
@@ -49,7 +48,7 @@
       ".read": true,
       "$draft": {
         "$trade": {
-          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists() && !data.exists()",
+          ".write": "root.child('drafts').child($draft).child('teams').child(auth.uid).exists() && !data.exists()"
         }
       }
     }
