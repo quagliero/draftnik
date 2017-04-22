@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DraftBoardView from '../views/DraftBoardView.vue';
+import TradesView from '../views/TradesView.vue';
 import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
 import UserHome from '../components/User/Home.vue';
@@ -39,6 +40,11 @@ const router = new Router({
       name: 'board',
       path: '/board',
       component: DraftBoardView,
+    },
+    {
+      name: 'trades',
+      path: '/trades',
+      component: TradesView,
     },
     {
       path: '/login',
