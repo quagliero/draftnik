@@ -19,8 +19,10 @@ const actions = {
     // pick values are static snapshot of 3rd party data so do not waste time and resource
     // fetching them over and over and over and over
     if (!(state.bayesian.length)) {
-      api.getPickValuesBayesian(response => {
+      api.getPickValuesBayesian().then(response => {
         commit(types.RECEIVE_PICK_VALUES_BAYESIAN, { response });
+      }).catch(error => {
+        console.error(error);
       });
     }
   },

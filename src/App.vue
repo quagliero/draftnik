@@ -1,14 +1,9 @@
 <template>
   <div id="app">
-    <site-header></site-header>
-    <router-view @onPickClick="showPickModal = true"></router-view>
-    <trade-dock @onDockPickClick="showPickModal = true"></trade-dock>
-    <transition name="fade">
-      <pick-modal
-        v-if="showPickModal"
-        @close="showPickModal = false"
-      />
-    </transition>
+    <site-header/>
+    <router-view/>
+    <trade-dock/>
+    <pick-modal/>
   </div>
 </template>
 
@@ -55,17 +50,20 @@ export default {
 @import "~bulma/elements/title";
 @import "~bulma/elements/icon";
 @import "~bulma/elements/content";
+@import "~bulma/elements/tag";
 @import "~bulma/elements/form";
 @import "~bulma/elements/notification";
+@import "~bulma/elements/other";
 @import "~bulma/components/nav";
 @import "~bulma/components/panel";
 @import "~bulma/components/level";
+@import "~bulma/components/message";
 
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: $text;
+  padding-bottom: 100px;
 }
 
 </style>

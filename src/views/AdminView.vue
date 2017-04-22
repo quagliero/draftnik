@@ -50,7 +50,6 @@
                     <button
                       type="submit"
                       class="is-pulled-right button is-medium is-primary"
-                      disabled
                     >
                       Save
                     </button>
@@ -80,6 +79,7 @@
     computed: {
       ...mapGetters([
         'currentUser',
+        'currentDraft',
         'allUsers',
       ]),
     },
@@ -109,7 +109,8 @@
         }
 
         // clear DB first
-        db.ref('/drafts/2017/picks').set(null);
+        const urlBase = `/drafts/${this.currentDraft.id}/picks`;
+        db.ref(urlBase).set(null);
 
         // loop through rounds and map and save each pick
         const snakeTeams = this.draftOrder.slice(0).reverse();
@@ -122,7 +123,9 @@
           // eslint-disable-next-line
           teamsArray.forEach((team, p) => {
             overall += 1;
-            db.ref('/drafts/2017/picks/').push({
+            const pickKey = db.ref(urlBase).push().key;
+            db.ref(`${urlBase}/${pickKey}`).set({
+              id: pickKey,
               overall,
               round: r,
               pickInRound: p + 1,

@@ -1,8 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DraftBoardView from '../views/DraftBoardView.vue';
+import TradesView from '../views/TradesView.vue';
 import LoginView from '../views/LoginView.vue';
 import UserView from '../views/UserView.vue';
+import UserHome from '../components/User/Home.vue';
+import UserTrade from '../components/User/Trade.vue';
 import PasswordResetView from '../views/PasswordResetView.vue';
 import AdminView from '../views/AdminView.vue';
 import store from '../store';
@@ -39,18 +42,25 @@ const router = new Router({
       component: DraftBoardView,
     },
     {
+      name: 'trades',
+      path: '/trades',
+      component: TradesView,
+    },
+    {
       path: '/login',
       name: 'login',
       component: LoginView,
       beforeEnter: (to, from, next) => {
         // check if user is logged in, if so, redirect
         //  - basically a one-off inverse of checkAuth
-        if (store.state.auth.authenticated === null) {
+        if (store.state.auth.authenticated == null) {
           store.watch(
             (state) => state.auth.authenticated,
             (value) => {
               if (value === true) {
                 next('me');
+              } else {
+                next();
               }
             },
           );
@@ -67,19 +77,31 @@ const router = new Router({
       component: PasswordResetView,
     },
     {
-      name: 'me',
-      path: '/my-draft',
+      path: '/war-room',
       component: UserView,
       beforeEnter: (to, from, next) => {
         checkAuth(to, from, next);
       },
+      children: [
+        {
+          name: 'me',
+          path: '',
+          component: UserHome,
+        },
+        {
+          name: 'trade',
+          path: 'trades/:id',
+          component: UserTrade,
+          props: true,
+        },
+      ],
     },
     {
       name: 'admin',
       path: '/admin',
       component: AdminView,
       beforeEnter: (to, from, next) => {
-        if (store.state.users.currentUser.isAdmin === true) {
+        if (store.getters.isAdmin === true) {
           next();
         } else {
           next('login');

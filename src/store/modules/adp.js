@@ -20,7 +20,7 @@ const actions = {
   getAdp({ commit }) {
     // adps change daily, so in the future compare a timestamp and only update if they differ
     if (!(state.all.length)) {
-      api.getAdp(response => {
+      api.getAdp().then(response => {
         commit(types.RECEIVE_ADP, { response });
       });
     }

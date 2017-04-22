@@ -2,7 +2,7 @@ import * as types from '../mutations';
 
 // initial state
 const state = {
-  all: [],
+  all: {},
   selectedTeam: null,
 };
 

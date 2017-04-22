@@ -4,7 +4,7 @@ import * as types from '../mutations';
 
 // initial state
 const state = {
-  all: {},
+  all: null,
   timestap: null,
 };
 
@@ -16,11 +16,11 @@ const getters = {
 // actions
 const actions = {
   getPlayers({ commit }) {
-    // players are static (right now, anyway) so do not waste time and resource
-    // fetching them over and over and over and over
-    if (!(state.all.length)) {
-      api.getPlayers(response => {
+    if (state.all == null) {
+      api.getPlayers().then(response => {
         commit(types.RECEIVE_PLAYERS, { response });
+      }).catch(error => {
+        console.error(error);
       });
     }
   },

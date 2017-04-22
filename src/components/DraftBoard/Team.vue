@@ -7,7 +7,7 @@
     }"
     @click="handleClick(teamId)"
   >
-    <b>{{ team.displayName }}</b>
+    <strong class="team__name">{{ team.teamName }}</strong>
   </th>
 </template>
 
@@ -55,6 +55,7 @@
   .team {
     cursor: pointer;
     min-width: 100px;
+    vertical-align: middle;
     background-color: $grey-lighter;
     border-left: 2px solid $white-ter;
     border-right: 2px solid $white-ter;
@@ -66,6 +67,15 @@
       background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
       border-color 0.2s ease-in-out;
+  }
+
+  .team__name {
+    display: block;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 100%;
+    color: inherit;
   }
 
   .is-adp-view {

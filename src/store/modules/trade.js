@@ -1,8 +1,14 @@
+import keys from 'lodash/keys';
+import map from 'lodash/map';
+import filter from 'lodash/filter';
+import some from 'lodash/some';
 import * as types from '../mutations';
+import api from '../../api';
+import { db } from '../../database';
+import { TradeStatus } from '../../constants';
 
 // eslint-disable-next-line
 const Trade = (tradeProps) => {
-
   return {
     id: tradeProps.id,
     givingTeam: tradeProps.givingTeam,
@@ -15,13 +21,16 @@ const Trade = (tradeProps) => {
 // initial state
 const state = {
   current: {},
-  savedTrades: [],
+  userTrades: {},
+  acceptedTrades: {},
 };
 
 // getters
 const getters = {
   currentTrade: stateObj => stateObj.current,
-  savedTrades: stateObj => stateObj.savedTrades,
+  userTrades: stateObj => stateObj.userTrades,
+  acceptedTrades: stateObj => stateObj.acceptedTrades,
+  getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
 
 // actions
@@ -77,9 +86,117 @@ const actions = {
       }
     }
   },
-  getSavedTrades({ commit }) {
-    const savedTrades = JSON.parse(window.localStorage.getItem('draftnik_saved_trades')) || [];
-    commit(types.RECEIVE_TRADES, { savedTrades });
+  getAcceptedTrades({ commit }, { draft }) {
+    api.getAcceptedTrades(draft, (acceptedTrades) => {
+      const tradeIds = keys(acceptedTrades);
+      Promise.all(
+        tradeIds.map((id) => api.getTrade({ draft, id }).then((snapshot) => snapshot.val())),
+      ).then((trades) => {
+        commit(types.RECEIVE_ACCEPTED_TRADES, trades);
+      });
+    });
+  },
+  getUserTrades({ commit }, data) {
+    api.getUserTrades(data.draft, data.user, userTrades => {
+      const tradeIds = keys(userTrades);
+      const ref = db.ref(`trades/${data.draft}`);
+      const trades = {};
+
+      Promise.all(
+        tradeIds.map((id) => new Promise((resolve) => {
+          ref.child(id).on('value', trade => {
+            trades[id] = trade.val();
+            resolve();
+          });
+        })),
+      ).then(() => {
+        commit(types.RECEIVE_USER_TRADES, trades);
+      });
+    });
+  },
+  proposeTrade({ commit }, { trade, draft }) {
+    const tradeKey = db.ref('trades').push().key;
+    const users = [trade.givingTeam, trade.receivingTeam];
+
+    return new Promise((resolve, reject) => {
+      api.proposeTrade(draft, trade, tradeKey).then(() => {
+        Promise.all(
+          users.map(user => api.addTradeToUser(draft, user, tradeKey)),
+        ).then(() => {
+          commit(types.PROPOSED_TRADE, tradeKey);
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    });
+  },
+  rejectTrade({ commit }, { trade, draft }) {
+    api.rejectTrade({ trade, draft }).then(() => {
+      commit(types.REJECTED_TRADE, trade);
+    }).catch(error => {
+      console.error(error);
+    });
+  },
+  withdrawTrade({ commit }, { trade, draft }) {
+    api.withdrawTrade({ trade, draft }).then(() => {
+      commit(types.WITHDRAWN_TRADE, trade);
+    }).catch(error => {
+      console.error(error);
+    });
+  },
+  acceptTrade({ commit }, payload) {
+    const {
+      trade,
+      draft,
+      givingTeam,
+      givingPicks,
+      receivingTeam,
+      receivingPicks,
+    } = payload;
+
+    api.acceptTrade({ trade, draft }).then(() => {
+      Promise.all([
+        api.addTradeToAccepted({ trade, draft }),
+        ...map(keys(givingPicks), (pick) => api.changePickOwner({
+          pick,
+          draft,
+          team: receivingTeam,
+        })),
+        ...map(keys(receivingPicks), (pick) => api.changePickOwner({
+          pick,
+          draft,
+          team: givingTeam,
+        })),
+      ]).then(() => {
+        // mark as accepted
+        commit(types.ACCEPTED_TRADE, trade);
+        // tidy up any potential conflicting open offers
+        const openOffers = filter(state.userTrades, (userTrade) => {
+          if (userTrade.id !== trade && userTrade.status === TradeStatus.OFFERED) {
+            return true;
+          }
+          return false;
+        });
+
+        Promise.all([
+          ...map(openOffers, (offer) => {
+            if (some([
+              some(keys(offer.givingPicks), pick => givingPicks[pick]),
+              some(keys(offer.receivingPicks), pick => givingPicks[pick]),
+              some(keys(offer.givingPicks), pick => receivingPicks[pick]),
+              some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
+            ])) {
+              return api.withdrawTrade({ trade: offer.id, draft });
+            }
+
+            return null;
+          }),
+        ]);
+      }).catch((error) => {
+        console.error(error);
+      });
+    });
   },
 };
 
@@ -87,9 +204,6 @@ const actions = {
 const mutations = {
   [types.SELECT_GIVING_TEAM](stateObj, userId) {
     stateObj.givingTeam = userId;
-  },
-  [types.RECEIVE_TRADES](stateObj, { savedTrades }) {
-    stateObj.savedTrades = savedTrades;
   },
   [types.ADD_GIVING_TEAM_PICK](stateObj, pick) {
     stateObj.current.givingPicks.push(pick);
@@ -107,7 +221,6 @@ const mutations = {
       p.overall !== pick.overall,
     );
   },
-  // eslint-disable-next-line no-unused-vars
   [types.CLEAR_TRADE](stateObj) {
     stateObj.current = {};
   },
@@ -123,10 +236,30 @@ const mutations = {
   [types.LOAD_TRADE](stateObj, { trade }) {
     stateObj.current = trade;
   },
+  [types.RECEIVE_ACCEPTED_TRADES](stateObj, acceptedTrades) {
+    stateObj.acceptedTrades = acceptedTrades;
+  },
+  [types.RECEIVE_USER_TRADES](stateObj, trades) {
+    stateObj.userTrades = trades;
+  },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
-
-    window.localStorage.set('draftnik_saved_trades', stateObj.savedTrades);
+  },
+  [types.PROPOSED_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.REJECTED_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.WITHDRAWN_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.ACCEPTED_TRADE](stateObj, trade) {
+    console.log(trade);
+  },
+  [types.DESTROY_SESSION](stateObj) {
+    stateObj.userTrades = [];
+    stateObj.current = {};
   },
 };
 

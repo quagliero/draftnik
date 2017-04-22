@@ -11,8 +11,13 @@
       @click="isOpen = !isOpen"
     >
       <router-link :to="{ name: 'board' }" class="nav-item is-tab">Board</router-link>
-      <router-link :to="{ name: 'me' }" class="nav-item is-tab">My Draft</router-link>
-      <!-- <router-link to="/trades" class="nav-item is-tab">Trades</router-link> -->
+      <router-link :to="{ name: 'me' }" class="nav-item is-tab">War Room</router-link>
+      <router-link :to="{ name: 'trades' }" class="nav-item is-tab">
+        <span class="icon is-small" style="margin-right: 0.5rem;">
+          <i class="fa fa-handshake-o"></i>
+        </span>
+        <span>Trades</span>
+      </router-link>
       <router-link
         v-if="authenticated && isAdmin === true"
         :to="{ name: 'admin' }"

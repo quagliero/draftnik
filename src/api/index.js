@@ -1,66 +1,111 @@
 import axios from 'axios';
 import { auth, db } from '../database';
+import { TradeStatus } from '../constants';
+
+const listenForValueEvents = (url, cb) => {
+  db.ref(url).on('value', snapshot => {
+    cb(snapshot.val());
+  });
+};
 
 export default {
-  login(credentials, cb) {
-    auth.signInWithEmailAndPassword(
+  login(credentials) {
+    return auth.signInWithEmailAndPassword(
       credentials.email,
       credentials.password,
-    ).catch((error) => {
-      cb(error);
-    });
-  },
-  logout(cb) {
-    auth.signOut().then(
-      response => cb(response),
     );
   },
-  resetPassword(email, cb) {
-    auth.sendPasswordResetEmail(email).then(() => {
-      cb(email);
+  logout() {
+    return auth.signOut();
+  },
+  resetPassword(email) {
+    return auth.sendPasswordResetEmail(email);
+  },
+  getUsers() {
+    return db.ref('users').once('value');
+  },
+  getDrafts() {
+    return db.ref('drafts').once('value');
+  },
+  getWatchlist(draft, user, cb) {
+    listenForValueEvents(`watchlists/${draft}/${user}/`, cb);
+  },
+  addToWatchlist(draft, user, player) {
+    return db.ref(`watchlists/${draft}/${user}/${player.id}`).set(true);
+  },
+  removeFromWatchlist(draft, user, player) {
+    return db.ref(`watchlists/${draft}/${user}/${player.id}`).set(null);
+  },
+  getAcceptedTrades(draft, cb) {
+    listenForValueEvents(`tradesAccepted/${draft}`, cb);
+  },
+  getTrade({ draft, id }) {
+    return db.ref(`trades/${draft}/${id}`).once('value');
+  },
+  getUserTrades(draft, user, cb) {
+    listenForValueEvents(`tradesUsersPivot/${draft}/${user}`, cb);
+  },
+  proposeTrade(draft, trade, tradeKey) {
+    // create references to this trade on the user first
+    // so we can use firebase rules to restrict access
+    return db.ref(`trades/${draft}/${tradeKey}`).set({
+      id: tradeKey,
+      givingTeam: trade.givingTeam,
+      receivingTeam: trade.receivingTeam,
+      givingPicks: trade.givingPicks,
+      receivingPicks: trade.receivingPicks,
+      status: TradeStatus.OFFERED,
+      seen: false,
+    });
+  },
+  addTradeToUser(draft, user, tradeKey) {
+    return db.ref(`tradesUsersPivot/${draft}/${user}/${tradeKey}`).set(true);
+  },
+  rejectTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.REJECTED,
+    });
+  },
+  withdrawTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.WITHDRAWN,
+    });
+  },
+  acceptTrade({ draft, trade }) {
+    return db.ref(`trades/${draft}/${trade}`).update({
+      status: TradeStatus.ACCEPTED,
+    });
+  },
+  addTradeToAccepted({ draft, trade }) {
+    return db.ref(`tradesAccepted/${draft}/${trade}`).set(true);
+  },
+  changePickOwner({ draft, pick, team }) {
+    return db.ref(`drafts/${draft}/picks/${pick}/team`).set(team);
+  },
+  counterTrade(draft, trade, cb) {
+    const tradeKey = db.ref('trades').push().key;
+    db.ref(`trades/${draft}/${tradeKey}`).set({
+      id: tradeKey,
+      givingTeam: trade.givingTeam,
+      receivingTeam: trade.receivingTeam,
+      givingPicks: trade.givingPicks,
+      receivingPicks: trade.receivingPicks,
+      status: TradeStatus.OFFERED,
+      seen: false,
+      counters: trade.id,
     }, (err) => {
-      cb(err);
-    });
-  },
-  getUsers(cb, error) {
-    db.ref('users').once('value', (snapshot) => {
-      cb(snapshot.val());
-    }, err => error(err));
-  },
-  getDrafts(cb) {
-    db.ref('drafts').once('value', (snapshot) => {
-      cb(snapshot.val());
-    });
-  },
-  getWatchlist(user, cb) {
-    db.ref(`watchlists/${user}`).on('value', (snapshot) => {
-      cb(snapshot.val());
-    });
-  },
-  addToWatchlist(user, player, cb) {
-    db.ref(`watchlists/${user}/${player.id}`).set(true, (err) => {
       if (!err) {
-        cb(player);
+        cb(trade);
       }
     });
   },
-  removeFromWatchlist(user, player, cb) {
-    db.ref(`watchlists/${user}/${player.id}`).set(null, (err) => {
-      if (!err) {
-        cb(player);
-      }
-    });
+  getPickValuesBayesian() {
+    return axios.get('/static/data/pick-values-bayesian.json');
   },
-  getPickValuesBayesian(cb) {
-    axios.get('/static/data/pick-values-bayesian.json')
-    .then(response => cb(response));
+  getPlayers() {
+    return axios.get('/static/data/players.json');
   },
-  getPlayers(cb) {
-    axios.get('/static/data/players.json')
-    .then(response => cb(response));
-  },
-  getAdp(cb) {
-    axios.get('/static/data/adp.json')
-    .then(response => cb(response));
+  getAdp() {
+    return axios.get('/static/data/adp.json');
   },
 };

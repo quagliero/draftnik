@@ -1,56 +1,40 @@
+import get from 'lodash/get';
 import api from '../../api';
 import * as types from '../mutations';
+import { getUserById } from '../../utils';
 
 // initial state
 const state = {
-  all: {},
-  currentUser: {},
-  watchlist: {},
+  all: null,
+  currentUser: null,
 };
 
 // getters
 const getters = {
   allUsers: stateObj => stateObj.all,
-  currentUser: stateObj => stateObj.currentUser,
-  isAdmin: stateObj => stateObj.currentUser.isAdmin === true,
-  watchlist: stateObj => stateObj.watchlist,
+  currentUser: stateObj => getUserById(stateObj.currentUser),
+  isAdmin: stateObj => get(getUserById(stateObj.currentUser), 'isAdmin', false),
+  getUserById: stateObj => id => stateObj.all[id],
 };
 
 // actions
 const actions = {
   getUsers({ commit }) {
     return new Promise((resolve, reject) => {
-      api.getUsers(
-        (response) => {
-          commit(types.RECEIVE_USERS, response);
+      if (state.all === null) {
+        api.getUsers()
+        .then(snapshot => {
+          commit(types.RECEIVE_USERS, snapshot.val());
           resolve();
-        },
-        (response) => reject(response),
-      );
+        })
+        .catch(error => {
+          console.log(error);
+          reject();
+        });
+      } else {
+        resolve();
+      }
     });
-  },
-  getWatchlist({ commit }) {
-    api.getWatchlist(state.currentUser.id, (response) => {
-      commit(types.RECEIVE_WATCHLIST, response);
-    });
-  },
-  addToWatchlist({ commit }, player) {
-    api.addToWatchlist(
-      state.currentUser.id,
-      player,
-      (response) => {
-        commit(types.ADDED_TO_WATCHLIST, response);
-      },
-    );
-  },
-  removeFromWatchlist({ commit }, player) {
-    api.removeFromWatchlist(
-      state.currentUser.id,
-      player,
-      (response) => {
-        commit(types.REMOVED_FROM_WATCHLIST, response);
-      },
-    );
   },
 };
 
@@ -60,19 +44,25 @@ const mutations = {
     stateObj.all = users;
   },
   [types.CREATE_SESSION](stateObj, { user }) {
-    stateObj.currentUser = stateObj.all[user.uid];
+    stateObj.currentUser = user.uid;
+  },
+  [types.DESTROY_SESSION](stateObj) {
+    stateObj.currentUser = null;
+    stateObj.watchlist = {};
+  },
+  [types.INVALID_SESSION](stateObj) {
+    stateObj.currentUser = null;
+    stateObj.watchlist = {};
   },
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
     stateObj.watchlist = watchlist;
   },
-  /*
-  [types.ADDED_TO_WATCHLIST](stateObj, player) {
-    //@TODO notify user? not sure as list autoupdates from firebase
-  },
-  [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
-    //@TODO notify user? not sure as list autoupdates from firebase
-  },
-  */
+  // [types.ADDED_TO_WATCHLIST](stateObj, player) {
+  //   console.log(player);
+  // },
+  // [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
+  //   console.log(player);
+  // },
 };
 
 export default {

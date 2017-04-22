@@ -1,5 +1,9 @@
+import get from 'lodash/get';
+import reduce from 'lodash/reduce';
 import store from '../store';
-import { calculateDoddsTradeValue } from './dodds-calculator';
+import doddsCalculator from './dodds-calculator';
+
+export const calculateDoddsTradeValue = doddsCalculator;
 
 export const roundPicksMap = (picks) => {
   const map = {};
@@ -29,7 +33,9 @@ export const roundPicksMap = (picks) => {
   return map;
 };
 
-export const getTeamById = (id) => store.getters.allUsers[id];
+export const getTeamById = (id) => get(store.getters.allUsers, id, {});
+
+export const getUserById = getTeamById;
 
 export const getPickValue = (pickNumber) => {
   const pick = store.getters.bayesianValues.find(p => p.overall === pickNumber);
@@ -45,11 +51,12 @@ export const getPlayerById = (playerId) => store.getters.players[playerId];
  */
 export const formatPlayerName = (name) => name.split(', ').reverse().join(' ');
 
-export const getPlayersInRange = (pick) => {
-  pick = (pick >= 2) ? pick : 2;
+export const getPlayersInRange = (pick, range) => {
+  range = range || 2;
+  pick = (pick >= range) ? pick : range;
   // map players by IDs and find the 3 players around the current pick in the format
   // n-1, n, n+1
-  const adpChunk = store.getters.adp.slice(pick - 2, pick + 2);
+  const adpChunk = store.getters.adp.slice(pick - range, pick + range);
 
   // format it
   return adpChunk.map(p => getPlayerById(p.id));
@@ -57,7 +64,7 @@ export const getPlayersInRange = (pick) => {
 
 export const calculateBayesianTradeValue = (trade) => {
   function getTotal(picks) {
-    return picks.reduce((total, pick) => {
+    return reduce(picks, (total, pick) => {
       const bayesianPick = store.getters.bayesianValues.find(p => p.overall === pick.overall);
       return total + bayesianPick.value;
     }, 0);
@@ -88,5 +95,6 @@ export default {
   getTeamById,
   getPickValue,
   getPlayersInRange,
+  calculateBayesianTradeValue,
   calculateDoddsTradeValue,
 };

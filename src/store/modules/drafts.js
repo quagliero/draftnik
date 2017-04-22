@@ -6,8 +6,8 @@ import { roundPicksMap } from '../../utils';
 
 // initial state
 const state = {
-  all: [],
-  selectedDraft: {},
+  all: null,
+  currentDraft: {},
   selectedPick: {},
   picksByRound: {},
   order: {},
@@ -16,27 +16,36 @@ const state = {
 // getters
 const getters = {
   allDrafts: stateObj => stateObj.all,
-  selectedDraft: stateObj => stateObj.selectedDraft,
-  picks: stateObj => stateObj.selectedDraft.picks,
-  picksArray: stateObj => toArray(stateObj.selectedDraft.picks).sort(
+  currentDraft: stateObj => stateObj.currentDraft,
+  picks: stateObj => stateObj.currentDraft.picks,
+  picksArray: stateObj => toArray(stateObj.currentDraft.picks).sort(
     (a, b) => a.overall - b.overall,
   ),
   draftOrder: stateObj => stateObj.order,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
-  picksByTeam: stateObj => (team) => filter(stateObj.selectedDraft.picks, (p) => p.team === team),
+  picksByTeam: stateObj => (team) => filter(stateObj.currentDraft.picks, (p) => p.team === team),
+  getPickById: stateObj => (pickId) => stateObj.currentDraft.picks[pickId],
 };
 
 // actions
 const actions = {
   getDrafts({ commit }) {
     // once we have them, don't bother again
-    if (!(state.all.length)) {
-      api.getDrafts((response) => {
-        commit(types.RECEIVE_DRAFTS, response);
-        commit(types.MAP_PICKS);
-      });
-    }
+    return new Promise((resolve, reject) => {
+      if (state.all === null) {
+        api.getDrafts().then(snapshot => {
+          commit(types.RECEIVE_DRAFTS, snapshot.val());
+          commit(types.MAP_PICKS);
+          resolve();
+        }).catch(err => {
+          console.log(err);
+          reject();
+        });
+      } else {
+        resolve();
+      }
+    });
   },
 };
 
@@ -44,18 +53,18 @@ const actions = {
 const mutations = {
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
-    stateObj.selectedDraft = response[Object.keys(response)[0]];
-    stateObj.order = stateObj.selectedDraft.order.filter(a => a);
+    stateObj.currentDraft = response[Object.keys(response)[0]];
+    stateObj.order = stateObj.currentDraft.order.filter(a => a);
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;
   },
   [types.SELECT_DRAFT](stateObj, { draftId }) {
-    stateObj.selectedDraft = draftId;
+    stateObj.currentDraft = draftId;
   },
   [types.MAP_PICKS](stateObj) {
     stateObj.picksByRound = roundPicksMap(
-      stateObj.selectedDraft.picks,
+      stateObj.currentDraft.picks,
     );
   },
 };

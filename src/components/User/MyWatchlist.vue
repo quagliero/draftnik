@@ -1,16 +1,21 @@
 <template>
   <nav class="panel">
     <p class="panel-heading">
-      My Watchlist
-    </p>
-    <!-- <div class="panel-block">
-      <p class="control has-icon">
-        <input class="input is-small" type="text" placeholder="Search">
-        <span class="icon is-small">
-          <i class="fa fa-search"></i>
+      Watchlist
+      <button
+        class="button is-small pull-right"
+        @click="expanded = !expanded"
+      >
+        <span class="icon">
+          <i
+            :class="['fa', {
+              'fa-arrow-circle-up': expanded === true,
+              'fa-arrow-circle-down': expanded === false,
+            }]">
+          </i>
         </span>
-      </p>
-    </div> -->
+      </button>
+    </p>
     <p class="panel-tabs">
       <a
         v-for="pos in watchlistFilters"
@@ -22,10 +27,10 @@
     </p>
     <div
       v-for="player in filteredWatchlist"
-      v-if="filteredWatchlist.length"
+      v-if="expanded"
       class="panel-block"
     >
-      <div class="level">
+      <div class="level is-mobile">
         <div class="level-left">
           <button
             class="button is-white"
@@ -38,7 +43,6 @@
           </button>
         </div>
         <div class="level-right">
-          <!-- @click="addToWatchlistClick(player)" -->
           <button
             class="button is-small is-danger"
             @click="removeFromWatchlistClick(player)"
@@ -65,7 +69,7 @@
     name: 'my-watchlist',
     data() {
       return {
-        // filteredPicks: this.computedFilteredPicks,
+        expanded: true,
         watchlistFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
         selectedWatchlistFilter: 'All',
       };
@@ -76,6 +80,8 @@
         'adp',
         'watchlist',
         'picksArray',
+        'currentUser',
+        'currentDraft',
       ]),
       filteredWatchlist() {
         return this.filterWatchlistBy(this.selectedWatchlistFilter);
@@ -102,10 +108,18 @@
         return filter(this.watchlistPlayers, (p) => p.position === pos);
       },
       addToWatchlistClick(player) {
-        this.addToWatchlist(player);
+        this.addToWatchlist({
+          player,
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       },
       removeFromWatchlistClick(player) {
-        this.removeFromWatchlist(player);
+        this.removeFromWatchlist({
+          player,
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       },
       onPlayerClick(player) {
         const adpSlot = findIndex(this.adp, (pick) => pick.id === player.id);
@@ -119,11 +133,16 @@
         }
 
         this.SELECT_PICK({ pick });
-        this.$emit('onPickClick', pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
     created() {
-      this.$store.dispatch('getWatchlist');
+      this.$store.dispatch('getDrafts').then(() => {
+        this.$store.dispatch('getWatchlist', {
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
+      });
     },
   };
 </script>

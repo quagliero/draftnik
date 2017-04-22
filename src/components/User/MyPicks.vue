@@ -1,28 +1,33 @@
 <template>
   <nav class="panel">
     <p class="panel-heading">
-      My picks
-    </p>
-    <!-- <div class="panel-block">
-      <p class="control has-icon">
-        <input class="input is-small" type="text" placeholder="Search">
-        <span class="icon is-small">
-          <i class="fa fa-search"></i>
+      Picks
+      <button
+        class="button is-small pull-right"
+        @click="expanded = !expanded"
+      >
+        <span class="icon">
+          <i
+            :class="['fa', {
+              'fa-arrow-circle-up': expanded === true,
+              'fa-arrow-circle-down': expanded === false,
+            }]">
+          </i>
         </span>
-      </p>
-    </div> -->
+      </button>
+    </p>
     <div class="panel-tabs">
       <a
         v-for="num in pickFilters"
         @click="filterPickBy(num)"
         :class="{ 'is-active' : selectedPickFilter === num }"
       >
-        {{ num === 0 ? 'All' : `Top ${num}` }}
+        {{ num === 0 ? 'All' : `${num}` }}
       </a>
     </div>
     <div
       v-for="pick in filteredPicks"
-      v-if="filteredPicks.length"
+      v-if="filteredPicks.length && expanded"
       class="panel-block"
     >
       <button
@@ -35,36 +40,20 @@
         #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
       </button>
     </div>
-    <!-- <a
-      v-for="pick in filteredPicks"
-      v-if="filteredPicks !== null"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fa fa-chevron-right"></i>
-      </span>
-      #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
-    </a> -->
-    <!-- <div class="panel-block">
-      <button class="button is-primary is-outlined is-fullwidth">
-        Reset all filters
-      </button>
-    </div> -->
   </nav>
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
+  import { mapMutations, mapGetters } from 'vuex';
   import filter from 'lodash/filter';
   import { SELECT_PICK } from '../../store/mutations';
 
   export default {
     name: 'my-picks',
-    props: ['picks'],
     data() {
       return {
-        // filteredPicks: this.computedFilteredPicks,
-        pickFilters: [0, 12, 24, 36, 50, 75],
+        expanded: true,
+        pickFilters: [0, 12, 24, 36, 50, 75, 100],
         selectedPickFilter: 0,
       };
     },
@@ -72,12 +61,21 @@
       filteredPicks() {
         return this.filterPickBy(this.selectedPickFilter);
       },
+      ...mapGetters([
+        'currentUser',
+        'currentDraft',
+        'picksByTeam',
+      ]),
+      picks() {
+        return this.picksByTeam(this.currentUser.id);
+      },
     },
     methods: {
       ...mapMutations([
         SELECT_PICK,
       ]),
       filterPickBy(num) {
+        this.expanded = true;
         this.selectedPickFilter = num;
         if (num === 0) {
           return this.picks;
@@ -87,7 +85,7 @@
       },
       onPickClick(pick) {
         this.SELECT_PICK({ pick });
-        this.$emit('onPickClick', pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
   };

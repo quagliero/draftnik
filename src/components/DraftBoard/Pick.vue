@@ -2,12 +2,13 @@
   <td
     class="pick"
     :class="[{
+      'is-muted': isMuted,
       'is-selected' : isSelected,
       'is-available' : isAvailable,
       'is-receiving' : isReceiving,
       'is-giving' : isGiving,
       'is-player' : boardView === 'adp',
-    }, `pick--${playerPositionClass}` ]"
+    }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
   >
     <a
       class="pick__clickable"
@@ -17,11 +18,15 @@
         <b class="pick__overall">{{ pick.overall }}</b>
         <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
       </div>
-      <!-- <div class="pick__team">{{ teamInfo.displayName }}</div> -->
       <div v-if="boardView === 'adp'" class="pick__player">
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
       </div>
+        <transition name="name-fade">
+          <div class="pick__team" v-if="!isSelected">
+            <span class="tag is-white">{{ teamInfo.displayName }}</span>
+          </div>
+        </transition>
     </a>
   </td>
 </template>
@@ -46,11 +51,16 @@
       ...mapGetters([
         'selectedTeam',
         'currentTrade',
+        'currentUser',
         'allUsers',
         'adp',
       ]),
       isSelected() {
         return this.pick.team === this.selectedTeam;
+      },
+      isMuted() {
+        return this.currentTrade.id && this.currentTrade.receivingPicks.length > 0 &&
+          !(this.isAvailable || this.isOwnPick);
       },
       isReceiving() {
         return this.currentTrade.id && this.currentTrade.receivingPicks.find(pick =>
@@ -64,6 +74,9 @@
       },
       isAvailable() {
         return this.pick.team === this.currentTrade.receivingTeam;
+      },
+      isOwnPick() {
+        return this.pick.team === this.currentTrade.givingTeam;
       },
       playerPositionClass() {
         if (this.boardView === 'adp') {
@@ -113,7 +126,7 @@
       }),
       onPickClick() {
         this.SELECT_PICK({ pick: this.pick });
-        this.$emit('onPickClick', this.pick);
+        this.$bus.$emit('pickModal.open');
       },
     },
   };
@@ -210,17 +223,21 @@
     }
   }
 
-  .is-selected {
-    background-color: $grey-dark;
-    border-top-color: $grey-dark;
-    border-bottom-color: $grey-dark;
-    color: white;
+  .is-muted {
+    opacity: 0.7;
   }
 
   .is-available {
     background-color: $white-ter;
     border-color: $white-ter;
     color: $grey-darker;
+  }
+
+  .is-selected {
+    background-color: $grey-dark;
+    border-top-color: $grey-dark;
+    border-bottom-color: $grey-dark;
+    color: white;
   }
 
   .is-receiving,
@@ -240,5 +257,13 @@
     background-color: $yellow;
     border-color: $yellow;
     color: $grey-darker;
+  }
+
+  .name-fade-enter-active, .name-fade-leave-active {
+    transition: opacity .2s ease-in-out;
+  }
+
+  .name-fade-enter, .name-fade-leave-active {
+    opacity: 0;
   }
 </style>

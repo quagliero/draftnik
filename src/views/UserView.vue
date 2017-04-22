@@ -1,47 +1,23 @@
 <template>
   <div class="section">
     <section class="container">
-      <h1 class="title" v-if="currentUser">{{ currentUser.teamName }}</h1>
+      <h1 class="title">War Room</h1>
+      <h2 class="subtitle" v-if="currentUser">{{ currentUser.teamName }}</h2>
       <br />
-      <div class="columns">
-        <div class="column">
-          <my-picks
-            :picks="myPicks"
-            @onPickClick="$emit('onPickClick')"
-          />
-        </div>
-        <div class="column">
-          <my-watchlist
-            @onPickClick="$emit('onPickClick')"
-          />
-        </div>
-      </div>
+      <router-view/>
     </section>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import MyPicks from '../components/User/MyPicks.vue';
-  import MyWatchlist from '../components/User/MyWatchlist.vue';
 
   export default {
     name: 'user-view',
-    components: {
-      MyPicks,
-      MyWatchlist,
-    },
     computed: {
       ...mapGetters([
         'currentUser',
-        'picksByTeam',
       ]),
-      myPicks() {
-        return this.picksByTeam(this.currentUser.id);
-      },
-    },
-    created() {
-      this.$store.dispatch('getDrafts');
     },
   };
 </script>

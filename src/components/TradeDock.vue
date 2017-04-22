@@ -9,10 +9,27 @@
           You are giving {{ givingPicks.length }}, and receiving {{ receivingPicks.length }}.
         </div>
       </div>
+      <div v-if="showTradeSuccess" class="trade-dock__notifications">
+        <div class="notification is-success">
+          <button class="delete" @click="clearTrade"></button>
+          <p class="trade-dock__success">
+            <span>Your trade offer has been sent!</span>
+            <button
+              class="button is-success is-inverted is-outlined"
+              @click="offerComplete = false; showTradeSuccess = false;"
+            >
+              Make another?
+            </button>
+            <button class="button is-success" @click="clearTrade">
+              I'm done, thanks
+            </button>
+          </p>
+        </div>
+      </div>
     </transition>
     <div class="trade-dock__inner">
-      <div class="level">
-        <div class="level-item">
+      <div class="columns">
+        <div class="column">
           <div class="trade-dock__picks">
             <div class="trade-dock__giving" v-if="currentTrade.receivingPicks.length">
               <b>You get:&nbsp;</b>
@@ -25,8 +42,8 @@
               </trade-dock-pick>
             </div>
             <div class="trade-dock__receiving" v-if="givingPicks.length">
-              <b v-if="receivingTeam">{{ receivingTeam.displayName }} gets:&nbsp;</b>
-              <b v-else="receivingTeam">They get:&nbsp;</b>
+              <b v-if="receivingTeam.displayName">{{ receivingTeam.displayName }} gets:&nbsp;</b>
+              <b v-else>They get:&nbsp;</b>
               <trade-dock-pick
                 v-for="(pick, i) in givingPicks"
                 :key="pick.overall"
@@ -55,21 +72,31 @@
           </div>
         </div>
         <div class="level-item">
-          <div class="trade-dock__action" v-if="canMakeOffer">
-            <!-- <button class="button is-white is-inverted is-outlined">
-              <span class="icon is-small">
-                <i class="fa fa-save"></i>
-              </span>
-              <span>Save</span>
-            </button> -->
+          <div class="trade-dock__action">
             <button
-              class="button is-outlined is-primary is-inverted"
+              v-if="canMakeOffer"
+              :class="['button is-outlined is-primary is-inverted', {
+                'is-loading': offerProcessing,
+                'is-hidden': offerComplete,
+              }]"
               @click="onMakeOfferClick"
+              :disabled="offerProcessing"
             >
-            <span class="icon is-small">
-              <i class="fa fa-paper-plane"></i>
-            </span>
+              <span class="icon is-small">
+                <i class="fa fa-paper-plane"></i>
+              </span>
               <span>Make Offer</span>
+            </button>
+            <!-- <template v-if="offerComplete">
+              <span class="tag is-medium is-dark">
+                <span>Offer sent!</span>
+              </span>
+
+            </template> -->
+            <button
+              @click="clearTrade"
+              class="trade-dock__clear delete is-medium"
+            >
             </button>
           </div>
         </div>
@@ -81,14 +108,15 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
-  import { SELECT_PICK } from '../store/mutations';
+  import { mapGetters, mapActions, mapMutations } from 'vuex';
+  import reduce from 'lodash/reduce';
+  import { SELECT_PICK, CLEAR_TRADE, CLEAR_RECEIVING_TEAM } from '../store/mutations';
   import TradeDockPick from './TradeDock/Pick.vue';
   import {
     getTeamById,
     calculateBayesianTradeValue,
+    calculateDoddsTradeValue,
   } from '../utils';
-  import { calculateDoddsTradeValue } from '../utils/dodds-calculator';
 
   export default {
     name: 'trade-dock',
@@ -98,11 +126,16 @@
     data() {
       return {
         showTradeValidation: false,
+        showTradeSuccess: false,
+        offerProcessing: false,
+        offerComplete: false,
       };
     },
     computed: {
       ...mapGetters([
         'currentTrade',
+        'currentUser',
+        'currentDraft',
       ]),
       hasTrade() {
         return this.currentTrade.id &&
@@ -144,7 +177,12 @@
     methods: {
       ...mapMutations({
         SELECT_PICK,
+        CLEAR_TRADE,
+        CLEAR_RECEIVING_TEAM,
       }),
+      ...mapActions([
+        'proposeTrade',
+      ]),
       sortPicks(picks) {
         return picks.sort((a, b) => a.overall - b.overall);
       },
@@ -152,11 +190,43 @@
         this.SELECT_PICK({ pick });
         this.$emit('onDockPickClick');
       },
+      clearTrade() {
+        this.offerComplete = false;
+        this.showTradeSuccess = false;
+        this.CLEAR_TRADE();
+        this.CLEAR_RECEIVING_TEAM();
+      },
       onMakeOfferClick() {
         if (this.givingPicks.length !== this.receivingPicks.length) {
           this.showTradeValidation = true;
+          return false;
         }
-        // @TODO make trade request
+
+        this.offerProcessing = true;
+
+        const trade = {
+          givingTeam: this.currentTrade.givingTeam,
+          receivingTeam: this.currentTrade.receivingTeam,
+          givingPicks: reduce(this.currentTrade.givingPicks, (acc, cur) => {
+            acc[cur.id] = true;
+            return acc;
+          }, {}),
+          receivingPicks: reduce(this.currentTrade.receivingPicks, (acc, cur) => {
+            acc[cur.id] = true;
+            return acc;
+          }, {}),
+        };
+
+        this.proposeTrade({ draft: this.currentDraft.id, trade }).then(() => {
+          this.offerComplete = true;
+          this.offerProcessing = false;
+          this.showTradeSuccess = true;
+        }).catch(() => {
+          this.offerComplete = false;
+          this.offerProcessing = false;
+        });
+
+        return true;
       },
     },
   };
@@ -184,9 +254,13 @@
     z-index: 5;
   }
 
+  .level-item--picks {
+    max-width: 50%;
+  }
   .trade-dock__picks {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .trade-dock__giving,
@@ -234,8 +308,13 @@
 
   .trade-dock__action {
     text-align: right;
+    width: 100%;
 
-    @media screen and (max-width: 769px) {
+    .button {
+      vertical-align: middle;
+    }
+
+    @media screen and (max-width: $tablet) {
       display: flex;
       justify-content: center;
       margin-right: -10px;
@@ -252,11 +331,12 @@
           vertical-align: middle;
         }
       }
-
-      .is-primary {
-        flex: 2;
-      }
     }
+  }
+
+  .trade-dock__clear {
+    margin-left: 1rem;
+    vertical-align: middle;
   }
 
   .trade-dock__notifications {
@@ -268,12 +348,23 @@
     z-index: 4;
   }
 
+  .trade-dock__success {
+    display: flex;
+    align-items: center;
+
+    .button {
+      margin-left: 1rem;
+    }
+  }
+
   .slide-up-enter-active, .slide-up-leave-active {
-    transition: bottom .2s ease-in-out;
+    opacity: 1;
+    transition: opacity .3s ease-in-out, bottom .3s ease-in-out;
   }
 
   .slide-up-enter, .slide-up-leave-active {
-    bottom: 0%;
+    opacity: 0;
+    bottom: -50%;
   }
 
 </style>
