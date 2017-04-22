@@ -40,7 +40,7 @@
           ".write": "!data.exists() && $uid === auth.uid",
           "$trade": {
             ".write": "root.child('trades').child($draft).child($trade).child('receivingTeam').val() === auth.uid ||
-            root.child('trades').child($draft).child($trade).child('givingTeam').val() === auth.uid "
+            root.child('trades').child($draft).child($trade).child('givingTeam').val() === auth.uid"
           }
         }
       }
