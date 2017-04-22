@@ -18,15 +18,12 @@
         <b class="pick__overall">{{ pick.overall }}</b>
         <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
       </div>
-      <!-- <div class="pick__team">{{ teamInfo.displayName }}</div> -->
       <div v-if="boardView === 'adp'" class="pick__player">
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
-        <div>
-          <span class="icon is-small">
-            <i class="fa fa-exchange" v-if="isGiving || isReceiving"></i>
-          </span>
-        </div>
+      </div>
+      <div class="pick__team" v-if="!isSelected">
+        <span class="tag is-white">{{ teamInfo.displayName }}</span>
       </div>
     </a>
   </td>
@@ -224,21 +221,21 @@
     }
   }
 
-  .is-selected {
-    background-color: $grey-dark;
-    border-top-color: $grey-dark;
-    border-bottom-color: $grey-dark;
-    color: white;
-  }
-
   .is-muted {
-    opacity: 0.8;
+    opacity: 0.7;
   }
 
   .is-available {
     background-color: $white-ter;
     border-color: $white-ter;
     color: $grey-darker;
+  }
+
+  .is-selected {
+    background-color: $grey-dark;
+    border-top-color: $grey-dark;
+    border-bottom-color: $grey-dark;
+    color: white;
   }
 
   .is-receiving,
@@ -259,4 +256,5 @@
     border-color: $yellow;
     color: $grey-darker;
   }
+
 </style>

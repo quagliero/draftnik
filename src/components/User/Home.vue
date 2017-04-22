@@ -1,13 +1,13 @@
 <template>
-  <div class="columns">
-    <div class="column">
+  <div class="columns is-multiline">
+    <div class="column is-4-desktop is-half-tablet my-picks">
       <my-picks/>
     </div>
-    <div class="column">
-      <my-trades/>
-    </div>
-    <div class="column">
+    <div class="column is-4-desktop is-half-tablet my-watchlist">
       <my-watchlist/>
+    </div>
+    <div class="column is-4-desktop is-12-tablet my-trades">
+      <my-trades/>
     </div>
   </div>
 </template>
@@ -26,3 +26,20 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+@import "~bulma/utilities/variables";
+  @media screen and (max-width: $tablet) {
+    .my-trades {
+      order: 1 !important;
+    }
+
+    .my-picks {
+      order: 2 !important;
+    }
+
+    .my-watchlist {
+      order: 3 !important;
+    }
+  }
+</style>

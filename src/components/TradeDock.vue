@@ -9,6 +9,23 @@
           You are giving {{ givingPicks.length }}, and receiving {{ receivingPicks.length }}.
         </div>
       </div>
+      <div v-if="showTradeSuccess" class="trade-dock__notifications">
+        <div class="notification is-success">
+          <button class="delete" @click="clearTrade"></button>
+          <p class="trade-dock__success">
+            <span>Your trade offer has been sent!</span>
+            <button
+              class="button is-success is-inverted is-outlined"
+              @click="offerComplete = false; showTradeSuccess = false;"
+            >
+              Make another?
+            </button>
+            <button class="button is-success" @click="clearTrade">
+              I'm done, thanks
+            </button>
+          </p>
+        </div>
+      </div>
     </transition>
     <div class="trade-dock__inner">
       <div class="columns">
@@ -59,16 +76,23 @@
             <button
               v-if="canMakeOffer"
               :class="['button is-outlined is-primary is-inverted', {
-                'is-loading': processing === true,
+                'is-loading': offerProcessing,
+                'is-hidden': offerComplete,
               }]"
               @click="onMakeOfferClick"
-              :disabled="processing === true"
+              :disabled="offerProcessing"
             >
-            <span class="icon is-small">
-              <i class="fa fa-paper-plane"></i>
-            </span>
+              <span class="icon is-small">
+                <i class="fa fa-paper-plane"></i>
+              </span>
               <span>Make Offer</span>
             </button>
+            <!-- <template v-if="offerComplete">
+              <span class="tag is-medium is-dark">
+                <span>Offer sent!</span>
+              </span>
+
+            </template> -->
             <button
               @click="clearTrade"
               class="trade-dock__clear delete is-medium"
@@ -102,7 +126,9 @@
     data() {
       return {
         showTradeValidation: false,
-        processing: false,
+        showTradeSuccess: false,
+        offerProcessing: false,
+        offerComplete: false,
       };
     },
     computed: {
@@ -165,6 +191,8 @@
         this.$emit('onDockPickClick');
       },
       clearTrade() {
+        this.offerComplete = false;
+        this.showTradeSuccess = false;
         this.CLEAR_TRADE();
         this.CLEAR_RECEIVING_TEAM();
       },
@@ -174,7 +202,7 @@
           return false;
         }
 
-        this.processing = true;
+        this.offerProcessing = true;
 
         const trade = {
           givingTeam: this.currentTrade.givingTeam,
@@ -189,7 +217,15 @@
           }, {}),
         };
 
-        this.proposeTrade({ draft: this.currentDraft.id, trade });
+        this.proposeTrade({ draft: this.currentDraft.id, trade }).then(() => {
+          this.offerComplete = true;
+          this.offerProcessing = false;
+          this.showTradeSuccess = true;
+        }).catch(() => {
+          this.offerComplete = false;
+          this.offerProcessing = false;
+        });
+
         return true;
       },
     },
@@ -278,7 +314,7 @@
       vertical-align: middle;
     }
 
-    @media screen and (max-width: 769px) {
+    @media screen and (max-width: $tablet) {
       display: flex;
       justify-content: center;
       margin-right: -10px;
@@ -310,6 +346,15 @@
     left: 20px;
     right: 20px;
     z-index: 4;
+  }
+
+  .trade-dock__success {
+    display: flex;
+    align-items: center;
+
+    .button {
+      margin-left: 1rem;
+    }
   }
 
   .slide-up-enter-active, .slide-up-leave-active {

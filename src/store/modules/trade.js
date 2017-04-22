@@ -113,11 +113,16 @@ const actions = {
     const tradeKey = db.ref('trades').push().key;
     const users = [trade.givingTeam, trade.receivingTeam];
 
-    api.proposeTrade(draft, trade, tradeKey).then(() => {
-      Promise.all(
-        users.map(user => api.addTradeToUser(draft, user, tradeKey)),
-      ).then(() => {
-        commit(types.PROPOSED_TRADE, tradeKey);
+    return new Promise((resolve, reject) => {
+      api.proposeTrade(draft, trade, tradeKey).then(() => {
+        Promise.all(
+          users.map(user => api.addTradeToUser(draft, user, tradeKey)),
+        ).then(() => {
+          commit(types.PROPOSED_TRADE, tradeKey);
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
       });
     });
   },
