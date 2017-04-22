@@ -36,8 +36,11 @@ export default {
   removeFromWatchlist(draft, user, player) {
     return db.ref(`watchlists/${draft}/${user}/${player.id}`).set(null);
   },
-  getTrade(draft, tradeId, cb) {
-    listenForValueEvents(`trades/${draft}/${tradeId}`, cb);
+  getAcceptedTrades(draft, cb) {
+    listenForValueEvents(`tradesAccepted/${draft}`, cb);
+  },
+  getTrade({ draft, id }) {
+    return db.ref(`trades/${draft}/${id}`).once('value');
   },
   getUserTrades(draft, user, cb) {
     listenForValueEvents(`tradesUsersPivot/${draft}/${user}`, cb);

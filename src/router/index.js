@@ -77,7 +77,7 @@ const router = new Router({
       component: PasswordResetView,
     },
     {
-      path: '/my-draft',
+      path: '/war-room',
       component: UserView,
       beforeEnter: (to, from, next) => {
         checkAuth(to, from, next);

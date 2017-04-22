@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade">
+  <transition name="modal-fade">
     <div class="modal is-active">
       <div class="modal-background"></div>
       <div class="modal-content">
@@ -39,11 +39,11 @@
     transition: margin-top .3s;
   }
 
-  .fade-enter-active, .fade-leave-active {
+  .modal-fade-enter-active, .modal-fade-leave-active {
     transition: opacity .2s;
   }
 
-  .fade-enter, .fade-leave-active {
+  .modal-fade-enter, .modal-fade-leave-active {
     opacity: 0;
 
     .modal-content {

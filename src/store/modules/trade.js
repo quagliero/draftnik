@@ -22,12 +22,14 @@ const Trade = (tradeProps) => {
 const state = {
   current: {},
   userTrades: {},
+  acceptedTrades: {},
 };
 
 // getters
 const getters = {
   currentTrade: stateObj => stateObj.current,
   userTrades: stateObj => stateObj.userTrades,
+  acceptedTrades: stateObj => stateObj.acceptedTrades,
   getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
 
@@ -84,6 +86,16 @@ const actions = {
       }
     }
   },
+  getAcceptedTrades({ commit }, { draft }) {
+    api.getAcceptedTrades(draft, (acceptedTrades) => {
+      const tradeIds = keys(acceptedTrades);
+      Promise.all(
+        tradeIds.map((id) => api.getTrade({ draft, id }).then((snapshot) => snapshot.val())),
+      ).then((trades) => {
+        commit(types.RECEIVE_ACCEPTED_TRADES, trades);
+      });
+    });
+  },
   getUserTrades({ commit }, data) {
     api.getUserTrades(data.draft, data.user, userTrades => {
       const tradeIds = keys(userTrades);
@@ -100,13 +112,6 @@ const actions = {
       ).then(() => {
         commit(types.RECEIVE_USER_TRADES, trades);
       });
-    });
-  },
-  getTrade({ commit }, data) {
-    api.getTrade(data.draft, data.tradeId).then(response => {
-      commit(types.RECEIVED_TRADE, response);
-    }).catch(error => {
-      console.error(error);
     });
   },
   proposeTrade({ commit }, { trade, draft }) {
@@ -164,6 +169,8 @@ const actions = {
           team: givingTeam,
         })),
       ]).then(() => {
+        // mark as accepted
+        commit(types.ACCEPTED_TRADE, trade);
         // tidy up any potential conflicting open offers
         const openOffers = filter(state.userTrades, (userTrade) => {
           if (userTrade.id !== trade && userTrade.status === TradeStatus.OFFERED) {
@@ -186,8 +193,6 @@ const actions = {
             return null;
           }),
         ]);
-
-        commit(types.ACCEPTED_TRADE, trade);
       }).catch((error) => {
         console.error(error);
       });
@@ -230,6 +235,9 @@ const mutations = {
   },
   [types.LOAD_TRADE](stateObj, { trade }) {
     stateObj.current = trade;
+  },
+  [types.RECEIVE_ACCEPTED_TRADES](stateObj, acceptedTrades) {
+    stateObj.acceptedTrades = acceptedTrades;
   },
   [types.RECEIVE_USER_TRADES](stateObj, trades) {
     stateObj.userTrades = trades;

@@ -22,9 +22,11 @@
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
       </div>
-      <div class="pick__team" v-if="!isSelected">
-        <span class="tag is-white">{{ teamInfo.displayName }}</span>
-      </div>
+        <transition name="name-fade">
+          <div class="pick__team" v-if="!isSelected">
+            <span class="tag is-white">{{ teamInfo.displayName }}</span>
+          </div>
+        </transition>
     </a>
   </td>
 </template>
@@ -257,4 +259,11 @@
     color: $grey-darker;
   }
 
+  .name-fade-enter-active, .name-fade-leave-active {
+    transition: opacity .2s ease-in-out;
+  }
+
+  .name-fade-enter, .name-fade-leave-active {
+    opacity: 0;
+  }
 </style>
