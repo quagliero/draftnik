@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
-    "bulma": "^0.4.0",
+    "bulma": "^0.4.1",
     "dotenv": "^4.0.0",
     "firebase": "^3.8.0",
     "lodash": "^4.17.4",

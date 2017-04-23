@@ -67,4 +67,12 @@ export default {
   padding-bottom: 100px;
 }
 
+.button .icon {
+  vertical-align: middle;
+}
+
+.button .icon + span {
+  vertical-align: middle;
+}
+
 </style>
