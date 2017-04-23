@@ -61,6 +61,7 @@ export default {
 
 #app {
   -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $text;
   padding-bottom: 100px;
