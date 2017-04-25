@@ -25,21 +25,31 @@
         {{ num === 0 ? 'All' : `${num}` }}
       </a>
     </div>
-    <div
-      v-for="pick in filteredPicks"
-      v-if="filteredPicks.length && expanded"
-      class="panel-block"
-    >
-      <button
-        class="button is-white"
-        @click="onPickClick(pick)"
+    <template v-if="currentDraft.picks">
+      <div
+        v-for="pick in filteredPicks"
+        v-if="filteredPicks.length && expanded"
+        class="panel-block"
       >
-        <span class="panel-icon">
-          <i class="fa fa-vcard"></i>
+        <button
+          class="button is-white"
+          @click="onPickClick(pick)"
+        >
+          <span class="panel-icon">
+            <i class="fa fa-vcard"></i>
+          </span>
+          #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
+        </button>
+      </div>
+    </template>
+    <template v-else>
+      <div class="panel-block">
+        <span>Fetching picks </span>
+        <span class="icon">
+          <i class="fa fa-spinner fa-spin"></i>
         </span>
-        #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
-      </button>
-    </div>
+      </div>
+    </template>
   </nav>
 </template>
 
