@@ -33,9 +33,9 @@
             <thead>
               <tr>
                 <team
-                  v-for="(team, uid) in teams"
-                  :teamId="uid"
-                  :key="uid"
+                  v-for="team in currentDraftOrder"
+                  :teamId="team"
+                  :key="team"
                   :boardView="boardView"
                 />
               </tr>
@@ -81,13 +81,11 @@ export default {
   computed: {
     ...mapGetters([
       'currentDraft',
+      'currentDraftOrder',
       'picksByRound',
       'adp',
       'players',
     ]),
-    teams() {
-      return this.currentDraft.teams;
-    },
     dataLoaded() {
       // we've got all the data we want
       return this.currentDraft && this.picksByRound && this.players && this.adp.length;
