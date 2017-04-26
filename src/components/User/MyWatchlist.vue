@@ -25,35 +25,45 @@
         {{ pos }}
       </a>
     </p>
-    <div
-      v-for="player in filteredWatchlist"
-      v-if="expanded"
-      class="panel-block"
-    >
-      <div class="level is-mobile">
-        <div class="level-left">
-          <button
-            class="button is-white"
-            @click="onPlayerClick(player)"
-          >
-            <span class="panel-icon">
-              <i class="fa fa-vcard-o"></i>
-            </span>
-            {{ player.name }} {{ player.position }}
-          </button>
-        </div>
-        <div class="level-right">
-          <button
-            class="button is-small is-danger"
-            @click="removeFromWatchlistClick(player)"
-          >
-            <span class="icon is-small">
-              <i class="fa fa-remove"></i>
-            </span>
-          </button>
+    <template v-if="watchlistReceived">
+      <div
+        v-for="player in filteredWatchlist"
+        v-if="expanded"
+        class="panel-block"
+      >
+        <div class="level is-mobile">
+          <div class="level-left">
+            <button
+              class="button is-white"
+              @click="onPlayerClick(player)"
+            >
+              <span class="panel-icon">
+                <i class="fa fa-vcard-o"></i>
+              </span>
+              {{ formatPlayerName(player.name) }} ({{ player.position }})
+            </button>
+          </div>
+          <div class="level-right">
+            <button
+              class="button is-small is-danger"
+              @click="removeFromWatchlistClick(player)"
+            >
+              <span class="icon is-small">
+                <i class="fa fa-remove"></i>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
+    <template v-else="">
+      <div class="panel-block">
+        <span>Fetching watchlist </span>
+        <span class="icon">
+          <i class="fa fa-spinner fa-spin"></i>
+        </span>
+      </div>
+    </template>
   </nav>
 </template>
 
@@ -64,6 +74,7 @@
   import keys from 'lodash/keys';
   import findIndex from 'lodash/findIndex';
   import { SELECT_PICK } from '../../store/mutations';
+  import { formatPlayerName } from '../../utils';
 
   export default {
     name: 'my-watchlist',
@@ -72,6 +83,7 @@
         expanded: true,
         watchlistFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
         selectedWatchlistFilter: 'All',
+        formatPlayerName,
       };
     },
     computed: {
@@ -79,6 +91,7 @@
         'players',
         'adp',
         'watchlist',
+        'watchlistReceived',
         'picksArray',
         'currentUser',
         'currentDraft',

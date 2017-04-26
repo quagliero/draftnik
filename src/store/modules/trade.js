@@ -1,6 +1,7 @@
 import keys from 'lodash/keys';
 import map from 'lodash/map';
 import filter from 'lodash/filter';
+import reduce from 'lodash/reduce';
 import some from 'lodash/some';
 import * as types from '../mutations';
 import api from '../../api';
@@ -22,6 +23,7 @@ const Trade = (tradeProps) => {
 const state = {
   current: {},
   userTrades: {},
+  userTradesReceived: false,
   acceptedTrades: {},
 };
 
@@ -29,6 +31,7 @@ const state = {
 const getters = {
   currentTrade: stateObj => stateObj.current,
   userTrades: stateObj => stateObj.userTrades,
+  userTradesReceived: stateObj => stateObj.userTradesReceived,
   acceptedTrades: stateObj => stateObj.acceptedTrades,
   getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
@@ -97,29 +100,43 @@ const actions = {
     });
   },
   getUserTrades({ commit }, data) {
+    // @TODO figure out why every trade gets looped after proposing
+    // guess maybe something to do with snapshotting inside the map
     api.getUserTrades(data.draft, data.user, userTrades => {
       const tradeIds = keys(userTrades);
       const ref = db.ref(`trades/${data.draft}`);
-      const trades = {};
 
       Promise.all(
         tradeIds.map((id) => new Promise((resolve) => {
           ref.child(id).on('value', trade => {
-            trades[id] = trade.val();
-            resolve();
+            const snapshot = trade.val();
+            commit(types.RECEIVE_USER_TRADE, snapshot);
+            resolve(snapshot);
           });
         })),
-      ).then(() => {
-        commit(types.RECEIVE_USER_TRADES, trades);
+      ).then((trades) => {
+        commit(types.RECEIVE_USER_TRADES, reduce(trades, (all, t) => {
+          all[t.id] = t;
+          return all;
+        }, {}));
       });
     });
   },
   proposeTrade({ commit }, { trade, draft }) {
     const tradeKey = db.ref('trades').push().key;
     const users = [trade.givingTeam, trade.receivingTeam];
+    const payload = {
+      id: tradeKey,
+      givingTeam: trade.givingTeam,
+      receivingTeam: trade.receivingTeam,
+      givingPicks: trade.givingPicks,
+      receivingPicks: trade.receivingPicks,
+      status: TradeStatus.OFFERED,
+      seen: false,
+    };
 
     return new Promise((resolve, reject) => {
-      api.proposeTrade(draft, trade, tradeKey).then(() => {
+      api.proposeTrade({ draft, tradeKey, payload }).then(() => {
         Promise.all(
           users.map(user => api.addTradeToUser(draft, user, tradeKey)),
         ).then(() => {
@@ -241,6 +258,11 @@ const mutations = {
   },
   [types.RECEIVE_USER_TRADES](stateObj, trades) {
     stateObj.userTrades = trades;
+    stateObj.userTradesReceived = true;
+  },
+  [types.RECEIVE_USER_TRADE](stateObj, trade) {
+    console.log(trade.id);
+    stateObj.userTrades[trade.id] = trade;
   },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
@@ -258,7 +280,8 @@ const mutations = {
     console.log(trade);
   },
   [types.DESTROY_SESSION](stateObj) {
-    stateObj.userTrades = [];
+    stateObj.userTrades = {};
+    stateObj.userTradesReceived = false;
     stateObj.current = {};
   },
 };

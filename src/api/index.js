@@ -28,7 +28,7 @@ export default {
     return db.ref('drafts').once('value');
   },
   getWatchlist(draft, user, cb) {
-    listenForValueEvents(`watchlists/${draft}/${user}/`, cb);
+    listenForValueEvents(`watchlists/${draft}/${user}`, cb);
   },
   addToWatchlist(draft, user, player) {
     return db.ref(`watchlists/${draft}/${user}/${player.id}`).set(true);
@@ -45,18 +45,10 @@ export default {
   getUserTrades(draft, user, cb) {
     listenForValueEvents(`tradesUsersPivot/${draft}/${user}`, cb);
   },
-  proposeTrade(draft, trade, tradeKey) {
+  proposeTrade({ draft, tradeKey, payload }) {
     // create references to this trade on the user first
     // so we can use firebase rules to restrict access
-    return db.ref(`trades/${draft}/${tradeKey}`).set({
-      id: tradeKey,
-      givingTeam: trade.givingTeam,
-      receivingTeam: trade.receivingTeam,
-      givingPicks: trade.givingPicks,
-      receivingPicks: trade.receivingPicks,
-      status: TradeStatus.OFFERED,
-      seen: false,
-    });
+    return db.ref(`trades/${draft}/${tradeKey}`).set(payload);
   },
   addTradeToUser(draft, user, tradeKey) {
     return db.ref(`tradesUsersPivot/${draft}/${user}/${tradeKey}`).set(true);

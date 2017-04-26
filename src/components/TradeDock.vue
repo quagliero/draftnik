@@ -12,8 +12,8 @@
       <div v-if="showTradeSuccess" class="trade-dock__notifications">
         <div class="notification is-success">
           <button class="delete" @click="clearTrade"></button>
-          <p class="trade-dock__success">
-            <span>Your trade offer has been sent!</span>
+          <div class="trade-dock__success">
+            <p style="margin-bottom: 1rem">Your trade offer has been sent!</p>
             <button
               class="button is-success is-inverted is-outlined"
               @click="offerComplete = false; showTradeSuccess = false;"
@@ -23,7 +23,7 @@
             <button class="button is-success" @click="clearTrade">
               I'm done, thanks
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </transition>
@@ -55,7 +55,10 @@
           </div>
         </div>
 
-        <div class="level-item">
+        <div
+          class="level-item"
+          v-if="canMakeOffer"
+        >
           <div class="trade-dock__calcs">
             <div class="trade-dock__calc">
               <a href="http://www.draftpicktradecalculator.com/" target="_blank">
@@ -71,11 +74,11 @@
             </div>
           </div>
         </div>
-        <div class="level-item">
+        <div class="column level-item">
           <div class="trade-dock__action">
             <button
               v-if="canMakeOffer"
-              :class="['button is-outlined is-primary is-inverted', {
+              :class="['trade-dock__offer button is-outlined is-primary', {
                 'is-loading': offerProcessing,
                 'is-hidden': offerComplete,
               }]"
@@ -87,16 +90,14 @@
               </span>
               <span>Make Offer</span>
             </button>
-            <!-- <template v-if="offerComplete">
-              <span class="tag is-medium is-dark">
-                <span>Offer sent!</span>
-              </span>
-
-            </template> -->
             <button
               @click="clearTrade"
-              class="trade-dock__clear delete is-medium"
+              class="trade-dock__clear button is-dark is-outlined is-inverted"
             >
+              <span class="icon">
+                <i class="fa fa-times-circle"></i>
+              </span>
+              <span>Clear</span>
             </button>
           </div>
         </div>
@@ -250,7 +251,7 @@
 
   .trade-dock__inner {
     background-color: $dark;
-    padding: 5px 20px 5px;
+    padding: 8px 20px;
     z-index: 5;
   }
 
@@ -269,16 +270,8 @@
     line-height: 2;
   }
 
-  .trade-dock__giving {
-    // margin-bottom: 5px;
-  }
-  .trade-dock__receiving {
-    // margin-top: 5px;
-  }
-
   .trade-dock__calcs {
     display: flex;
-    // flex-direction: column;
     align-items: flex-start;
   }
 
@@ -312,17 +305,23 @@
 
     .button {
       vertical-align: middle;
+      text-align: center !important;
     }
 
     @media screen and (max-width: $tablet) {
       display: flex;
       justify-content: center;
-      margin-right: -10px;
       margin-bottom: 10px;
 
-      .button {
+      .trade-dock__offer {
+        flex: 4;
+      }
+
+      .trade-dock__clear {
         flex: 1;
-        margin-right: 10px;
+      }
+
+      .button {
         font-size: 1.25rem;
         line-height: 1.5;
         height: 2.285em;
@@ -334,9 +333,8 @@
     }
   }
 
-  .trade-dock__clear {
-    margin-left: 1rem;
-    vertical-align: middle;
+  .trade-dock__offer {
+    margin-right: 1rem;
   }
 
   .trade-dock__notifications {
@@ -349,10 +347,10 @@
   }
 
   .trade-dock__success {
-    display: flex;
-    align-items: center;
+    text-align: center;
 
     .button {
+      vertical-align: middle;
       margin-left: 1rem;
     }
   }

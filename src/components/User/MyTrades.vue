@@ -25,12 +25,23 @@
         {{ filter }}
       </a>
     </p>
-    <trade-panel
-      v-for="trade in filteredTrades"
-      :trade="trade"
-      :currentUser="currentUser"
-      :key="trade.id"
-    />
+    <template v-if="userTradesReceived">
+      <trade-panel
+        v-if="expanded"
+        v-for="trade in filteredTrades"
+        :trade="trade"
+        :currentUser="currentUser"
+        :key="trade.id"
+      />
+    </template>
+    <template v-else>
+      <div class="panel-block">
+        <span>Fetching trades </span>
+        <span class="icon">
+          <i class="fa fa-spinner fa-spin"></i>
+        </span>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -57,6 +68,7 @@
         'currentDraft',
         'currentUser',
         'userTrades',
+        'userTradesReceived',
       ]),
       filteredTrades() {
         return this.filterTradesBy(this.selectedTradeFilter);

@@ -4,11 +4,13 @@ import * as types from '../mutations';
 // initial state
 const state = {
   watchlist: null,
+  watchlistReceived: false,
 };
 
 // getters
 const getters = {
   watchlist: stateObj => stateObj.watchlist,
+  watchlistReceived: stateObj => stateObj.watchlistReceived,
 };
 
 // actions
@@ -38,12 +40,15 @@ const actions = {
 const mutations = {
   [types.DESTROY_SESSION](stateObj) {
     stateObj.watchlist = null;
+    stateObj.watchlistReceived = false;
   },
   [types.INVALID_SESSION](stateObj) {
     stateObj.watchlist = null;
+    stateObj.watchlistReceived = false;
   },
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
     stateObj.watchlist = watchlist;
+    stateObj.watchlistReceived = true;
   },
   [types.ADDED_TO_WATCHLIST](stateObj, player) {
     console.log(player);

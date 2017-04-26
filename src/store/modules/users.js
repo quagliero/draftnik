@@ -48,21 +48,10 @@ const mutations = {
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.currentUser = null;
-    stateObj.watchlist = {};
   },
   [types.INVALID_SESSION](stateObj) {
     stateObj.currentUser = null;
-    stateObj.watchlist = {};
   },
-  [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
-    stateObj.watchlist = watchlist;
-  },
-  // [types.ADDED_TO_WATCHLIST](stateObj, player) {
-  //   console.log(player);
-  // },
-  // [types.REMOVED_FROM_WATCHLIST](stateObj, player) {
-  //   console.log(player);
-  // },
 };
 
 export default {

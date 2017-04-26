@@ -2,12 +2,12 @@
   <td
     class="pick"
     :class="[{
-      'is-muted': isMuted,
-      'is-selected' : isSelected,
-      'is-available' : isAvailable,
-      'is-receiving' : isReceiving,
-      'is-giving' : isGiving,
-      'is-player' : boardView === 'adp',
+      'pick--is-muted': isMuted,
+      'pick--is-selected' : isSelected,
+      'pick--is-available' : isAvailable,
+      'pick--is-receiving' : isReceiving,
+      'pick--is-giving' : isGiving,
+      'pick--is-player' : boardView === 'adp',
     }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
   >
     <a
@@ -132,13 +132,13 @@
   };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "~bulma/utilities/variables";
 
   .pick {
     cursor: pointer;
     position: relative;
-    z-index: inherit;
+    z-index: 1;
     height: 100%;
     text-align: center;
     word-break: break-word;
@@ -180,6 +180,11 @@
     display: block;
     width: 100%;
     color: inherit;
+
+    &:hover, &:focus {
+      color: inherit;
+      opacity: 0.9
+    }
   }
 
   .pick__numbers {
@@ -215,7 +220,7 @@
     text-overflow: ellipsis;
   }
 
-  .is-player {
+  .pick--is-player {
     min-height: 110px;
 
     .pick__clickable {
@@ -223,40 +228,38 @@
     }
   }
 
-  .is-muted {
+  .pick--is-muted {
     opacity: 0.7;
   }
 
-  .is-available {
+  .pick--is-available {
     background-color: $white-ter;
     border-color: $white-ter;
     color: $grey-darker;
   }
 
-  .is-selected {
+  .pick--is-selected {
     background-color: $grey-dark;
     border-top-color: $grey-dark;
-    border-bottom-color: $grey-dark;
     color: white;
   }
 
-  .is-receiving,
-  .is-giving {
-    transform: scale(1.1);
-    z-index: 1;
-    box-shadow: 0 2px 1px rgba(0,0,0,.1);
-  }
-
-  .is-receiving {
+  .pick--is-receiving {
     background-color: $green;
     color: $grey-darker;
-    border-color: $green;
+
+    &.pick--is-player {
+      box-shadow: inset 0 0 1rem rgba(mix(black, $green, 50%), .3);
+    }
   }
 
-  .is-giving {
+  .pick--is-giving {
     background-color: $yellow;
-    border-color: $yellow;
     color: $grey-darker;
+
+    &.pick--is-player {
+      box-shadow: inset 0 0 1rem rgba(mix(black, $yellow, 50%), .3);
+    }
   }
 
   .name-fade-enter-active, .name-fade-leave-active {

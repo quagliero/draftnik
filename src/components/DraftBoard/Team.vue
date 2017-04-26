@@ -86,7 +86,6 @@
   .is-selected {
     background-color: $grey-dark;
     border-top-color: $grey-dark;
-    border-bottom-color: $grey-dark;
     color: white;
   }
 
