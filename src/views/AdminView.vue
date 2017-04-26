@@ -112,6 +112,14 @@
         const urlBase = `/drafts/${this.currentDraft.id}/picks`;
         db.ref(urlBase).set(null);
 
+        // store order
+        db.ref(`/drafts/${this.currentDraft.id}/order`).set(
+          this.draftOrder.reduce((all, slot, i) => {
+            all[i + 1] = slot;
+            return all;
+          }, {}),
+        );
+
         // loop through rounds and map and save each pick
         const snakeTeams = this.draftOrder.slice(0).reverse();
         const rounds = 15;
