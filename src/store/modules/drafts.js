@@ -54,7 +54,7 @@ const mutations = {
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
     stateObj.currentDraft = response[Object.keys(response)[0]];
-    stateObj.order = stateObj.currentDraft.order.filter(a => a);
+    stateObj.order = filter(stateObj.currentDraft.order, a => a);
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;
