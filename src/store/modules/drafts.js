@@ -1,4 +1,6 @@
 import filter from 'lodash/filter';
+import sortBy from 'lodash/sortBy';
+import keys from 'lodash/keys';
 import toArray from 'lodash/toArray';
 import api from '../../api';
 import * as types from '../mutations';
@@ -10,7 +12,7 @@ const state = {
   currentDraft: {},
   selectedPick: {},
   picksByRound: {},
-  order: {},
+  currentDraftOrder: {},
 };
 
 // getters
@@ -21,7 +23,7 @@ const getters = {
   picksArray: stateObj => toArray(stateObj.currentDraft.picks).sort(
     (a, b) => a.overall - b.overall,
   ),
-  draftOrder: stateObj => stateObj.order,
+  currentDraftOrder: stateObj => stateObj.currentDraftOrder,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
   picksByTeam: stateObj => (team) => filter(stateObj.currentDraft.picks, (p) => p.team === team),
@@ -53,8 +55,10 @@ const actions = {
 const mutations = {
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
-    stateObj.currentDraft = response[Object.keys(response)[0]];
-    stateObj.order = filter(stateObj.currentDraft.order, a => a);
+    stateObj.currentDraft = response[keys(response)[0]];
+    stateObj.currentDraftOrder = sortBy(
+      keys(stateObj.currentDraft.order), (team) => stateObj.currentDraft.order[team],
+    );
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;
