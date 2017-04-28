@@ -1,7 +1,7 @@
 <template>
   <span class="logo">
     <span class="logo__icon">🏈</span>
-    <span class="logo__text">draftnik <small>(pre-alpha)</small></span>
+    <span class="logo__text">draftnik <small class="tag is-small is-warning">beta</small></span>
   </span>
 </template>
 
