@@ -3,7 +3,6 @@
     <trade-title
       :trade="trade"
     />
-    <br/>
     <trade-details
       :trade="trade"
     />

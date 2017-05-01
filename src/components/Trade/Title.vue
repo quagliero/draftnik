@@ -1,5 +1,5 @@
 <template>
-  <h3 class="title is-3">
+  <h3 class="title is-4">
     <span class="icon is-medium">
       <i :class="['fa', userProposed ? 'fa-arrow-right' : 'fa-arrow-left']"></i>
     </span>

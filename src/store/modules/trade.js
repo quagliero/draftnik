@@ -16,6 +16,7 @@ const Trade = (tradeProps) => {
     receivingTeam: tradeProps.receivingTeam,
     givingPicks: tradeProps.givingPicks || [],
     receivingPicks: tradeProps.receivingPicks || [],
+    message: tradeProps.message,
   };
 };
 
@@ -131,6 +132,7 @@ const actions = {
       receivingTeam: trade.receivingTeam,
       givingPicks: trade.givingPicks,
       receivingPicks: trade.receivingPicks,
+      message: trade.message,
       status: TradeStatus.OFFERED,
       seen: false,
     };
@@ -237,6 +239,9 @@ const mutations = {
     stateObj.current.receivingPicks = stateObj.current.receivingPicks.filter(p =>
       p.overall !== pick.overall,
     );
+  },
+  [types.ADD_TRADE_MESSAGE](stateObj, message) {
+    stateObj.current.message = message;
   },
   [types.CLEAR_TRADE](stateObj) {
     stateObj.current = {};
