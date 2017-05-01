@@ -50,6 +50,7 @@
                     <button
                       type="submit"
                       class="is-pulled-right button is-medium is-primary"
+                      disabled
                     >
                       Save
                     </button>
