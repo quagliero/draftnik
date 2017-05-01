@@ -132,10 +132,13 @@ const actions = {
       receivingTeam: trade.receivingTeam,
       givingPicks: trade.givingPicks,
       receivingPicks: trade.receivingPicks,
-      message: trade.message,
       status: TradeStatus.OFFERED,
       seen: false,
     };
+
+    if (trade.message != null) {
+      payload.message = trade.message;
+    }
 
     return new Promise((resolve, reject) => {
       api.proposeTrade({ draft, tradeKey, payload }).then(() => {

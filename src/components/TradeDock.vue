@@ -79,14 +79,14 @@
           </div>
           <div class="column">
             <textarea
-              v-if="canMakeOffer && showMessage"
-              v-model="currentTrade.message"
+              v-show="canMakeOffer && showMessage && !offerComplete"
+              v-model="message"
               placeholder="Add a message..."
               class="textarea trade-dock__message"
             />
             <div class="trade-dock__action">
               <button
-                v-if="canMakeOffer"
+                v-if="canMakeOffer && !offerComplete"
                 class="button is-dark"
                 @click="showMessage = !showMessage"
               >
@@ -253,7 +253,7 @@
             acc[cur.id] = true;
             return acc;
           }, {}),
-          message: this.currentTrade.message,
+          message: this.message,
         };
 
         this.proposeTrade({ draft: this.currentDraft.id, trade }).then(() => {
@@ -397,7 +397,6 @@
   }
 
   .trade-dock__clear {
-    flex: 1;
   }
 
   .trade-dock__notifications {
