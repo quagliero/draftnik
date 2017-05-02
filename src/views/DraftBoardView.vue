@@ -54,6 +54,9 @@
           </table>
         </div>
       </div>
+      <div class="content">
+        <small>ADP data provided by <a href="https://fantasyfootballcalculator.com" target="_blank">fantasyfootballcalculator.com</a> from {{ adpTotal }} drafts between {{ adpStart }} and {{ adpEnd }}</small>
+      </div>
     </template>
   </section>
 </template>
@@ -84,6 +87,9 @@ export default {
       'currentDraftOrder',
       'picksByRound',
       'adp',
+      'adpStart',
+      'adpEnd',
+      'adpTotal',
       'players',
     ]),
     dataLoaded() {

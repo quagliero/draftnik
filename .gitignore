@@ -6,6 +6,5 @@ npm-debug.log
 test/unit/coverage
 test/e2e/reports
 selenium-debug.log
-static/data/adp.json
-static/data/players.json
-static/data/drafts.json
+static/data/adp-player.json
+static/data/pick-values-bayesian.json

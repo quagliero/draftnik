@@ -40,7 +40,7 @@
               <span class="panel-icon">
                 <i class="fa fa-vcard-o"></i>
               </span>
-              {{ formatPlayerName(player.name) }} ({{ player.position }})
+              {{ player.name }} ({{ player.pos }})
             </button>
           </div>
           <div class="level-right">
@@ -74,7 +74,6 @@
   import keys from 'lodash/keys';
   import findIndex from 'lodash/findIndex';
   import { SELECT_PICK } from '../../store/mutations';
-  import { formatPlayerName } from '../../utils';
 
   export default {
     name: 'my-watchlist',
@@ -83,7 +82,6 @@
         expanded: true,
         watchlistFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
         selectedWatchlistFilter: 'All',
-        formatPlayerName,
       };
     },
     computed: {
@@ -118,7 +116,7 @@
           return this.watchlistPlayers;
         }
 
-        return filter(this.watchlistPlayers, (p) => p.position === pos);
+        return filter(this.watchlistPlayers, (p) => p.pos === pos);
       },
       addToWatchlistClick(player) {
         this.addToWatchlist({

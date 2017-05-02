@@ -15,10 +15,13 @@ const getters = {
 
 // actions
 const actions = {
-  getPlayers({ commit }) {
+  getPlayersAndAdp({ commit }) {
     if (state.all == null) {
-      api.getPlayers().then(response => {
-        commit(types.RECEIVE_PLAYERS, { response });
+      api.getPlayersAndAdp().then(response => {
+        const data = response.data;
+        console.log(data);
+        commit(types.RECEIVE_PLAYERS, { players: data.adp_data.player });
+        commit(types.RECEIVE_ADP, { adp: data });
       }).catch(error => {
         console.error(error);
       });
@@ -28,12 +31,11 @@ const actions = {
 
 // mutations
 const mutations = {
-  [types.RECEIVE_PLAYERS](stateObj, { response }) {
-    stateObj.all = reduce(response.data.players.player, (acc, cur) => {
+  [types.RECEIVE_PLAYERS](stateObj, { players }) {
+    stateObj.all = reduce(players, (acc, cur) => {
       acc[cur.id] = cur;
       return acc;
     }, {});
-    stateObj.timestap = Number(response.data.players.timestamp);
   },
 };
 
