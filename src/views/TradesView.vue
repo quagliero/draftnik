@@ -3,7 +3,7 @@
     <section class="container">
       <h1 class="title">Accepted Trades</h1>
       <ul class="panel has-text-centered">
-        <li v-for="trade in acceptedTrades" style="margin-bottom: 1rem;">
+        <li v-for="trade in sortedTrades" style="margin-bottom: 1rem;">
           <div class="panel-heading">
             <div class="columns is-mobile">
               <div class="column is-5">
@@ -37,6 +37,12 @@
               </div>
             </div>
           </div>
+          <div
+            v-if="trade.closedAt != null"
+            class="panel-block has-text-centered"
+          >
+            <small style="width: 100%;">Trade accepted on {{ prettyDate(trade.closedAt) }}</small>
+          </div>
         </li>
       </ul>
     </section>
@@ -45,6 +51,8 @@
 
 <script>
   import { mapGetters } from 'vuex';
+  import sortBy from 'lodash/sortBy';
+  import moment from 'moment';
 
   export default {
     name: 'trades-view',
@@ -55,13 +63,19 @@
         'getUserById',
         'getPickById',
       ]),
+      sortedTrades() {
+        return sortBy(this.acceptedTrades, (a) => a.closedAt).reverse();
+      },
     },
-    created() {
-      this.$store.dispatch('getDrafts').then(() => {
-        this.$store.dispatch('getAcceptedTrades', {
-          draft: this.currentDraft.id,
-        });
-      });
+    methods: {
+      prettyDate(date) {
+        if (date != null) {
+          const pretty = moment(date).format('MMMM Do YYYY @ h:mma');
+          return `${pretty}`;
+        }
+
+        return '';
+      },
     },
   };
 </script>

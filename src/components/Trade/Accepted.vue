@@ -9,7 +9,8 @@
     />
     <trade-outcome
       status="is-success"
-      notification="This trade was accepted"
+      notification="Trade accepted"
+      :date="trade.closedAt"
     />
     <hr/>
     <trade-calculators

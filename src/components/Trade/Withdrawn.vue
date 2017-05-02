@@ -8,7 +8,8 @@
     />
     <trade-outcome
       status="is-danger"
-      notification="This offer was withdrawn"
+      notification="Trade withdrawn"
+      :date="trade.closedAt"
     />
     <hr/>
     <trade-calculators
