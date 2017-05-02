@@ -98,7 +98,7 @@
         return this.filterWatchlistBy(this.selectedWatchlistFilter);
       },
       watchlistPlayers() {
-        return map(keys(this.watchlist), pid => this.players[pid]);
+        return filter(map(keys(this.watchlist), pid => this.players[pid]), p => p);
       },
     },
     methods: {

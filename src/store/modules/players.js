@@ -16,10 +16,9 @@ const getters = {
 // actions
 const actions = {
   getPlayersAndAdp({ commit }) {
-    if (state.all == null) {
+    if (state.all === null) {
       api.getPlayersAndAdp().then(response => {
         const data = response.data;
-        console.log(data);
         commit(types.RECEIVE_PLAYERS, { players: data.adp_data.player });
         commit(types.RECEIVE_ADP, { adp: data });
       }).catch(error => {
