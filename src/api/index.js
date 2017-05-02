@@ -2,11 +2,15 @@ import axios from 'axios';
 import { auth, db } from '../database';
 import { TradeStatus } from '../constants';
 
+window.axios = axios;
+
 const listenForValueEvents = (url, cb) => {
   db.ref(url).on('value', snapshot => {
     cb(snapshot.val());
   });
 };
+
+const from = Math.floor(new Date() / 8.64e7);
 
 export default {
   login(credentials) {
@@ -98,6 +102,6 @@ export default {
     return axios.get('/static/data/players.json');
   },
   getAdp() {
-    return axios.get('/static/data/adp.json');
+    return axios.get(`/static/data/adp.json?timestamp=${from}`);
   },
 };

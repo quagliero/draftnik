@@ -14,7 +14,7 @@ function getPlayerData() {
 }
 
 function getAdpData() {
-  return axios.get(`${mflUrl}adp&FRANCHISES=12&IS_KEEPER=0&IS_MOCK=0`);
+  return axios.get(`${mflUrl}adp&FRANCHISES=12&IS_PPR=0&IS_KEEPER=0`);
 }
 
 axios.all([getPlayerData(), getAdpData()])
@@ -26,8 +26,8 @@ axios.all([getPlayerData(), getAdpData()])
 
     spinner.text = 'data fetched, processing...';
 
-    const playerData = playerResponse.data;
-    const adpData = adpResponse.data;
+    let playerData = playerResponse.data;
+    let adpData = adpResponse.data;
 
     const playerArray = [];
     const adpArray = [];
@@ -49,6 +49,7 @@ axios.all([getPlayerData(), getAdpData()])
 
     // overwrite enormous player response with only players we want
     playerData.players.player = playerArray;
+
     // overwrite adp data with player info within it to save constant lookups
     adpData.adp.player = adpArray.sort((a, b) => Number(a.averagePick) - Number(b.averagePick));
 
