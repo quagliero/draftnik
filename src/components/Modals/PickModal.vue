@@ -18,7 +18,7 @@
             <i v-if="isInWatchlist(player.id)" class="fa fa-check"></i>
             <i v-else class="fa fa-plus"></i>
           </span>
-          <span>{{ formatName(player.name) }}</span>
+          <span>{{ player.name }}</span>
         </button>
       </p>
       <p>
@@ -61,7 +61,6 @@
     getTeamById,
     getPickValue,
     getPlayersInRange,
-    formatPlayerName,
   } from '../../utils';
   import { SELECT_RECEIVING_TEAM } from '../../store/mutations';
   import Modal from '../Modal.vue';
@@ -185,9 +184,6 @@
           pick: this.selectedPick,
         });
         this.$bus.$emit('pickModal.close');
-      },
-      formatName(name) {
-        return formatPlayerName(name);
       },
     },
     mounted() {

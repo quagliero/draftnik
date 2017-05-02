@@ -104,4 +104,7 @@ export default {
   getAdp() {
     return axios.get(`/static/data/adp.json?timestamp=${from}`);
   },
+  getPlayersAndAdp() {
+    return axios.get(`/static/data/adp-player.json?timestamp=${from}`);
+  },
 };

@@ -29,10 +29,9 @@ export default {
     // then trigger authentication checks and pull in required data
     this.$store.dispatch('getUsers').then(() => {
       this.$store.dispatch('checkAuth');
-      this.$store.dispatch('getPlayers');
+      this.$store.dispatch('getPlayersAndAdp');
       this.$store.dispatch('getDrafts');
       this.$store.dispatch('getPickValuesBayesian');
-      this.$store.dispatch('getAdp');
     });
   },
 };

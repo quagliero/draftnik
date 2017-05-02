@@ -1,10 +1,8 @@
-import api from '../../api';
 import * as types from '../mutations';
 
 // initial state
 const state = {
   all: [],
-  timestap: null,
   totalDrafts: 0,
 };
 
@@ -16,29 +14,18 @@ const getters = {
 };
 
 // actions
-const actions = {
-  getAdp({ commit }) {
-    // adps change daily, so in the future compare a timestamp and only update if they differ
-    if (!(state.all.length)) {
-      api.getAdp().then(response => {
-        commit(types.RECEIVE_ADP, { response });
-      });
-    }
-  },
-};
+
 
 // mutations
 const mutations = {
-  [types.RECEIVE_ADP](stateObj, { response }) {
-    stateObj.all = response.data.adp.player;
-    stateObj.timestap = Number(response.data.adp.timestamp);
-    stateObj.totalDrafts = Number(response.data.adp.totalDrafts);
+  [types.RECEIVE_ADP](stateObj, { adp }) {
+    stateObj.all = adp.adp_data.player;
+    stateObj.totalDrafts = Number(adp.adp_info.total_drafts);
   },
 };
 
 export default {
   state,
   getters,
-  actions,
   mutations,
 };
