@@ -6,29 +6,28 @@
         <li v-for="trade in acceptedTrades" style="margin-bottom: 1rem;">
           <div class="panel-heading">
             <div class="columns is-mobile">
-              <div class="column is-4">
-                <strong>{{ getUserById(trade.givingTeam).teamName }}</strong>
+              <div class="column is-5">
+                <strong class="trades-team-name">{{ getUserById(trade.givingTeam).teamName }}</strong>
               </div>
-              <div class="column is-4"></div>
-              <div class="column is-4">
-                <strong>{{ getUserById(trade.receivingTeam).teamName }}</strong>
+              <div class="column is-2"></div>
+              <div class="column is-5">
+                <strong class="trades-team-name">{{ getUserById(trade.receivingTeam).teamName }}</strong>
               </div>
             </div>
           </div>
           <div class="panel-block">
             <div class="level is-mobile">
-              <div class="column is-4">
-
+              <div class="column is-5">
                 <ul>
                   <li v-for="(value, pick) in trade.givingPicks">
                     #{{ getPickById(pick).overall }}
                   </li>
                 </ul>
               </div>
-              <div class="column is-4">
+              <div class="column is-2">
                 <i class="fa fa-exchange"></i>
               </div>
-              <div class="column is-4">
+              <div class="column is-5">
 
                 <ul>
                   <li v-for="(value, pick) in trade.receivingPicks">
@@ -70,5 +69,11 @@
 <style lang="scss" scoped>
   .level {
     width: 100%;
+  }
+
+  .trades-team-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
