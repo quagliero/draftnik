@@ -1,3 +1,4 @@
+import { database as fireDb } from 'firebase';
 import keys from 'lodash/keys';
 import map from 'lodash/map';
 import filter from 'lodash/filter';
@@ -133,7 +134,7 @@ const actions = {
       givingPicks: trade.givingPicks,
       receivingPicks: trade.receivingPicks,
       status: TradeStatus.OFFERED,
-      seen: false,
+      createdAt: fireDb.ServerValue.TIMESTAMP,
     };
 
     if (trade.message != null) {

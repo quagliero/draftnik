@@ -8,7 +8,8 @@
     />
     <trade-outcome
       status="is-danger"
-      notification="This offer was rejected"
+      notification="Trade rejected"
+      :date="trade.closedAt"
     />
     <hr/>
     <trade-calculators

@@ -3,7 +3,7 @@
     <div class="column has-text-centered">
       <div>
         <div :class="['notification', status]">
-          <span class="title is-5">{{ notification }}</span>
+          <span class="title is-5">{{ notification }} {{ prettyDate }}</span>
         </div>
       </div>
     </div>
@@ -11,9 +11,21 @@
 </template>
 
 <script>
+  import moment from 'moment';
+
   export default {
     name: 'trade-outcome',
-    props: ['status', 'notification'],
+    props: ['status', 'notification', 'date'],
+    computed: {
+      prettyDate() {
+        if (this.date != null) {
+          const pretty = moment(this.date).format('MMMM Do YYYY @ h:mma');
+          return ` on ${pretty}`;
+        }
+
+        return '';
+      },
+    },
   };
 </script>
 

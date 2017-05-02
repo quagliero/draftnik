@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { database as fireDb } from 'firebase';
 import { auth, db } from '../database';
 import { TradeStatus } from '../constants';
 
@@ -60,16 +61,19 @@ export default {
   rejectTrade({ draft, trade }) {
     return db.ref(`trades/${draft}/${trade}`).update({
       status: TradeStatus.REJECTED,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
     });
   },
   withdrawTrade({ draft, trade }) {
     return db.ref(`trades/${draft}/${trade}`).update({
       status: TradeStatus.WITHDRAWN,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
     });
   },
   acceptTrade({ draft, trade }) {
     return db.ref(`trades/${draft}/${trade}`).update({
       status: TradeStatus.ACCEPTED,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
     });
   },
   addTradeToAccepted({ draft, trade }) {
