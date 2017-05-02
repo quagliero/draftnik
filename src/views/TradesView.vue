@@ -77,6 +77,13 @@
         return '';
       },
     },
+    created() {
+      this.$store.dispatch('getDrafts').then(() => {
+        this.$store.dispatch('getAcceptedTrades', {
+          draft: this.currentDraft.id,
+        });
+      });
+    },
   };
 </script>
 
