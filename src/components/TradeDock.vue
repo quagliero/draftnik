@@ -1,107 +1,127 @@
 <template>
 <div>
   <div v-if="hasTrade" class="trade-dock">
-    <transition name="slide-up">
-      <div v-if="showTradeValidation" class="trade-dock__notifications">
-        <div class="notification is-danger">
-          <button class="delete" @click="showTradeValidation = false"></button>
-          An even amount of picks must be exchanged.
-          You are giving {{ givingPicks.length }}, and receiving {{ receivingPicks.length }}.
-        </div>
-      </div>
-      <div v-if="showTradeSuccess" class="trade-dock__notifications">
-        <div class="notification is-success">
-          <button class="delete" @click="clearTrade"></button>
-          <div class="trade-dock__success">
-            <p style="margin-bottom: 1rem">Your trade offer has been sent!</p>
-            <button
-              class="button is-success is-inverted is-outlined"
-              @click="offerComplete = false; showTradeSuccess = false;"
-            >
-              Make another?
-            </button>
-            <button class="button is-success" @click="clearTrade">
-              I'm done, thanks
-            </button>
+    <div class="container">
+      <transition name="slide-up">
+        <div v-if="showTradeValidation" class="trade-dock__notifications">
+          <div class="notification is-danger">
+            <button class="delete" @click="showTradeValidation = false"></button>
+            An even amount of picks must be exchanged.
+            You are giving {{ givingPicks.length }}, and receiving {{ receivingPicks.length }}.
           </div>
         </div>
-      </div>
-    </transition>
+        <div v-if="showTradeSuccess" class="trade-dock__notifications">
+          <div class="notification is-success">
+            <button class="delete" @click="clearTrade"></button>
+            <div class="trade-dock__success">
+              <p style="margin-bottom: 1rem">Your trade offer has been sent!</p>
+              <button
+                class="button is-success is-inverted is-outlined"
+                @click="offerComplete = false; showTradeSuccess = false;"
+              >
+                Make another?
+              </button>
+              <button class="button is-success" @click="clearTrade">
+                I'm done, thanks
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
     <div class="trade-dock__inner">
-      <div class="columns">
-        <div class="column">
-          <div class="trade-dock__picks">
-            <div class="trade-dock__giving" v-if="currentTrade.receivingPicks.length">
-              <b>You get:&nbsp;</b>
-              <trade-dock-pick
-                v-for="(pick, i) in receivingPicks"
-                :key="pick.overall"
-                :pick="pick"
-                 @click="onDockPickClick"
-              >{{ (i !== receivingPicks.length - 1) ? ',' : ''}}
-              </trade-dock-pick>
-            </div>
-            <div class="trade-dock__receiving" v-if="givingPicks.length">
-              <b v-if="receivingTeam.displayName">{{ receivingTeam.displayName }} gets:&nbsp;</b>
-              <b v-else>They get:&nbsp;</b>
-              <trade-dock-pick
-                v-for="(pick, i) in givingPicks"
-                :key="pick.overall"
-                :pick="pick"
-                 @click="onDockPickClick"
-              >{{ (i !== givingPicks.length - 1) ? ',' : ''}}
-              </trade-dock-pick>
+      <div class="container">
+        <div class="columns align-items-center">
+          <div class="column is-4">
+            <div class="trade-dock__picks">
+              <div class="trade-dock__giving" v-if="currentTrade.receivingPicks.length">
+                <b>You get:&nbsp;</b>
+                <trade-dock-pick
+                  v-for="(pick, i) in receivingPicks"
+                  :key="pick.overall"
+                  :pick="pick"
+                   @click="onDockPickClick"
+                >{{ (i !== receivingPicks.length - 1) ? ',' : ''}}
+                </trade-dock-pick>
+              </div>
+              <div class="trade-dock__receiving" v-if="givingPicks.length">
+                <b v-if="receivingTeam.displayName">{{ receivingTeam.displayName }} gets:&nbsp;</b>
+                <b v-else>They get:&nbsp;</b>
+                <trade-dock-pick
+                  v-for="(pick, i) in givingPicks"
+                  :key="pick.overall"
+                  :pick="pick"
+                   @click="onDockPickClick"
+                >{{ (i !== givingPicks.length - 1) ? ',' : ''}}
+                </trade-dock-pick>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          class="level-item"
-          v-if="canMakeOffer"
-        >
-          <div class="trade-dock__calcs">
-            <div class="trade-dock__calc">
-              <a href="http://www.draftpicktradecalculator.com/" target="_blank">
-                <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
-                <span v-html="BayesianTradeCalculator"></span>
-              </a>
+          <div
+            class="column"
+            v-if="canMakeOffer"
+          >
+            <div class="trade-dock__calcs">
+              <div class="trade-dock__calc">
+                <a href="http://www.draftpicktradecalculator.com/" target="_blank">
+                  <img v-if="BayesianTradeCalculator" class="trade-dock__img" src="/static/img/bayesian.png" alt="Bayesian"/>
+                  <span v-html="BayesianTradeCalculator"></span>
+                </a>
+              </div>
+              <div class="trade-dock__calc">
+                <a href="https://footballguys.com/pickvalue.htm" target="_blank">
+                  <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
+                  <span v-html="DoddsTradeCalculator"></span>
+                </a>
+              </div>
             </div>
-            <div class="trade-dock__calc">
-              <a href="https://footballguys.com/pickvalue.htm" target="_blank">
-                <img v-if="DoddsTradeCalculator" class="trade-dock__img" src="/static/img/dodds.png" alt="Doddsy"/>
-                <span v-html="DoddsTradeCalculator"></span>
-              </a>
+          </div>
+          <div class="column">
+            <textarea
+              v-show="canMakeOffer && showMessage && !offerComplete"
+              v-model="message"
+              placeholder="Add a message..."
+              class="textarea trade-dock__message"
+            />
+            <div class="trade-dock__action">
+              <button
+                v-if="canMakeOffer && !offerComplete"
+                class="button is-dark"
+                @click="showMessage = !showMessage"
+              >
+                <span class="icon is-small">
+                  <i class="fa fa-plus-circle"></i>
+                  &nbsp;
+                  <i class="fa fa-comment"></i>
+                </span>
+              </button>
+              <button
+                v-if="canMakeOffer"
+                :class="['trade-dock__offer button is-outlined is-primary', {
+                  'is-loading': offerProcessing,
+                  'is-hidden': offerComplete,
+                }]"
+                @click="onMakeOfferClick"
+                :disabled="offerProcessing"
+              >
+                <span class="icon is-small">
+                  <i class="fa fa-paper-plane"></i>
+                </span>
+                <span>Make Offer</span>
+              </button>
+              <button
+                @click="clearTrade"
+                class="trade-dock__clear button is-dark is-outlined is-inverted"
+              >
+                <span class="icon is-small">
+                  <i class="fa fa-times-circle"></i>
+                </span>
+                <span>Clear</span>
+              </button>
             </div>
           </div>
         </div>
-        <div class="column level-item">
-          <div class="trade-dock__action">
-            <button
-              v-if="canMakeOffer"
-              :class="['trade-dock__offer button is-outlined is-primary', {
-                'is-loading': offerProcessing,
-                'is-hidden': offerComplete,
-              }]"
-              @click="onMakeOfferClick"
-              :disabled="offerProcessing"
-            >
-              <span class="icon is-small">
-                <i class="fa fa-paper-plane"></i>
-              </span>
-              <span>Make Offer</span>
-            </button>
-            <button
-              @click="clearTrade"
-              class="trade-dock__clear button is-dark is-outlined is-inverted"
-            >
-              <span class="icon">
-                <i class="fa fa-times-circle"></i>
-              </span>
-              <span>Clear</span>
-            </button>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -111,7 +131,12 @@
 <script>
   import { mapGetters, mapActions, mapMutations } from 'vuex';
   import reduce from 'lodash/reduce';
-  import { SELECT_PICK, CLEAR_TRADE, CLEAR_RECEIVING_TEAM } from '../store/mutations';
+  import {
+    SELECT_PICK,
+    CLEAR_TRADE,
+    CLEAR_RECEIVING_TEAM,
+    ADD_TRADE_MESSAGE,
+  } from '../store/mutations';
   import TradeDockPick from './TradeDock/Pick.vue';
   import {
     getTeamById,
@@ -130,6 +155,7 @@
         showTradeSuccess: false,
         offerProcessing: false,
         offerComplete: false,
+        showMessage: false,
       };
     },
     computed: {
@@ -138,6 +164,14 @@
         'currentUser',
         'currentDraft',
       ]),
+      message: {
+        get() {
+          return this.currentTrade.message;
+        },
+        set(value) {
+          this.ADD_TRADE_MESSAGE(value);
+        },
+      },
       hasTrade() {
         return this.currentTrade.id &&
         (this.currentTrade.givingPicks.length || this.currentTrade.receivingPicks.length);
@@ -180,6 +214,8 @@
         SELECT_PICK,
         CLEAR_TRADE,
         CLEAR_RECEIVING_TEAM,
+        ADD_TRADE_MESSAGE,
+
       }),
       ...mapActions([
         'proposeTrade',
@@ -194,6 +230,7 @@
       clearTrade() {
         this.offerComplete = false;
         this.showTradeSuccess = false;
+        this.showMessage = false;
         this.CLEAR_TRADE();
         this.CLEAR_RECEIVING_TEAM();
       },
@@ -216,6 +253,7 @@
             acc[cur.id] = true;
             return acc;
           }, {}),
+          message: this.message,
         };
 
         this.proposeTrade({ draft: this.currentDraft.id, trade }).then(() => {
@@ -226,7 +264,6 @@
           this.offerComplete = false;
           this.offerProcessing = false;
         });
-
         return true;
       },
     },
@@ -251,7 +288,7 @@
 
   .trade-dock__inner {
     background-color: $dark;
-    padding: 8px 20px;
+    padding: 0.75rem;
     z-index: 5;
   }
 
@@ -273,11 +310,13 @@
   .trade-dock__calcs {
     display: flex;
     align-items: flex-start;
+    justify-content: center;
   }
 
   .trade-dock__calc {
-    padding-right: 20px;
-    align-items: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    text-align: center;
     font-size: 1.2rem;
     font-weight: bold;
 
@@ -299,13 +338,42 @@
     border: 2px solid $white-ter;
   }
 
+  .trade-dock__message {
+    background-color: $grey-dark;
+    color: $white;
+    margin-left: 0;
+    margin-right: 0;
+    min-height: 2.3rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+      color: $grey-lighter;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+      color: $grey-lighter;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+      color: $grey-lighter;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+      color: $grey-lighter;
+    }
+  }
+
   .trade-dock__action {
-    text-align: right;
+    justify-content: flex-end;
+    display: flex;
     width: 100%;
 
     .button {
       vertical-align: middle;
       text-align: center !important;
+      margin-left: 0.75rem;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
     }
 
     @media screen and (max-width: $tablet) {
@@ -313,16 +381,7 @@
       justify-content: center;
       margin-bottom: 10px;
 
-      .trade-dock__offer {
-        flex: 4;
-      }
-
-      .trade-dock__clear {
-        flex: 1;
-      }
-
       .button {
-        font-size: 1.25rem;
         line-height: 1.5;
         height: 2.285em;
 
@@ -334,15 +393,18 @@
   }
 
   .trade-dock__offer {
-    margin-right: 1rem;
+    flex: 3;
+  }
+
+  .trade-dock__clear {
   }
 
   .trade-dock__notifications {
     position: absolute;
     bottom: 100%;
-    margin-bottom: 10px;
-    left: 20px;
-    right: 20px;
+    margin-bottom: 0.75rem;
+    left: 0;
+    right: 0;
     z-index: 4;
   }
 
@@ -363,6 +425,10 @@
   .slide-up-enter, .slide-up-leave-active {
     opacity: 0;
     bottom: -50%;
+  }
+
+  .align-items-center {
+    align-items: center;
   }
 
 </style>

@@ -58,6 +58,7 @@ export default {
 @import "~bulma/components/panel";
 @import "~bulma/components/level";
 @import "~bulma/components/message";
+@import "~bulma/components/media";
 
 #app {
   -webkit-font-smoothing: antialiased;
