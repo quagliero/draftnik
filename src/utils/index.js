@@ -44,13 +44,6 @@ export const getPickValue = (pickNumber) => {
 
 export const getPlayerById = (playerId) => store.getters.players[playerId];
 
-/**
- * formatPlayerName turns "Bell, Le'Veon" in "Le'Veon Bell"
- * @param  {String} name The player name as it arrives from the MFL JSON
- * @return {String}
- */
-export const formatPlayerName = (name) => name.split(', ').reverse().join(' ');
-
 export const getPlayersInRange = (pick, range) => {
   range = range || 2;
   pick = (pick >= range) ? pick : range;

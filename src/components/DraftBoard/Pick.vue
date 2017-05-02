@@ -105,11 +105,14 @@
           return new Promise(resolve => {
             const adpInfo = this.adp[Number(this.pick.overall) - 1];
             const player = getPlayerById(adpInfo.id);
-            const playerName = player.name.split(', ').reverse();
+            let playerName = player.name.split(' ');
+            if ((playerName.indexOf('Defense') > -1) && playerName.length === 3) {
+              playerName = [[playerName[0], playerName[1]].join(' '), playerName[2]];
+            }
             resolve({
               forename: playerName[0],
               surname: playerName[1],
-              position: player.position,
+              position: player.pos,
             });
           });
         },
