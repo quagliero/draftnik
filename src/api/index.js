@@ -3,15 +3,11 @@ import { database as fireDb } from 'firebase';
 import { auth, db } from '../database';
 import { TradeStatus } from '../constants';
 
-window.axios = axios;
-
 const listenForValueEvents = (url, cb) => {
   db.ref(url).on('value', snapshot => {
     cb(snapshot.val());
   });
 };
-
-const from = Math.floor(new Date() / 8.64e7);
 
 export default {
   login(credentials) {
@@ -102,13 +98,7 @@ export default {
   getPickValuesBayesian() {
     return axios.get('/static/data/pick-values-bayesian.json');
   },
-  getPlayers() {
-    return axios.get('/static/data/players.json');
-  },
-  getAdp() {
-    return axios.get(`/static/data/adp.json?timestamp=${from}`);
-  },
   getPlayersAndAdp() {
-    return axios.get(`/static/data/adp-player.json?timestamp=${from}`);
+    return axios.get('/static/data/adp-player.json');
   },
 };
