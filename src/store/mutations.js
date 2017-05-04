@@ -12,6 +12,8 @@ export const CAUGHT_ERROR = 'CAUGHT_ERROR';
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 
 // Drafts
+export const FETCHING_DRAFTS = 'FETCHING_DRAFTS';
+export const FETCHED_DRAFTS = 'FETCHED_DRAFTS';
 export const RECEIVE_DRAFTS = 'RECEIVE_DRAFTS';
 export const SELECT_DRAFT = 'SELECT_DRAFT';
 export const MAP_PICKS = 'MAP_PICKS';

@@ -10,7 +10,7 @@
     <div v-if="authenticated === true">
       <p>
         <button class="add-to-watchlist button is-small is-white"
-          v-for="(player, i) in playersInRange"
+          v-for="player in playersInRange"
           :key="player.id"
           @click="handleAddToWatchlist(player)"
         >
@@ -195,12 +195,12 @@
         this.showPickModal = false;
       });
 
-      if (this.authenticated === true) {
+      this.$store.dispatch('getDrafts').then(() => {
         this.$store.dispatch('getWatchlist', {
           draft: this.currentDraft.id,
           user: this.currentUser.id,
         });
-      }
+      });
     },
   };
 </script>
