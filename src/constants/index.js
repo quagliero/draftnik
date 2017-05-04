@@ -1,6 +1,12 @@
 export const BoardView = {
+  SNAKE: 'SNAKE',
+  STANDARD: 'STANDARD',
+  STACK: 'STACK',
+};
+
+export const PickView = {
   ADP: 'ADP',
-  PICK: 'PICK',
+  TEAM: 'TEAM',
 };
 
 export const TradeStatus = {

@@ -4,27 +4,63 @@
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
     <template v-if="dataLoaded">
       <div class="board-toggle">
-        <div class="field has-addons">
-          <span class="control">
-            <button
-              @click="boardView = 'pick'"
-              :class="[{
-                'is-primary is-active' : boardView === 'pick'
-              }, 'button is-light']"
-            >
-              Teams
-            </button>
-          </span>
-          <span class="control">
-            <button
-              @click="boardView = 'adp'"
-              :class="[{
-                'is-primary is-active' : boardView === 'adp'
-              }, 'button is-light']"
-            >
-              ADP
-            </button>
-          </span>
+        <div class="field field-horizontal">
+          <div class="field-body">
+            <div class="field has-addons has-addons-centered">
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.STACK)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.STACK
+                  }, 'button is-light']"
+                >
+                  Stack
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.SNAKE)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.SNAKE
+                  }, 'button is-light']"
+                >
+                  Snake
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.STANDARD)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.STANDARD
+                  }, 'button is-light']"
+                >
+                  Standard
+                </button>
+              </span>
+            </div>
+            <div class="field has-addons has-addons-centered">
+              <span class="control">
+                <button
+                  @click="setPickView(PickView.TEAM)"
+                  :class="[{
+                    'is-info is-active' : pickView === PickView.TEAM
+                  }, 'button is-light']"
+                >
+                  Teams
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setPickView(PickView.ADP)"
+                  :class="[{
+                    'is-info is-active' : pickView === PickView.ADP
+                  }, 'button is-light']"
+                >
+                  ADP
+                </button>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="scroll-container">
@@ -36,7 +72,6 @@
                   v-for="team in currentDraftOrder"
                   :teamId="team"
                   :key="team"
-                  :boardView="boardView"
                 />
               </tr>
             </thead>
@@ -47,7 +82,6 @@
                 :key="key"
                 :index="key"
                 :round="round"
-                :boardView="boardView"
                 @onPickClick="$emit('onPickClick')"
               />
             </tbody>
@@ -62,10 +96,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
+import { SELECT_BOARD_VIEW, SELECT_PICK_VIEW } from '../store/mutations';
 import Round from '../components/DraftBoard/Round.vue';
 import Team from '../components/DraftBoard/Team.vue';
 import PickModal from '../components/Modals/PickModal.vue';
+import { BoardView, PickView } from '../constants';
 
 export default {
   name: 'draft-board',
@@ -76,13 +112,14 @@ export default {
   },
   data() {
     return {
-      showPickModal: false,
-      modalContent: '',
-      boardView: 'pick',
+      BoardView,
+      PickView,
     };
   },
   computed: {
     ...mapGetters([
+      'boardView',
+      'pickView',
       'currentDraft',
       'currentDraftOrder',
       'picksByRound',
@@ -95,6 +132,18 @@ export default {
     dataLoaded() {
       // we've got all the data we want
       return this.currentDraft && this.picksByRound && this.players && this.adp.length;
+    },
+  },
+  methods: {
+    ...mapMutations({
+      SELECT_BOARD_VIEW,
+      SELECT_PICK_VIEW,
+    }),
+    setBoardView(view) {
+      this.SELECT_BOARD_VIEW(view);
+    },
+    setPickView(view) {
+      this.SELECT_PICK_VIEW(view);
     },
   },
 };

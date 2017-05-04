@@ -3,7 +3,7 @@
     class="team"
     :class="{
       'is-selected' : isSelected,
-      'is-adp-view' : boardView === 'adp',
+      'is-adp-view' : pickView === PickView.ADP,
     }"
     @click="handleClick(teamId)"
   >
@@ -13,6 +13,7 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+  import { PickView } from '../../constants';
 
   export default {
     name: 'team',
@@ -21,13 +22,15 @@
         type: String,
         required: true,
       },
-      boardView: {
-        type: String,
-        required: true,
-      },
+    },
+    data() {
+      return {
+        PickView,
+      };
     },
     computed: {
       ...mapGetters([
+        'pickView',
         'selectedTeam',
         'allUsers',
       ]),

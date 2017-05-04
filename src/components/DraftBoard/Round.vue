@@ -1,16 +1,17 @@
 <template>
   <tr>
     <pick
-      v-for="pick in checkRound"
+      v-for="pick in roundDirection"
       :pick="pick"
       :key="pick.overall"
-      :boardView="boardView"
     />
   </tr>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
   import Pick from './Pick.vue';
+  import { BoardView } from '../../constants';
 
   export default {
     name: 'round',
@@ -25,21 +26,25 @@
         type: Array,
         required: true,
       },
-      boardView: {
-        type: String,
-        required: true,
-      },
     },
     data() {
       return {
         // create local version as we reverse it and therefore mutate the state
-        displayRound: this.round.slice(0),
+        standardRound: this.round,
+        reverseRound: this.round.slice(0).reverse(),
       };
     },
     computed: {
-      checkRound() {
-        // odd numbered rounds should print like a snake
-        return (this.index % 2 === 0) ? this.displayRound.reverse() : this.displayRound;
+      ...mapGetters([
+        'boardView',
+      ]),
+      roundDirection() {
+        // odd numbered rounds should print in reverse on snake view
+        if (this.boardView === BoardView.SNAKE && (this.index % 2 === 0)) {
+          return this.reverseRound;
+        }
+
+        return this.standardRound;
       },
     },
   };

@@ -5,9 +5,12 @@ import toArray from 'lodash/toArray';
 import api from '../../api';
 import * as types from '../mutations';
 import { roundPicksMap } from '../../utils';
+import { BoardView, PickView } from '../../constants';
 
 // initial state
 const state = {
+  boardView: BoardView.SNAKE,
+  pickView: PickView.TEAM,
   fetching: false,
   all: null,
   currentDraft: {},
@@ -18,6 +21,8 @@ const state = {
 
 // getters
 const getters = {
+  boardView: stateObj => stateObj.boardView,
+  pickView: stateObj => stateObj.pickView,
   allDrafts: stateObj => stateObj.all,
   currentDraft: stateObj => stateObj.currentDraft,
   picks: stateObj => stateObj.currentDraft.picks,
@@ -57,6 +62,12 @@ const actions = {
 
 // mutations
 const mutations = {
+  [types.SELECT_BOARD_VIEW](stateObj, view) {
+    stateObj.boardView = view;
+  },
+  [types.SELECT_PICK_VIEW](stateObj, view) {
+    stateObj.pickView = view;
+  },
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
     stateObj.currentDraft = response[keys(response)[0]];

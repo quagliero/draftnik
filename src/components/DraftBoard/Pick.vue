@@ -7,7 +7,7 @@
       'pick--is-available' : isAvailable,
       'pick--is-receiving' : isReceiving,
       'pick--is-giving' : isGiving,
-      'pick--is-player' : boardView === 'adp',
+      'pick--is-player' : pickView === PickView.ADP,
     }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
   >
     <a
@@ -18,7 +18,7 @@
         <b class="pick__overall">{{ pick.overall }}</b>
         <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
       </div>
-      <div v-if="boardView === 'adp'" class="pick__player">
+      <div v-if="pickView === PickView.ADP" class="pick__player">
         <span class="player-forename" v-html="playerInfo.forename"></span>
         <span class="player-surname" v-html="playerInfo.surname"></span>
       </div>
@@ -35,6 +35,7 @@
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
   import { getTeamById, getPlayerById } from '../../utils';
+  import { PickView } from '../../constants';
 
   export default {
     name: 'pick',
@@ -43,12 +44,15 @@
         type: Object,
         required: true,
       },
-      boardView: {
-        type: String,
-      },
+    },
+    data() {
+      return {
+        PickView,
+      };
     },
     computed: {
       ...mapGetters([
+        'pickView',
         'selectedTeam',
         'currentTrade',
         'currentUser',
@@ -79,7 +83,7 @@
         return this.pick.team === this.currentTrade.givingTeam;
       },
       playerPositionClass() {
-        if (this.boardView === 'adp') {
+        if (this.pickView === PickView.ADP) {
           if (this.playerInfo.position) {
             return this.playerInfo.position.toLowerCase();
           }
