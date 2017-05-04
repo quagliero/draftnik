@@ -44,7 +44,7 @@ const actions = {
           commit(types.MAP_PICKS);
           resolve();
         }).catch(err => {
-          console.log(err);
+          console.error(err);
           commit(types.FETCHED_DRAFTS);
           reject();
         });
