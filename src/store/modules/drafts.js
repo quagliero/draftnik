@@ -8,6 +8,7 @@ import { roundPicksMap } from '../../utils';
 
 // initial state
 const state = {
+  fetching: false,
   all: null,
   currentDraft: {},
   selectedPick: {},
@@ -35,13 +36,16 @@ const actions = {
   getDrafts({ commit }) {
     // once we have them, don't bother again
     return new Promise((resolve, reject) => {
-      if (state.all === null) {
+      if (state.all === null && state.fetching === false) {
+        commit(types.FETCHING_DRAFTS);
         api.getDrafts().then(snapshot => {
+          commit(types.FETCHED_DRAFTS);
           commit(types.RECEIVE_DRAFTS, snapshot.val());
           commit(types.MAP_PICKS);
           resolve();
         }).catch(err => {
-          console.log(err);
+          console.error(err);
+          commit(types.FETCHED_DRAFTS);
           reject();
         });
       } else {
@@ -59,6 +63,12 @@ const mutations = {
     stateObj.currentDraftOrder = sortBy(
       keys(stateObj.currentDraft.order), (team) => stateObj.currentDraft.order[team],
     );
+  },
+  [types.FETCHING_DRAFTS](stateObj) {
+    stateObj.fetching = true;
+  },
+  [types.FETCHED_DRAFTS](stateObj) {
+    stateObj.fetching = false;
   },
   [types.SELECT_PICK](stateObj, { pick }) {
     stateObj.selectedPick = pick;
