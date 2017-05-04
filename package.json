@@ -12,7 +12,9 @@
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+    "play": "vbuild dev --config play.config.js",
+    "build:play": "vbuild --config play.config.js"
   },
   "dependencies": {
     "axios": "^0.16.1",
@@ -89,7 +91,9 @@
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0",
     "url-loader": "^0.5.8",
+    "vbuild": "^7.1.0",
     "vue-loader": "^12.0.2",
+    "vue-play": "^3.2.1",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.3.0",
     "webpack": "^1.14.0",
