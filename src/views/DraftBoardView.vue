@@ -12,7 +12,7 @@
                 'is-primary is-active' : boardView === 'pick'
               }, 'button is-light']"
             >
-              Pick View
+              Teams
             </button>
           </span>
           <span class="control">
@@ -22,7 +22,7 @@
                 'is-primary is-active' : boardView === 'adp'
               }, 'button is-light']"
             >
-              ADP View
+              ADP
             </button>
           </span>
         </div>
