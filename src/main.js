@@ -1,3 +1,4 @@
+import 'es6-promise/auto';
 import Vue from 'vue';
 import AsyncComputed from 'vue-async-computed';
 import { sync } from 'vuex-router-sync';

@@ -6,7 +6,7 @@
     <h3 class="title">Pick ({{ pickAndRound }})</h3>
     <p>Currently owned by: {{ team.displayName }}</p>
     <p>draftpicktradecalculator.com value: <strong>{{ bayesianValue }}</strong></p>
-    <progress class="progress" :value="percentageValue" max="100">{{percentageValue}}</progress>
+    <progress class="progress" max="100" :value="percentageValue"/>
     <div v-if="authenticated === true">
       <p>
         <button class="add-to-watchlist button is-small is-white"
@@ -122,7 +122,7 @@
         return getPickValue(this.selectedPick.overall);
       },
       percentageValue() {
-        return (this.bayesianValue / this.bayesianMaxValue) * 100;
+        return Math.round((this.bayesianValue / this.bayesianMaxValue) * 100);
       },
       playersInRange() {
         return getPlayersInRange(this.selectedPick.overall);
