@@ -1,8 +1,8 @@
 <template>
-  <tr name="flip-list" is="transition-group">
+  <tr name="flip-row" is="transition-group">
     <td
       v-for="pick in pickDirection"
-      class="board__cell flip-list-item"
+      class="board__cell flip-row-item"
       :key="pick.overall"
     >
       <pick
@@ -64,20 +64,10 @@
 
   $count: 12;
 
-  .round-number {
-    font-size: 1.2rem;
-    padding: 0 10px;
-    vertical-align: middle;
-    text-align: center;
-    background-color: $white-ter;
-    color: $grey-darker;
-    border: 1px solid $white;
-  }
-
-  .flip-list-item {
+  .flip-row-item {
      transition: opacity 0.4s ease-in-out;
   }
-  .flip-list-move {
+  .flip-row-move {
     transform: scale(0.85);
     opacity: 0.75;
 

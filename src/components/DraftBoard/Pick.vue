@@ -2,28 +2,37 @@
   <a
     class="pick"
     @click.prevent="onPickClick"
-    :class="[{
-      'pick--is-muted': isMuted,
-      'pick--is-selected' : isSelected,
-      'pick--is-available' : isAvailable,
-      'pick--is-receiving' : isReceiving,
-      'pick--is-giving' : isGiving,
-      'pick--is-player' : pickView === PickView.ADP,
-    }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
+    :class="[
+      {
+        'pick--is-muted': isMuted,
+        'pick--is-selected' : isSelected,
+        'pick--is-available' : isAvailable,
+        'pick--is-receiving' : isReceiving,
+        'pick--is-giving' : isGiving,
+        'pick--is-player' : pickView === PickView.ADP,
+      },
+      playerPositionClass ? `pick--${playerPositionClass}` : '',
+    ]"
   >
     <div class="pick__numbers">
       <b class="pick__overall">{{ pick.overall }}</b>
       <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
     </div>
     <div v-if="pickView === PickView.ADP" class="pick__player">
-      <span class="player-forename" v-html="playerInfo.forename"></span>
-      <span class="player-surname" v-html="playerInfo.surname"></span>
+      <span class="player-forename">{{ playerInfo.forename }}</span>
+      <span class="player-surname">{{ playerInfo.surname }}</span>
+      <span class="pick__team">
+        {{ playerInfo.position }} &ndash; {{ playerInfo.team }}
+      </span>
     </div>
-      <transition name="name-fade">
-        <div class="pick__team" v-if="!isSelected">
-          <span class="tag is-white">{{ teamInfo.displayName }}</span>
-        </div>
-      </transition>
+    <div v-show="pickView === PickView.TEAM" class="pick__team">
+      <span
+        class="tag"
+        v-html="teamInfo.displayName"
+        :style="{ color: brand.BACKGROUND }"
+      ></span>
+    </div>
+    <span v-show="pickView === PickView.ADP" :style="brandMarker"></span>
   </a>
 </template>
 
@@ -31,7 +40,7 @@
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
   import { getTeamById, getPlayerById } from '../../utils';
-  import { PickView } from '../../constants';
+  import { PickView, BoardView, TeamBrand } from '../../constants';
 
   export default {
     name: 'pick',
@@ -43,17 +52,33 @@
     data() {
       return {
         PickView,
+        BoardView,
+        TeamBrand,
       };
     },
     computed: {
       ...mapGetters([
         'pickView',
+        'boardView',
         'selectedTeam',
         'currentTrade',
         'currentUser',
+        'currentDraftOrder',
         'allUsers',
         'adp',
       ]),
+      brandMarker() {
+        return {
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 0,
+          borderTop: '15px solid transparent',
+          borderBottom: '0px solid transparent',
+          borderRight: `15px solid ${this.brand.BACKGROUND}`,
+          opacity: (this.pickView === PickView.ADP) ? 1 : 0.75,
+        };
+      },
       isSelected() {
         return this.pick.team === this.selectedTeam;
       },
@@ -86,6 +111,9 @@
 
         return '';
       },
+      brand() {
+        return TeamBrand[this.currentDraftOrder.indexOf(this.pick.team)] || {};
+      },
     },
     asyncComputed: {
       teamInfo: {
@@ -112,6 +140,7 @@
               forename: playerName[0],
               surname: playerName[1],
               position: player.pos,
+              team: player.team,
             });
           });
         },
@@ -148,7 +177,7 @@
     height: 100%;
     text-align: center;
     word-break: break-word;
-    color: $grey-darker;
+    color: $grey-dark;
     background-color: $white;
     transition:
       background-color 0.2s ease-in-out,
@@ -185,6 +214,10 @@
     }
   }
 
+  .pick + .pick {
+    border-top: 2px solid $white-bis;
+  }
+
   .pick__numbers {
     display: flex;
     align-items: center;
@@ -198,7 +231,8 @@
   .pick__team {
     margin-bottom: 5px;
     margin-top: 5px;
-    font-size: 0.9em;
+    font-size: 0.8em;
+    font-weight: normal;
   }
 
   .pick__player {
@@ -223,7 +257,7 @@
   }
 
   .pick--is-muted {
-    opacity: 0.7;
+    opacity: 0.5;
   }
 
   .pick--is-available {

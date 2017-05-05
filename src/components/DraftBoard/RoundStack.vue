@@ -41,11 +41,11 @@
   @import "~bulma/utilities/variables";
 
   .round-number {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     padding: 0 10px;
     vertical-align: middle;
     text-align: center;
-    background-color: $white-ter;
+    background-color: $grey-lighter;
     color: $grey-darker;
     border: 1px solid $white;
   }

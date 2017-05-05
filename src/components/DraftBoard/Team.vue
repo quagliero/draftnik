@@ -5,6 +5,7 @@
       'is-selected' : isSelected,
       'is-adp-view' : pickView === PickView.ADP,
     }"
+    :style="{ borderTopColor: brand.BACKGROUND }"
     @click="handleClick(teamId)"
   >
     <strong class="team__name">{{ team.teamName }}</strong>
@@ -13,7 +14,7 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
-  import { PickView } from '../../constants';
+  import { PickView, TeamBrand } from '../../constants';
 
   export default {
     name: 'team',
@@ -26,6 +27,7 @@
     data() {
       return {
         PickView,
+        TeamBrand,
       };
     },
     computed: {
@@ -33,12 +35,16 @@
         'pickView',
         'selectedTeam',
         'allUsers',
+        'currentDraftOrder',
       ]),
       isSelected() {
         return this.teamId === this.selectedTeam;
       },
       team() {
         return this.allUsers[this.teamId];
+      },
+      brand() {
+        return TeamBrand[this.currentDraftOrder.indexOf(this.teamId)] || {};
       },
     },
     methods: {
@@ -62,7 +68,7 @@
     border-left: 2px solid $white-ter;
     border-right: 2px solid $white-ter;
     border-top: 2px solid $white-ter;
-    border-bottom: 1px solid $white-ter;
+    border-bottom: 2px solid $white-ter;
     padding: 5px;
     text-align: center;
     transition:

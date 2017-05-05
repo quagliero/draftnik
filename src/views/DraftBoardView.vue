@@ -205,7 +205,7 @@ export default {
   .board__cell {
     min-width: 100px;
     max-width: 100px;
-    background-color: $white;
+    background-color: $white-bis;
     border: 2px solid $white-ter;
   }
 
