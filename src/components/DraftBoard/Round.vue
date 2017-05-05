@@ -1,9 +1,9 @@
 <template>
   <tr name="flip-row" is="transition-group">
     <td
-      v-for="pick in pickDirection"
+      v-for="(pick, i) in pickDirection"
       class="board__cell flip-row-item"
-      :key="pick.overall"
+      :key="`pick_${pick.overall}`"
     >
       <pick
         :pick="pick"

@@ -6,12 +6,12 @@
     <td
       v-for="(slot, i) in slots"
       class="board__cell board_cell--stack"
-      :key="i"
+      :key="`slot_${i}`"
     >
       <pick
         v-for="pick in slot"
         :pick="pick"
-        :key="pick.overall"
+        :key="`slotPick_${pick.overall}`"
       />
     </td>
   </tr>

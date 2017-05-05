@@ -64,11 +64,9 @@
   .team {
     cursor: pointer;
     vertical-align: middle;
-    background-color: $grey-lighter;
-    border-left: 2px solid $white-ter;
-    border-right: 2px solid $white-ter;
-    border-top: 2px solid $white-ter;
-    border-bottom: 2px solid $white-ter;
+    background-color: $white;
+    border: 2px solid $white-ter;
+    border-top-width: 2px;
     padding: 5px;
     text-align: center;
     transition:

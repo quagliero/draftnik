@@ -14,23 +14,25 @@
       playerPositionClass ? `pick--${playerPositionClass}` : '',
     ]"
   >
-    <div class="pick__numbers">
-      <b class="pick__overall">{{ pick.overall }}</b>
-      <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
-    </div>
-    <div v-if="pickView === PickView.ADP" class="pick__player">
-      <span class="player-forename">{{ playerInfo.forename }}</span>
-      <span class="player-surname">{{ playerInfo.surname }}</span>
-      <span class="pick__team">
-        {{ playerInfo.position }} &ndash; {{ playerInfo.team }}
-      </span>
-    </div>
-    <div v-show="pickView === PickView.TEAM" class="pick__team">
-      <span
-        class="tag"
-        v-html="teamInfo.displayName"
-        :style="{ color: brand.BACKGROUND }"
-      ></span>
+    <span v-show="pickView === PickView.TEAM" :style="brandBackground"></span>
+    <div class="pick__inner">
+      <div class="pick__numbers">
+        <b class="pick__overall">{{ pick.overall }}</b>
+        <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
+      </div>
+      <div v-if="pickView === PickView.ADP" class="pick__player">
+        <span class="player-forename">{{ playerInfo.forename }}</span>
+        <span class="player-surname">{{ playerInfo.surname }}</span>
+        <span class="pick__team">
+          {{ playerInfo.position }} &ndash; {{ playerInfo.team }}
+        </span>
+      </div>
+      <div v-show="pickView === PickView.TEAM" class="pick__team">
+        <span
+          class="tag"
+          v-html="teamInfo.displayName"
+        ></span>
+      </div>
     </div>
     <span v-show="pickView === PickView.ADP" :style="brandMarker"></span>
   </a>
@@ -67,6 +69,18 @@
         'allUsers',
         'adp',
       ]),
+      brandBackground() {
+        return {
+          position: 'absolute',
+          opacity: (this.isSelected) ? 0 : 0.5,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          transition: 'opacity 0.3s ease-in-out',
+          backgroundColor: this.brand.BACKGROUND,
+        };
+      },
       brandMarker() {
         return {
           position: 'absolute',
@@ -216,6 +230,10 @@
 
   .pick + .pick {
     border-top: 2px solid $white-bis;
+  }
+
+  .pick__inner {
+    position: relative;
   }
 
   .pick__numbers {

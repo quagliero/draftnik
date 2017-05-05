@@ -80,7 +80,7 @@
             <tbody v-show="boardView === BoardView.STACK">
               <round-stack
                 v-for="(slots, i) in picksByRoundByTeam"
-                :key="`round${i}`"
+                :key="`roundStack_${i}`"
                 :number="i + 1"
                 :slots="slots"
                 @onPickClick="$emit('onPickClick')"
