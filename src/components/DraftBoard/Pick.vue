@@ -1,6 +1,7 @@
 <template>
-  <td
+  <a
     class="pick"
+    @click.prevent="onPickClick"
     :class="[{
       'pick--is-muted': isMuted,
       'pick--is-selected' : isSelected,
@@ -10,25 +11,20 @@
       'pick--is-player' : pickView === PickView.ADP,
     }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
   >
-    <a
-      class="pick__clickable"
-      @click.prevent="onPickClick"
-    >
-      <div class="pick__numbers">
-        <b class="pick__overall">{{ pick.overall }}</b>
-        <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
-      </div>
-      <div v-if="pickView === PickView.ADP" class="pick__player">
-        <span class="player-forename" v-html="playerInfo.forename"></span>
-        <span class="player-surname" v-html="playerInfo.surname"></span>
-      </div>
-        <transition name="name-fade">
-          <div class="pick__team" v-if="!isSelected">
-            <span class="tag is-white">{{ teamInfo.displayName }}</span>
-          </div>
-        </transition>
-    </a>
-  </td>
+    <div class="pick__numbers">
+      <b class="pick__overall">{{ pick.overall }}</b>
+      <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
+    </div>
+    <div v-if="pickView === PickView.ADP" class="pick__player">
+      <span class="player-forename" v-html="playerInfo.forename"></span>
+      <span class="player-surname" v-html="playerInfo.surname"></span>
+    </div>
+      <transition name="name-fade">
+        <div class="pick__team" v-if="!isSelected">
+          <span class="tag is-white">{{ teamInfo.displayName }}</span>
+        </div>
+      </transition>
+  </a>
 </template>
 
 <script>
@@ -41,7 +37,6 @@
     name: 'pick',
     props: {
       pick: {
-        type: Object,
         required: true,
       },
     },
@@ -143,13 +138,18 @@
   @import "~bulma/utilities/variables";
 
   .pick {
+    border: 1px solid $white-ter;
+    min-height: 80px;
+    padding: 0.2em 0.3em;
+    display: block;
+    width: 100%;
     cursor: pointer;
     position: relative;
     z-index: 1;
     height: 100%;
     text-align: center;
     word-break: break-word;
-    border: 2px solid $white-ter;
+    color: $grey-darker;
     transition:
       background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
@@ -179,17 +179,8 @@
     &--def {
       background-color: mix(white, $orange, 30%);
     }
-  }
-
-  .pick__clickable {
-    min-height: 80px;
-    padding: 0.2em 0.3em;
-    display: block;
-    width: 100%;
-    color: inherit;
 
     &:hover, &:focus {
-      color: inherit;
       opacity: 0.9
     }
   }
@@ -228,11 +219,7 @@
   }
 
   .pick--is-player {
-    min-height: 110px;
-
-    .pick__clickable {
-      min-height: 100px;
-    }
+    min-height: 120px;
   }
 
   .pick--is-muted {
@@ -247,8 +234,11 @@
 
   .pick--is-selected {
     background-color: $grey-dark;
-    border-top-color: $grey-dark;
     color: white;
+
+    &:hover, &:focus {
+      color: white;
+    }
   }
 
   .pick--is-receiving {

@@ -1,6 +1,6 @@
 <template>
   <th
-    class="team"
+    class="board__cell team"
     :class="{
       'is-selected' : isSelected,
       'is-adp-view' : pickView === PickView.ADP,
@@ -57,13 +57,12 @@
 
   .team {
     cursor: pointer;
-    min-width: 100px;
     vertical-align: middle;
     background-color: $grey-lighter;
     border-left: 2px solid $white-ter;
     border-right: 2px solid $white-ter;
     border-top: 2px solid $white-ter;
-    border-bottom: 2px solid $white-ter;
+    border-bottom: 1px solid $white-ter;
     padding: 5px;
     text-align: center;
     transition:

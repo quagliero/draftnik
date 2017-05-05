@@ -1,10 +1,31 @@
 <template>
   <tr>
-    <pick
-      v-for="pick in roundDirection"
-      :pick="pick"
-      :key="pick.overall"
-    />
+    <template v-if="boardView === BoardView.STACK">
+      <td class="board__number round-number">
+        {{ number }}
+      </td>
+      <td
+        v-for="picks in pickDirection"
+        class="board__cell"
+      >
+        <pick
+          v-for="pick in picks"
+          :pick="pick"
+          :key="pick.overall"
+        />
+      </td>
+    </template>
+    <template v-else>
+      <td
+        v-for="pick in pickDirection"
+        class="board__cell"
+      >
+        <pick
+          :pick="pick"
+          :key="pick.overall"
+        />
+      </td>
+    </template>
   </tr>
 </template>
 
@@ -19,28 +40,33 @@
       Pick,
     },
     props: {
-      index: {
-        type: String,
+      number: {
+        type: Number,
       },
-      round: {
+      picks: {
         type: Array,
         required: true,
       },
     },
     data() {
       return {
-        // create local version as we reverse it and therefore mutate the state
-        standardRound: this.round,
-        reverseRound: this.round.slice(0).reverse(),
+        BoardView,
       };
     },
     computed: {
       ...mapGetters([
         'boardView',
       ]),
-      roundDirection() {
+      // create local version as we reverse it and therefore mutate the state
+      standardRound() {
+        return this.picks;
+      },
+      reverseRound() {
+        return this.picks.slice(0).reverse();
+      },
+      pickDirection() {
         // odd numbered rounds should print in reverse on snake view
-        if (this.boardView === BoardView.SNAKE && (this.index % 2 === 0)) {
+        if (this.boardView === BoardView.SNAKE && (this.number % 2 === 0)) {
           return this.reverseRound;
         }
 
@@ -49,3 +75,17 @@
     },
   };
 </script>
+
+<style lang="scss">
+  @import "~bulma/utilities/variables";
+
+  .round-number {
+    font-size: 1.2rem;
+    padding: 0 10px;
+    vertical-align: middle;
+    text-align: center;
+    background-color: $white-ter;
+    color: $grey-darker;
+    border: 1px solid $white;
+  }
+</style>

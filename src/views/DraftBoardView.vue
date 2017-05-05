@@ -68,6 +68,8 @@
           <table class="board__table">
             <thead>
               <tr>
+                <!-- for round number alignment -->
+                <th v-if="boardView === BoardView.STACK"></th>
                 <team
                   v-for="team in currentDraftOrder"
                   :teamId="team"
@@ -77,11 +79,10 @@
             </thead>
             <tbody>
               <round
-                v-if="picksByRound"
-                v-for="(round, key) in picksByRound"
-                :key="key"
-                :index="key"
-                :round="round"
+                v-for="(picks, i) in rounds"
+                :key="i"
+                :number="i + 1"
+                :picks="picks"
                 @onPickClick="$emit('onPickClick')"
               />
             </tbody>
@@ -123,15 +124,23 @@ export default {
       'currentDraft',
       'currentDraftOrder',
       'picksByRound',
+      'picksByRoundByTeam',
       'adp',
       'adpStart',
       'adpEnd',
       'adpTotal',
       'players',
     ]),
+    rounds() {
+      if (this.boardView === BoardView.STACK) {
+        return this.picksByRoundByTeam;
+      }
+
+      return this.picksByRound;
+    },
     dataLoaded() {
       // we've got all the data we want
-      return this.currentDraft && this.picksByRound && this.players && this.adp.length;
+      return this.currentDraft && this.rounds && this.players && this.adp.length;
     },
   },
   methods: {
@@ -184,11 +193,20 @@ export default {
 }
 
 .board__table {
-  table-layout: fixed;
+  .board__cell {
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .board__number {
+    max-width: 40px;
+    min-width: 40px;
+  }
 }
 
 .board-toggle {
   margin: 0 auto;
   display: inline-block;
 }
+
 </style>
