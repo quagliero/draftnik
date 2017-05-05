@@ -1,31 +1,14 @@
 <template>
-  <tr>
-    <template v-if="boardView === BoardView.STACK">
-      <td class="board__number round-number">
-        {{ number }}
-      </td>
-      <td
-        v-for="picks in pickDirection"
-        class="board__cell"
-      >
-        <pick
-          v-for="pick in picks"
-          :pick="pick"
-          :key="pick.overall"
-        />
-      </td>
-    </template>
-    <template v-else>
-      <td
-        v-for="pick in pickDirection"
-        class="board__cell"
-      >
-        <pick
-          :pick="pick"
-          :key="pick.overall"
-        />
-      </td>
-    </template>
+  <tr name="flip-list" is="transition-group">
+    <td
+      v-for="pick in pickDirection"
+      class="board__cell flip-list-item"
+      :key="pick.overall"
+    >
+      <pick
+        :pick="pick"
+      />
+    </td>
   </tr>
 </template>
 
@@ -79,6 +62,8 @@
 <style lang="scss">
   @import "~bulma/utilities/variables";
 
+  $count: 12;
+
   .round-number {
     font-size: 1.2rem;
     padding: 0 10px;
@@ -88,4 +73,22 @@
     color: $grey-darker;
     border: 1px solid $white;
   }
+
+  .flip-list-item {
+     transition: opacity 0.4s ease-in-out;
+  }
+  .flip-list-move {
+    transform: scale(0.85);
+    opacity: 0.75;
+
+    @for $i from 1 through $count {
+      $delay: ($i / 12) * 0.3;
+      &:nth-child(#{$i}) {
+        transition: transform 0.3s ease-in-out #{$delay}s;
+      }
+    }
+  }
+
+
+
 </style>

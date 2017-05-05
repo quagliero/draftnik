@@ -1,6 +1,6 @@
 <template>
   <th
-    class="board__cell team"
+    class="board__heading team"
     :class="{
       'is-selected' : isSelected,
       'is-adp-view' : pickView === PickView.ADP,

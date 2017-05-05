@@ -34,7 +34,7 @@
                     'is-primary is-active' : boardView === BoardView.STANDARD
                   }, 'button is-light']"
                 >
-                  Standard
+                  Linear
                 </button>
               </span>
             </div>
@@ -69,18 +69,27 @@
             <thead>
               <tr>
                 <!-- for round number alignment -->
-                <th v-if="boardView === BoardView.STACK"></th>
+                <th v-show="boardView === BoardView.STACK"></th>
                 <team
                   v-for="team in currentDraftOrder"
                   :teamId="team"
-                  :key="team"
+                  :key="team.id"
                 />
               </tr>
             </thead>
-            <tbody>
+            <tbody v-show="boardView === BoardView.STACK">
+              <round-stack
+                v-for="(slots, i) in picksByRoundByTeam"
+                :key="`round${i}`"
+                :number="i + 1"
+                :slots="slots"
+                @onPickClick="$emit('onPickClick')"
+              />
+            </tbody>
+            <tbody v-show="boardView !== BoardView.STACK">
               <round
-                v-for="(picks, i) in rounds"
-                :key="i"
+                v-for="(picks, i) in picksByRound"
+                :key="`round${i}`"
                 :number="i + 1"
                 :picks="picks"
                 @onPickClick="$emit('onPickClick')"
@@ -100,6 +109,7 @@
 import { mapGetters, mapMutations } from 'vuex';
 import { SELECT_BOARD_VIEW, SELECT_PICK_VIEW } from '../store/mutations';
 import Round from '../components/DraftBoard/Round.vue';
+import RoundStack from '../components/DraftBoard/RoundStack.vue';
 import Team from '../components/DraftBoard/Team.vue';
 import PickModal from '../components/Modals/PickModal.vue';
 import { BoardView, PickView } from '../constants';
@@ -109,6 +119,7 @@ export default {
   components: {
     Team,
     Round,
+    RoundStack,
     PickModal,
   },
   data() {
@@ -131,16 +142,9 @@ export default {
       'adpTotal',
       'players',
     ]),
-    rounds() {
-      if (this.boardView === BoardView.STACK) {
-        return this.picksByRoundByTeam;
-      }
-
-      return this.picksByRound;
-    },
     dataLoaded() {
       // we've got all the data we want
-      return this.currentDraft && this.rounds && this.players && this.adp.length;
+      return this.currentDraft && this.picksByRoundByTeam.length && this.players && this.adp.length;
     },
   },
   methods: {
@@ -193,9 +197,16 @@ export default {
 }
 
 .board__table {
+  .board__heading {
+    min-width: 100px;
+    max-width: 100px;
+  }
+
   .board__cell {
     min-width: 100px;
     max-width: 100px;
+    background-color: $white;
+    border: 2px solid $white-ter;
   }
 
   .board__number {

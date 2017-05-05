@@ -16,9 +16,9 @@ const state = {
   currentDraft: {},
   selectedPick: {},
   picksArray: [],
-  picksByRound: {},
-  picksByRoundByTeam: {},
-  currentDraftOrder: {},
+  picksByRound: [],
+  picksByRoundByTeam: [],
+  currentDraftOrder: [],
 };
 
 // getters

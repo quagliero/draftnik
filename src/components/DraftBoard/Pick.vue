@@ -138,7 +138,6 @@
   @import "~bulma/utilities/variables";
 
   .pick {
-    border: 1px solid $white-ter;
     min-height: 80px;
     padding: 0.2em 0.3em;
     display: block;
@@ -150,6 +149,7 @@
     text-align: center;
     word-break: break-word;
     color: $grey-darker;
+    background-color: $white;
     transition:
       background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
