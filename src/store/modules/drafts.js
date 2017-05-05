@@ -4,29 +4,35 @@ import keys from 'lodash/keys';
 import toArray from 'lodash/toArray';
 import api from '../../api';
 import * as types from '../mutations';
-import { roundPicksMap } from '../../utils';
+import { roundPicksMap, roundPicksTeamMap } from '../../utils';
+import { BoardView, PickView } from '../../constants';
 
 // initial state
 const state = {
+  boardView: BoardView.STACK,
+  pickView: PickView.TEAM,
   fetching: false,
   all: null,
   currentDraft: {},
   selectedPick: {},
-  picksByRound: {},
-  currentDraftOrder: {},
+  picksArray: [],
+  picksByRound: [],
+  picksByRoundByTeam: [],
+  currentDraftOrder: [],
 };
 
 // getters
 const getters = {
+  boardView: stateObj => stateObj.boardView,
+  pickView: stateObj => stateObj.pickView,
   allDrafts: stateObj => stateObj.all,
   currentDraft: stateObj => stateObj.currentDraft,
   picks: stateObj => stateObj.currentDraft.picks,
-  picksArray: stateObj => toArray(stateObj.currentDraft.picks).sort(
-    (a, b) => a.overall - b.overall,
-  ),
+  picksArray: stateObj => stateObj.picksArray,
   currentDraftOrder: stateObj => stateObj.currentDraftOrder,
   selectedPick: stateObj => stateObj.selectedPick,
   picksByRound: stateObj => stateObj.picksByRound,
+  picksByRoundByTeam: stateObj => stateObj.picksByRoundByTeam,
   picksByTeam: stateObj => (team) => filter(stateObj.currentDraft.picks, (p) => p.team === team),
   getPickById: stateObj => (pickId) => stateObj.currentDraft.picks[pickId],
 };
@@ -57,11 +63,20 @@ const actions = {
 
 // mutations
 const mutations = {
+  [types.SELECT_BOARD_VIEW](stateObj, view) {
+    stateObj.boardView = view;
+  },
+  [types.SELECT_PICK_VIEW](stateObj, view) {
+    stateObj.pickView = view;
+  },
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
     stateObj.currentDraft = response[keys(response)[0]];
     stateObj.currentDraftOrder = sortBy(
       keys(stateObj.currentDraft.order), (team) => stateObj.currentDraft.order[team],
+    );
+    stateObj.picksArray = toArray(stateObj.currentDraft.picks).sort(
+      (a, b) => a.overall - b.overall,
     );
   },
   [types.FETCHING_DRAFTS](stateObj) {
@@ -77,8 +92,10 @@ const mutations = {
     stateObj.currentDraft = draftId;
   },
   [types.MAP_PICKS](stateObj) {
-    stateObj.picksByRound = roundPicksMap(
-      stateObj.currentDraft.picks,
+    stateObj.picksByRound = roundPicksMap(stateObj.picksArray);
+    stateObj.picksByRoundByTeam = roundPicksTeamMap(
+      stateObj.picksByRound,
+      stateObj.currentDraftOrder,
     );
   },
 };

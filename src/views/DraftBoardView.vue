@@ -4,27 +4,63 @@
     <div v-if="!dataLoaded">Fetching draft, team, and ADP data <i class="fa fa-spinner fa-spin"></i></div>
     <template v-if="dataLoaded">
       <div class="board-toggle">
-        <div class="field has-addons">
-          <span class="control">
-            <button
-              @click="boardView = 'pick'"
-              :class="[{
-                'is-primary is-active' : boardView === 'pick'
-              }, 'button is-light']"
-            >
-              Pick View
-            </button>
-          </span>
-          <span class="control">
-            <button
-              @click="boardView = 'adp'"
-              :class="[{
-                'is-primary is-active' : boardView === 'adp'
-              }, 'button is-light']"
-            >
-              ADP View
-            </button>
-          </span>
+        <div class="field field-horizontal">
+          <div class="field-body">
+            <div class="field has-addons has-addons-centered">
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.STACK)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.STACK
+                  }, 'button is-light']"
+                >
+                  Stack
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.SNAKE)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.SNAKE
+                  }, 'button is-light']"
+                >
+                  Snake
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setBoardView(BoardView.STANDARD)"
+                  :class="[{
+                    'is-primary is-active' : boardView === BoardView.STANDARD
+                  }, 'button is-light']"
+                >
+                  Linear
+                </button>
+              </span>
+            </div>
+            <div class="field has-addons has-addons-centered">
+              <span class="control">
+                <button
+                  @click="setPickView(PickView.TEAM)"
+                  :class="[{
+                    'is-info is-active' : pickView === PickView.TEAM
+                  }, 'button is-light']"
+                >
+                  Teams
+                </button>
+              </span>
+              <span class="control">
+                <button
+                  @click="setPickView(PickView.ADP)"
+                  :class="[{
+                    'is-info is-active' : pickView === PickView.ADP
+                  }, 'button is-light']"
+                >
+                  ADP
+                </button>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="scroll-container">
@@ -32,22 +68,30 @@
           <table class="board__table">
             <thead>
               <tr>
+                <!-- for round number alignment -->
+                <th v-show="boardView === BoardView.STACK"></th>
                 <team
                   v-for="team in currentDraftOrder"
                   :teamId="team"
-                  :key="team"
-                  :boardView="boardView"
+                  :key="team.id"
                 />
               </tr>
             </thead>
-            <tbody>
+            <tbody v-show="boardView === BoardView.STACK">
+              <round-stack
+                v-for="(slots, i) in picksByRoundByTeam"
+                :key="`round${i}`"
+                :number="i + 1"
+                :slots="slots"
+                @onPickClick="$emit('onPickClick')"
+              />
+            </tbody>
+            <tbody v-show="boardView !== BoardView.STACK">
               <round
-                v-if="picksByRound"
-                v-for="(round, key) in picksByRound"
-                :key="key"
-                :index="key"
-                :round="round"
-                :boardView="boardView"
+                v-for="(picks, i) in picksByRound"
+                :key="`round${i}`"
+                :number="i + 1"
+                :picks="picks"
                 @onPickClick="$emit('onPickClick')"
               />
             </tbody>
@@ -62,30 +106,36 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
+import { SELECT_BOARD_VIEW, SELECT_PICK_VIEW } from '../store/mutations';
 import Round from '../components/DraftBoard/Round.vue';
+import RoundStack from '../components/DraftBoard/RoundStack.vue';
 import Team from '../components/DraftBoard/Team.vue';
 import PickModal from '../components/Modals/PickModal.vue';
+import { BoardView, PickView } from '../constants';
 
 export default {
   name: 'draft-board',
   components: {
     Team,
     Round,
+    RoundStack,
     PickModal,
   },
   data() {
     return {
-      showPickModal: false,
-      modalContent: '',
-      boardView: 'pick',
+      BoardView,
+      PickView,
     };
   },
   computed: {
     ...mapGetters([
+      'boardView',
+      'pickView',
       'currentDraft',
       'currentDraftOrder',
       'picksByRound',
+      'picksByRoundByTeam',
       'adp',
       'adpStart',
       'adpEnd',
@@ -94,7 +144,19 @@ export default {
     ]),
     dataLoaded() {
       // we've got all the data we want
-      return this.currentDraft && this.picksByRound && this.players && this.adp.length;
+      return this.currentDraft && this.picksByRoundByTeam.length && this.players && this.adp.length;
+    },
+  },
+  methods: {
+    ...mapMutations({
+      SELECT_BOARD_VIEW,
+      SELECT_PICK_VIEW,
+    }),
+    setBoardView(view) {
+      this.SELECT_BOARD_VIEW(view);
+    },
+    setPickView(view) {
+      this.SELECT_PICK_VIEW(view);
     },
   },
 };
@@ -135,11 +197,27 @@ export default {
 }
 
 .board__table {
-  table-layout: fixed;
+  .board__heading {
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .board__cell {
+    min-width: 100px;
+    max-width: 100px;
+    background-color: $white-bis;
+    border: 2px solid $white-ter;
+  }
+
+  .board__number {
+    max-width: 40px;
+    min-width: 40px;
+  }
 }
 
 .board-toggle {
   margin: 0 auto;
   display: inline-block;
 }
+
 </style>

@@ -1,60 +1,84 @@
 <template>
-  <td
+  <a
     class="pick"
-    :class="[{
-      'pick--is-muted': isMuted,
-      'pick--is-selected' : isSelected,
-      'pick--is-available' : isAvailable,
-      'pick--is-receiving' : isReceiving,
-      'pick--is-giving' : isGiving,
-      'pick--is-player' : boardView === 'adp',
-    }, playerPositionClass ? `pick--${playerPositionClass}` : '']"
+    @click.prevent="onPickClick"
+    :class="[
+      {
+        'pick--is-muted': isMuted,
+        'pick--is-selected' : isSelected,
+        'pick--is-available' : isAvailable,
+        'pick--is-receiving' : isReceiving,
+        'pick--is-giving' : isGiving,
+        'pick--is-player' : pickView === PickView.ADP,
+      },
+      playerPositionClass ? `pick--${playerPositionClass}` : '',
+    ]"
   >
-    <a
-      class="pick__clickable"
-      @click.prevent="onPickClick"
-    >
-      <div class="pick__numbers">
-        <b class="pick__overall">{{ pick.overall }}</b>
-        <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
-      </div>
-      <div v-if="boardView === 'adp'" class="pick__player">
-        <span class="player-forename" v-html="playerInfo.forename"></span>
-        <span class="player-surname" v-html="playerInfo.surname"></span>
-      </div>
-        <transition name="name-fade">
-          <div class="pick__team" v-if="!isSelected">
-            <span class="tag is-white">{{ teamInfo.displayName }}</span>
-          </div>
-        </transition>
-    </a>
-  </td>
+    <div class="pick__numbers">
+      <b class="pick__overall">{{ pick.overall }}</b>
+      <small class="pick__round">{{ pick.round }}.{{ pick.pickInRound }}</small>
+    </div>
+    <div v-if="pickView === PickView.ADP" class="pick__player">
+      <span class="player-forename">{{ playerInfo.forename }}</span>
+      <span class="player-surname">{{ playerInfo.surname }}</span>
+      <span class="pick__team">
+        {{ playerInfo.position }} &ndash; {{ playerInfo.team }}
+      </span>
+    </div>
+    <div v-show="pickView === PickView.TEAM" class="pick__team">
+      <span
+        class="tag"
+        v-html="teamInfo.displayName"
+        :style="{ color: brand.BACKGROUND }"
+      ></span>
+    </div>
+    <span v-show="pickView === PickView.ADP" :style="brandMarker"></span>
+  </a>
 </template>
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
   import { getTeamById, getPlayerById } from '../../utils';
+  import { PickView, BoardView, TeamBrand } from '../../constants';
 
   export default {
     name: 'pick',
     props: {
       pick: {
-        type: Object,
         required: true,
       },
-      boardView: {
-        type: String,
-      },
+    },
+    data() {
+      return {
+        PickView,
+        BoardView,
+        TeamBrand,
+      };
     },
     computed: {
       ...mapGetters([
+        'pickView',
+        'boardView',
         'selectedTeam',
         'currentTrade',
         'currentUser',
+        'currentDraftOrder',
         'allUsers',
         'adp',
       ]),
+      brandMarker() {
+        return {
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 0,
+          borderTop: '15px solid transparent',
+          borderBottom: '0px solid transparent',
+          borderRight: `15px solid ${this.brand.BACKGROUND}`,
+          opacity: (this.pickView === PickView.ADP) ? 1 : 0.75,
+        };
+      },
       isSelected() {
         return this.pick.team === this.selectedTeam;
       },
@@ -79,13 +103,16 @@
         return this.pick.team === this.currentTrade.givingTeam;
       },
       playerPositionClass() {
-        if (this.boardView === 'adp') {
+        if (this.pickView === PickView.ADP) {
           if (this.playerInfo.position) {
             return this.playerInfo.position.toLowerCase();
           }
         }
 
         return '';
+      },
+      brand() {
+        return TeamBrand[this.currentDraftOrder.indexOf(this.pick.team)] || {};
       },
     },
     asyncComputed: {
@@ -113,6 +140,7 @@
               forename: playerName[0],
               surname: playerName[1],
               position: player.pos,
+              team: player.team,
             });
           });
         },
@@ -139,13 +167,18 @@
   @import "~bulma/utilities/variables";
 
   .pick {
+    min-height: 80px;
+    padding: 0.2em 0.3em;
+    display: block;
+    width: 100%;
     cursor: pointer;
     position: relative;
     z-index: 1;
     height: 100%;
     text-align: center;
     word-break: break-word;
-    border: 2px solid $white-ter;
+    color: $grey-dark;
+    background-color: $white;
     transition:
       background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
@@ -175,19 +208,14 @@
     &--def {
       background-color: mix(white, $orange, 30%);
     }
-  }
-
-  .pick__clickable {
-    min-height: 80px;
-    padding: 0.2em 0.3em;
-    display: block;
-    width: 100%;
-    color: inherit;
 
     &:hover, &:focus {
-      color: inherit;
       opacity: 0.9
     }
+  }
+
+  .pick + .pick {
+    border-top: 2px solid $white-bis;
   }
 
   .pick__numbers {
@@ -203,7 +231,8 @@
   .pick__team {
     margin-bottom: 5px;
     margin-top: 5px;
-    font-size: 0.9em;
+    font-size: 0.8em;
+    font-weight: normal;
   }
 
   .pick__player {
@@ -224,15 +253,11 @@
   }
 
   .pick--is-player {
-    min-height: 110px;
-
-    .pick__clickable {
-      min-height: 100px;
-    }
+    min-height: 120px;
   }
 
   .pick--is-muted {
-    opacity: 0.7;
+    opacity: 0.5;
   }
 
   .pick--is-available {
@@ -243,8 +268,11 @@
 
   .pick--is-selected {
     background-color: $grey-dark;
-    border-top-color: $grey-dark;
     color: white;
+
+    &:hover, &:focus {
+      color: white;
+    }
   }
 
   .pick--is-receiving {

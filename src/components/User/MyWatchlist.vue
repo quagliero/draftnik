@@ -134,13 +134,15 @@
       },
       onPlayerClick(player) {
         const adpSlot = findIndex(this.adp, (pick) => pick.id === player.id);
-        let pick;
+        const max = this.picksArray.length;
+
         // due to the nature of more players than picks, if the adp is above
         // the max pick count, then just return the last pick in the draft
-        if (adpSlot <= this.picksArray.length) {
+        let pick;
+        if (adpSlot <= max) {
           pick = this.picksArray[adpSlot];
         } else {
-          pick = this.picksArray[this.picksArray.length - 1];
+          pick = this.picksArray[max - 1];
         }
 
         this.SELECT_PICK({ pick });
