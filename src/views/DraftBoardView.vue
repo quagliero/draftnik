@@ -157,6 +157,10 @@ export default {
     },
     setPickView(view) {
       this.SELECT_PICK_VIEW(view);
+
+      if (view === PickView.ADP) {
+        this.$store.dispatch('getWatchlist');
+      }
     },
   },
 };

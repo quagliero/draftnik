@@ -34,14 +34,22 @@
         ></span>
       </div>
     </div>
-    <span v-show="pickView === PickView.ADP" :style="brandMarker"></span>
+    <div class="pick__meta" v-show="pickView === PickView.ADP">
+      <span
+        v-show="isInWatchlist"
+        class="icon is-small"
+      >
+        <i class="fa fa-eye"></i>
+      </span>
+      <span :style="brandMarker"></span>
+    </div>
   </a>
 </template>
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
   import { SELECT_PICK } from '../../store/mutations';
-  import { getTeamById, getPlayerById } from '../../utils';
+  import { getTeamById } from '../../utils';
   import { PickView, BoardView, TeamBrand } from '../../constants';
 
   export default {
@@ -67,6 +75,7 @@
         'currentUser',
         'currentDraftOrder',
         'allUsers',
+        'watchlist',
         'adp',
       ]),
       brandBackground() {
@@ -116,6 +125,9 @@
       isOwnPick() {
         return this.pick.team === this.currentTrade.givingTeam;
       },
+      isInWatchlist() {
+        return this.watchlist[this.playerInfo.id];
+      },
       playerPositionClass() {
         if (this.pickView === PickView.ADP) {
           if (this.playerInfo.position) {
@@ -144,13 +156,13 @@
       playerInfo: {
         get() {
           return new Promise(resolve => {
-            const adpInfo = this.adp[Number(this.pick.overall) - 1];
-            const player = getPlayerById(adpInfo.id);
+            const player = this.adp[Number(this.pick.overall) - 1];
             let playerName = player.name.split(' ');
             if ((playerName.indexOf('Defense') > -1) && playerName.length === 3) {
               playerName = [[playerName[0], playerName[1]].join(' '), playerName[2]];
             }
             resolve({
+              id: player.id,
               forename: playerName[0],
               surname: playerName[1],
               position: player.pos,
@@ -159,6 +171,7 @@
           });
         },
         default: {
+          id: null,
           forename: '',
           surname: '',
           position: '',
@@ -268,6 +281,11 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  .pick__meta {
+    text-align: left;
+    line-height: 1;
   }
 
   .pick--is-player {

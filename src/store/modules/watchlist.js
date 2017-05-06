@@ -3,7 +3,7 @@ import * as types from '../mutations';
 
 // initial state
 const state = {
-  watchlist: null,
+  watchlist: {},
   watchlistReceived: false,
 };
 
@@ -13,12 +13,15 @@ const getters = {
   watchlistReceived: stateObj => stateObj.watchlistReceived,
 };
 
+
 // actions
 const actions = {
   getWatchlist({ commit }, data) {
-    api.getWatchlist(data.draft, data.user, (watchlist) => {
-      commit(types.RECEIVE_WATCHLIST, watchlist);
-    });
+    if (state.watchlistReceived === false) {
+      api.getWatchlist(data.draft, data.user, (watchlist) => {
+        commit(types.RECEIVE_WATCHLIST, watchlist);
+      });
+    }
   },
   addToWatchlist({ commit }, data) {
     api.addToWatchlist(data.draft, data.user, data.player).then(() => {
@@ -39,15 +42,15 @@ const actions = {
 // mutations
 const mutations = {
   [types.DESTROY_SESSION](stateObj) {
-    stateObj.watchlist = null;
+    stateObj.watchlist = {};
     stateObj.watchlistReceived = false;
   },
   [types.INVALID_SESSION](stateObj) {
-    stateObj.watchlist = null;
+    stateObj.watchlist = {};
     stateObj.watchlistReceived = false;
   },
   [types.RECEIVE_WATCHLIST](stateObj, watchlist) {
-    stateObj.watchlist = watchlist;
+    stateObj.watchlist = watchlist || {};
     stateObj.watchlistReceived = true;
   },
   [types.ADDED_TO_WATCHLIST](stateObj, player) {
