@@ -144,7 +144,12 @@ export default {
     ]),
     dataLoaded() {
       // we've got all the data we want
-      return this.currentDraft && this.picksByRoundByTeam.length && this.players && this.adp.length;
+      return [
+        this.currentDraft != null,
+        this.picksByRound.length > 0,
+        this.picksByRoundByTeam.length > 0,
+        this.adp.length > 0,
+      ].every(el => el === true);
     },
   },
   methods: {
@@ -200,23 +205,21 @@ export default {
   }
 }
 
-.board__table {
-  .board__heading {
-    min-width: 100px;
-    max-width: 100px;
-  }
+.board__heading {
+  min-width: 100px;
+  max-width: 100px;
+}
 
-  .board__cell {
-    min-width: 100px;
-    max-width: 100px;
-    background-color: $white-bis;
-    border: 2px solid $white-ter;
-  }
+.board__cell {
+  min-width: 100px;
+  max-width: 100px;
+  background-color: $white-bis;
+  border: 2px solid $white-ter;
+}
 
-  .board__number {
-    max-width: 40px;
-    min-width: 40px;
-  }
+.board__number {
+  max-width: 40px;
+  min-width: 40px;
 }
 
 .board-toggle {

@@ -65,16 +65,17 @@
   $count: 12;
 
   .flip-row-item {
-     transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out, transform 0.5s ease-in-out;
   }
   .flip-row-move {
-    transform: scale(0.85);
+    transform: scale(0.9);
     opacity: 0.75;
+    transition: opacity 0.4s ease-in-out, transform 0.5s ease-in-out;
 
     @for $i from 1 through $count {
       $delay: ($i / 12) * 0.3;
       &:nth-child(#{$i}) {
-        transition: transform 0.3s ease-in-out #{$delay}s;
+        transition-delay: #{$delay}s;
       }
     }
   }
