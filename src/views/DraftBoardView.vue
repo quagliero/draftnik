@@ -130,6 +130,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'currentUser',
       'boardView',
       'pickView',
       'currentDraft',
@@ -164,7 +165,10 @@ export default {
       this.SELECT_PICK_VIEW(view);
 
       if (view === PickView.ADP) {
-        this.$store.dispatch('getWatchlist');
+        this.$store.dispatch('getWatchlist', {
+          draft: this.currentDraft.id,
+          user: this.currentUser.id,
+        });
       }
     },
   },

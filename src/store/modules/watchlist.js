@@ -16,11 +16,13 @@ const getters = {
 
 // actions
 const actions = {
-  getWatchlist({ commit }, data) {
+  getWatchlist({ commit }, { draft, user }) {
     if (state.watchlistReceived === false) {
-      api.getWatchlist(data.draft, data.user, (watchlist) => {
-        commit(types.RECEIVE_WATCHLIST, watchlist);
-      });
+      if (draft && user) {
+        api.getWatchlist({ draft, user }, (watchlist) => {
+          commit(types.RECEIVE_WATCHLIST, watchlist);
+        });
+      }
     }
   },
   addToWatchlist({ commit }, data) {

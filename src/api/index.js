@@ -28,7 +28,7 @@ export default {
   getDrafts() {
     return db.ref('drafts').once('value');
   },
-  getWatchlist(draft, user, cb) {
+  getWatchlist({ draft, user }, cb) {
     listenForValueEvents(`watchlists/${draft}/${user}`, cb);
   },
   addToWatchlist(draft, user, player) {
