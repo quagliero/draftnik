@@ -5,6 +5,7 @@ import { getUserById } from '../../utils';
 
 // initial state
 const state = {
+  received: false,
   all: null,
   currentUser: null,
 };
@@ -21,9 +22,8 @@ const getters = {
 const actions = {
   getUsers({ commit }) {
     return new Promise((resolve, reject) => {
-      if (state.all === null) {
-        api.getUsers()
-        .then(snapshot => {
+      if (state.received === false) {
+        api.once('users').then(snapshot => {
           commit(types.RECEIVE_USERS, snapshot.val());
           resolve();
         })
@@ -41,6 +41,7 @@ const actions = {
 // mutations
 const mutations = {
   [types.RECEIVE_USERS](stateObj, users) {
+    stateObj.received = true;
     stateObj.all = users;
   },
   [types.CREATE_SESSION](stateObj, { user }) {
