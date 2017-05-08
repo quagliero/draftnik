@@ -13,28 +13,27 @@ const getters = {
   watchlistReceived: stateObj => stateObj.watchlistReceived,
 };
 
-
 // actions
 const actions = {
   getWatchlist({ commit }, { draft, user }) {
     if (state.watchlistReceived === false) {
       if (draft && user) {
-        api.getWatchlist({ draft, user }, (watchlist) => {
+        api.listenForValueEvents(`watchlists/${draft}/${user}`, (watchlist) => {
           commit(types.RECEIVE_WATCHLIST, watchlist);
         });
       }
     }
   },
-  addToWatchlist({ commit }, data) {
-    api.addToWatchlist(data.draft, data.user, data.player).then(() => {
-      commit(types.ADDED_TO_WATCHLIST, data.player);
+  addToWatchlist({ commit }, { draft, user, player }) {
+    api.set(`watchlists/${draft}/${user}/${player.id}`, true).then(() => {
+      commit(types.ADDED_TO_WATCHLIST, player);
     }).catch(error => {
       console.error(error);
     });
   },
-  removeFromWatchlist({ commit }, data) {
-    api.removeFromWatchlist(data.draft, data.user, data.player).then(() => {
-      commit(types.REMOVED_FROM_WATCHLIST, data.player);
+  removeFromWatchlist({ commit }, { draft, user, player }) {
+    api.remove(`watchlists/${draft}/${user}/${player.id}`).then(() => {
+      commit(types.REMOVED_FROM_WATCHLIST, player);
     }).catch(error => {
       console.error(error);
     });

@@ -92,25 +92,25 @@ const actions = {
     }
   },
   getAcceptedTrades({ commit }, { draft }) {
-    api.getAcceptedTrades(draft, (acceptedTrades) => {
-      const tradeIds = keys(acceptedTrades);
+    api.once(`tradesAccepted/${draft}`).then((snapshot) => {
+      const tradeIds = keys(snapshot.val());
       Promise.all(
-        tradeIds.map((id) => api.getTrade({ draft, id }).then((snapshot) => snapshot.val())),
+        tradeIds.map((id) => api.once(`trades/${draft}/${id}`).then((snap) => snap.val())),
       ).then((trades) => {
         commit(types.RECEIVE_ACCEPTED_TRADES, trades);
       });
     });
   },
-  getUserTrades({ commit }, data) {
+  getUserTrades({ commit }, { draft, user }) {
     // @TODO figure out why every trade gets looped after proposing
     // guess maybe something to do with snapshotting inside the map
-    api.getUserTrades(data.draft, data.user, userTrades => {
+    api.listenForValueEvents(`tradesUsersPivot/${draft}/${user}`, (userTrades) => {
       const tradeIds = keys(userTrades);
-      const ref = db.ref(`trades/${data.draft}`);
+      const ref = db.ref(`trades/${draft}`);
 
       Promise.all(
         tradeIds.map((id) => new Promise((resolve) => {
-          ref.child(id).on('value', trade => {
+          ref.child(id).on('value', (trade) => {
             const snapshot = trade.val();
             commit(types.RECEIVE_USER_TRADE, snapshot);
             resolve(snapshot);
@@ -142,9 +142,9 @@ const actions = {
     }
 
     return new Promise((resolve, reject) => {
-      api.proposeTrade({ draft, tradeKey, payload }).then(() => {
+      api.set(`trades/${draft}/${tradeKey}`, payload).then(() => {
         Promise.all(
-          users.map(user => api.addTradeToUser(draft, user, tradeKey)),
+          users.map(user => api.set(`tradesUsersPivot/${draft}/${user}/${tradeKey}`, true)),
         ).then(() => {
           commit(types.PROPOSED_TRADE, tradeKey);
           resolve();
@@ -155,14 +155,20 @@ const actions = {
     });
   },
   rejectTrade({ commit }, { trade, draft }) {
-    api.rejectTrade({ trade, draft }).then(() => {
+    api.update(`trades/${draft}/${trade}`, {
+      status: TradeStatus.REJECTED,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
+    }).then(() => {
       commit(types.REJECTED_TRADE, trade);
     }).catch(error => {
       console.error(error);
     });
   },
   withdrawTrade({ commit }, { trade, draft }) {
-    api.withdrawTrade({ trade, draft }).then(() => {
+    api.update(`trades/${draft}/${trade}`, {
+      status: TradeStatus.WITHDRAWN,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
+    }).then(() => {
       commit(types.WITHDRAWN_TRADE, trade);
     }).catch(error => {
       console.error(error);
@@ -178,19 +184,14 @@ const actions = {
       receivingPicks,
     } = payload;
 
-    api.acceptTrade({ trade, draft }).then(() => {
+    api.update(`trades/${draft}/${trade}`, {
+      status: TradeStatus.ACCEPTED,
+      closedAt: fireDb.ServerValue.TIMESTAMP,
+    }).then(() => {
       Promise.all([
-        api.addTradeToAccepted({ trade, draft }),
-        ...map(keys(givingPicks), (pick) => api.changePickOwner({
-          pick,
-          draft,
-          team: receivingTeam,
-        })),
-        ...map(keys(receivingPicks), (pick) => api.changePickOwner({
-          pick,
-          draft,
-          team: givingTeam,
-        })),
+        api.set(`tradesAccepted/${draft}/${trade}`, true),
+        ...map(keys(givingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, receivingTeam)),
+        ...map(keys(receivingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, givingTeam)),
       ]).then(() => {
         // mark as accepted
         commit(types.ACCEPTED_TRADE, trade);
@@ -210,7 +211,10 @@ const actions = {
               some(keys(offer.givingPicks), pick => receivingPicks[pick]),
               some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
             ])) {
-              return api.withdrawTrade({ trade: offer.id, draft });
+              return api.update(`trades/${draft}/${offer.id}`, {
+                status: TradeStatus.WITHDRAWN,
+                closedAt: fireDb.ServerValue.TIMESTAMP,
+              });
             }
 
             return null;

@@ -12,6 +12,7 @@ const state = {
   boardView: BoardView.STACK,
   pickView: PickView.TEAM,
   fetching: false,
+  fetched: false,
   all: null,
   currentDraft: {},
   selectedPick: {},
@@ -40,23 +41,24 @@ const getters = {
 // actions
 const actions = {
   getDrafts({ commit }) {
-    // once we have them, don't bother again
+    commit(types.FETCHING_DRAFTS);
     return new Promise((resolve, reject) => {
-      if (state.all === null && state.fetching === false) {
-        commit(types.FETCHING_DRAFTS);
-        api.getDrafts().then(snapshot => {
-          commit(types.FETCHED_DRAFTS);
-          commit(types.RECEIVE_DRAFTS, snapshot.val());
-          commit(types.MAP_PICKS);
-          resolve();
-        }).catch(err => {
-          console.error(err);
-          commit(types.FETCHED_DRAFTS);
-          reject();
-        });
-      } else {
+      // once we have them, don't bother again
+      if (state.fetched === true) {
+        commit(types.FETCHED_DRAFTS);
         resolve();
       }
+      api.once('drafts').then((snapshot) => {
+        if (state.fetched === false) {
+          commit(types.RECEIVE_DRAFTS, snapshot.val());
+          commit(types.MAP_PICKS);
+        }
+        commit(types.FETCHED_DRAFTS);
+        resolve();
+      }).catch(err => {
+        console.error(err);
+        reject();
+      });
     });
   },
 };
@@ -80,9 +82,11 @@ const mutations = {
     );
   },
   [types.FETCHING_DRAFTS](stateObj) {
+    stateObj.fetched = false;
     stateObj.fetching = true;
   },
   [types.FETCHED_DRAFTS](stateObj) {
+    stateObj.fetched = true;
     stateObj.fetching = false;
   },
   [types.SELECT_PICK](stateObj, { pick }) {
