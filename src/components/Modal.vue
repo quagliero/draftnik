@@ -1,7 +1,7 @@
 <template>
   <transition name="modal-fade">
     <div class="modal is-active">
-      <div class="modal-background"></div>
+      <div class="modal-background" @click="close"></div>
       <div class="modal-content">
         <div class="box content">
           <slot></slot>
