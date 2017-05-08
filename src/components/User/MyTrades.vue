@@ -25,7 +25,7 @@
         {{ filter }}
       </a>
     </p>
-    <template v-if="userTradesReceived">
+    <template v-if="userTrades">
       <trade-panel
         v-if="expanded"
         v-for="trade in filteredTrades"
@@ -68,7 +68,6 @@
         'currentDraft',
         'currentUser',
         'userTrades',
-        'userTradesReceived',
       ]),
       filteredTrades() {
         return this.filterTradesBy(this.selectedTradeFilter);
