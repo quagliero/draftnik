@@ -1,8 +1,8 @@
+import { set } from 'vue';
 import { database as fireDb } from 'firebase';
 import keys from 'lodash/keys';
 import map from 'lodash/map';
 import filter from 'lodash/filter';
-import reduce from 'lodash/reduce';
 import some from 'lodash/some';
 import * as types from '../mutations';
 import api from '../../api';
@@ -25,7 +25,6 @@ const Trade = (tradeProps) => {
 const state = {
   current: {},
   userTrades: {},
-  userTradesReceived: false,
   acceptedTrades: {},
 };
 
@@ -33,7 +32,6 @@ const state = {
 const getters = {
   currentTrade: stateObj => stateObj.current,
   userTrades: stateObj => stateObj.userTrades,
-  userTradesReceived: stateObj => stateObj.userTradesReceived,
   acceptedTrades: stateObj => stateObj.acceptedTrades,
   getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
@@ -102,27 +100,17 @@ const actions = {
     });
   },
   getUserTrades({ commit }, { draft, user }) {
-    // @TODO figure out why every trade gets looped after proposing
-    // guess maybe something to do with snapshotting inside the map
-    api.listenForValueEvents(`tradesUsersPivot/${draft}/${user}`, (userTrades) => {
-      const tradeIds = keys(userTrades);
-      const ref = db.ref(`trades/${draft}`);
-
-      Promise.all(
-        tradeIds.map((id) => new Promise((resolve) => {
-          ref.child(id).on('value', (trade) => {
-            const snapshot = trade.val();
-            commit(types.RECEIVE_USER_TRADE, snapshot);
-            resolve(snapshot);
-          });
-        })),
-      ).then((trades) => {
-        commit(types.RECEIVE_USER_TRADES, reduce(trades, (all, t) => {
-          all[t.id] = t;
-          return all;
-        }, {}));
+    const url = `tradesUsersPivot/${draft}/${user}`;
+    const ref = db.ref(`trades/${draft}`);
+    const getUserTrade = (key) => {
+      ref.child(key).on('value', (childSnapshot) => {
+        const trade = childSnapshot.val();
+        commit(types.RECEIVE_USER_TRADE, trade);
       });
-    });
+    };
+
+    api.listenForAddedEvents(url, (snapshot) => getUserTrade(snapshot.key));
+    api.listenForChangeEvents(url, (snapshot) => getUserTrade(snapshot.key));
   },
   proposeTrade({ commit }, { trade, draft }) {
     const tradeKey = db.ref('trades').push().key;
@@ -269,13 +257,8 @@ const mutations = {
   [types.RECEIVE_ACCEPTED_TRADES](stateObj, acceptedTrades) {
     stateObj.acceptedTrades = acceptedTrades;
   },
-  [types.RECEIVE_USER_TRADES](stateObj, trades) {
-    stateObj.userTrades = trades;
-    stateObj.userTradesReceived = true;
-  },
   [types.RECEIVE_USER_TRADE](stateObj, trade) {
-    console.log(trade.id);
-    stateObj.userTrades[trade.id] = trade;
+    set(stateObj.userTrades, trade.id, trade);
   },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
@@ -294,7 +277,6 @@ const mutations = {
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.userTrades = {};
-    stateObj.userTradesReceived = false;
     stateObj.current = {};
   },
 };

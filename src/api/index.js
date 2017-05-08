@@ -20,10 +20,21 @@ export default {
   once(url) {
     return db.ref(url).once('value');
   },
+  // the firebase 'listen' events aren't promises, so pass in the raw response
+  // to be used with an inline callback
   listenForValueEvents(url, cb) {
-    // only method that isn't `thenable` and requires inline callback
     db.ref(url).on('value', (snapshot) => {
-      cb(snapshot.val());
+      cb(snapshot);
+    });
+  },
+  listenForAddedEvents(url, cb) {
+    db.ref(url).on('child_added', (snapshot) => {
+      cb(snapshot);
+    });
+  },
+  listenForChangeEvents(url, cb) {
+    db.ref(url).on('child_changed', (snapshot) => {
+      cb(snapshot);
     });
   },
   set(url, payload) {

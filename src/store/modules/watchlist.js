@@ -18,8 +18,8 @@ const actions = {
   getWatchlist({ commit }, { draft, user }) {
     if (state.watchlistReceived === false) {
       if (draft && user) {
-        api.listenForValueEvents(`watchlists/${draft}/${user}`, (watchlist) => {
-          commit(types.RECEIVE_WATCHLIST, watchlist);
+        api.listenForValueEvents(`watchlists/${draft}/${user}`, (snapshot) => {
+          commit(types.RECEIVE_WATCHLIST, snapshot.val());
         });
       }
     }
