@@ -1,5 +1,5 @@
 <template>
-  <div class="columns is-multiline">
+  <div class="columns is-multiline my-home">
     <div class="column is-4-desktop is-half-tablet my-picks">
       <my-picks/>
     </div>
@@ -40,6 +40,13 @@ export default {
 
     .my-watchlist {
       order: 3 !important;
+    }
+  }
+
+  @media screen and (max-width: $tablet) {
+    .my-home {
+      display: flex;
+      flex-direction: column;
     }
   }
 </style>

@@ -16,7 +16,7 @@
         </span>
       </button>
     </p>
-    <template v-if="userTrades && expanded">
+    <template v-if="receivedUserTrades && expanded">
       <p class="panel-tabs">
         <a
           v-for="filter in tradeFilters"
@@ -32,8 +32,14 @@
         :currentUser="currentUser"
         :key="trade.id"
       />
+      <p
+        v-show="filteredTrades.length === 0"
+        class="panel-block"
+      >
+        <em>{{ displayEmptyFilterMessage(selectedTradeFilter) }}</em>
+      </p>
     </template>
-    <template v-if="userTrades && !expanded">
+    <template v-if="!expanded">
       <p class="panel-tabs">
         <a @click.prevent="toggleExpanded()">
           <i class="fa fa-angle-double-down"></i>
@@ -42,7 +48,7 @@
         </a>
       </p>
     </template>
-    <template v-if="!userTrades && expanded">
+    <template v-if="!receivedUserTrades && expanded">
       <div class="panel-block">
         <span>Fetching trades </span>
         <span class="icon">
@@ -76,6 +82,7 @@
         'currentDraft',
         'currentUser',
         'userTrades',
+        'receivedUserTrades',
         'userPrefs',
       ]),
       expanded() {
@@ -98,22 +105,30 @@
       filterTradesBy(option) {
         this.selectedTradeFilter = option;
 
-        if (option === 'Open') {
-          return filter(this.userTrades, (t) => t.status === TradeStatus.OFFERED);
+        switch (option) {
+          case 'All':
+            return filter(this.userTrades);
+          case 'Open':
+            return filter(this.userTrades, (t) => t.status === TradeStatus.OFFERED);
+          case 'Accepted':
+            return filter(this.userTrades, (t) => t.status === TradeStatus.ACCEPTED);
+          case 'Rejected':
+            return filter(
+              this.userTrades,
+              (t) => t.status === TradeStatus.REJECTED || t.status === TradeStatus.WITHDRAWN,
+            );
+          default:
+            return filter(this.userTrades);
+        }
+      },
+      displayEmptyFilterMessage(filterName) {
+        const type = filterName.toLowerCase();
+
+        if (type === 'all') {
+          return 'You have no desire to win, it seems. Make some trades.';
         }
 
-        if (option === 'Accepted') {
-          return filter(this.userTrades, (t) => t.status === TradeStatus.ACCEPTED);
-        }
-
-        if (option === 'Rejected') {
-          return filter(
-            this.userTrades,
-            (t) => t.status === TradeStatus.REJECTED || t.status === TradeStatus.WITHDRAWN,
-          );
-        }
-
-        return this.userTrades;
+        return `You have no ${type} trades`;
       },
     },
     created() {

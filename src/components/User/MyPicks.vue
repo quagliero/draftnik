@@ -16,7 +16,7 @@
         </span>
       </button>
     </p>
-    <template v-if="expanded">
+    <template v-if="currentDraft.picks && expanded">
       <div class="panel-tabs">
         <a
           v-for="num in pickFilters"
@@ -28,7 +28,7 @@
       </div>
       <div
         v-for="pick in filteredPicks"
-        v-if="filteredPicks.length"
+        v-if="filteredPicks.length > 0"
         class="panel-block"
       >
         <button
@@ -40,6 +40,12 @@
           </span>
           #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
         </button>
+      </div>
+      <div
+        v-show="filteredPicks.length === 0"
+        class="panel-block"
+      >
+        <em>{{ displayEmptyFilterMessage(selectedPickFilter) }}</em>
       </div>
     </template>
     <template v-if="currentDraft.picks && !expanded">
@@ -114,6 +120,9 @@
       onPickClick(pick) {
         this.SELECT_PICK({ pick });
         this.$bus.$emit('pickModal.open');
+      },
+      displayEmptyFilterMessage(filterNumber) {
+        return `You have no picks in the top ${filterNumber}`;
       },
     },
   };

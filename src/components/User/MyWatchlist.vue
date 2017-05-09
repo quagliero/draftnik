@@ -28,6 +28,7 @@
       </p>
       <div
         v-for="player in filteredWatchlist"
+        v-if="filteredWatchlist.length > 0"
         class="panel-block"
       >
         <div class="level is-mobile">
@@ -53,6 +54,12 @@
             </button>
           </div>
         </div>
+      </div>
+      <div
+        v-show="filteredWatchlist.length === 0"
+        class="panel-block"
+      >
+        <em>{{ displayEmptyFilterMessage(selectedWatchlistFilter) }}</em>
       </div>
     </template>
     <template v-if="watchlistReceived && !expanded">
@@ -165,6 +172,15 @@
 
         this.SELECT_PICK({ pick });
         this.$bus.$emit('pickModal.open');
+      },
+      displayEmptyFilterMessage(filterName) {
+        const type = filterName.toUpperCase();
+
+        if (type === 'ALL') {
+          return 'You have no players in your watchlist.';
+        }
+
+        return `You have no ${type}s in your watchlist`;
       },
     },
     created() {
