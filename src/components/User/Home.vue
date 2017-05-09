@@ -29,7 +29,7 @@ export default {
 
 <style lang="scss">
 @import "~bulma/utilities/variables";
-  @media screen and (max-width: $tablet) {
+  @media screen and (max-width: $desktop) {
     .my-trades {
       order: 1 !important;
     }

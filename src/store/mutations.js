@@ -11,6 +11,9 @@ export const CAUGHT_ERROR = 'CAUGHT_ERROR';
 // Users (teams)
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 
+// User
+export const CHANGE_USER_PREF = 'CHANGE_USER_PREF';
+
 // Drafts
 export const SELECT_BOARD_VIEW = 'SELECT_BOARD_VIEW';
 export const SELECT_PICK_VIEW = 'SELECT_PICK_VIEW';

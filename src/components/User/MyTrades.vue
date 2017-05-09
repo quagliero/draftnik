@@ -4,7 +4,7 @@
       Trades
       <button
         class="button is-small pull-right"
-        @click="expanded = !expanded"
+        @click="toggleExpanded()"
       >
         <span class="icon">
           <i
@@ -16,25 +16,33 @@
         </span>
       </button>
     </p>
-    <p class="panel-tabs">
-      <a
-        v-for="filter in tradeFilters"
-        @click="filterTradesBy(filter)"
-        :class="{ 'is-active' : selectedTradeFilter === filter }"
-      >
-        {{ filter }}
-      </a>
-    </p>
-    <template v-if="userTrades">
+    <template v-if="userTrades && expanded">
+      <p class="panel-tabs">
+        <a
+          v-for="filter in tradeFilters"
+          @click="selectedTradeFilter = filter"
+          :class="{ 'is-active' : selectedTradeFilter === filter }"
+        >
+          {{ filter }}
+        </a>
+      </p>
       <trade-panel
-        v-if="expanded"
         v-for="trade in filteredTrades"
         :trade="trade"
         :currentUser="currentUser"
         :key="trade.id"
       />
     </template>
-    <template v-else>
+    <template v-if="userTrades && !expanded">
+      <p class="panel-tabs">
+        <a @click.prevent="toggleExpanded()">
+          <i class="fa fa-angle-double-down"></i>
+          Show
+          <i class="fa fa-angle-double-down"></i>
+        </a>
+      </p>
+    </template>
+    <template v-if="!userTrades && expanded">
       <div class="panel-block">
         <span>Fetching trades </span>
         <span class="icon">
@@ -46,10 +54,11 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
   import filter from 'lodash/filter';
   import TradePanel from './MyTrades/TradePanel.vue';
   import { TradeStatus } from '../../constants';
+  import { CHANGE_USER_PREF } from '../../store/mutations';
 
   export default {
     name: 'my-trades',
@@ -58,7 +67,6 @@
     },
     data() {
       return {
-        expanded: true,
         tradeFilters: ['All', 'Open', 'Accepted', 'Rejected'],
         selectedTradeFilter: 'Open',
       };
@@ -68,12 +76,25 @@
         'currentDraft',
         'currentUser',
         'userTrades',
+        'userPrefs',
       ]),
+      expanded() {
+        return this.userPrefs.showTrades;
+      },
       filteredTrades() {
         return this.filterTradesBy(this.selectedTradeFilter);
       },
     },
     methods: {
+      ...mapMutations({
+        CHANGE_USER_PREF,
+      }),
+      toggleExpanded() {
+        this.CHANGE_USER_PREF({
+          pref: 'showTrades',
+          value: !this.expanded,
+        });
+      },
       filterTradesBy(option) {
         this.selectedTradeFilter = option;
 

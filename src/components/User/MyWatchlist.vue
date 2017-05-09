@@ -4,7 +4,7 @@
       Watchlist
       <button
         class="button is-small pull-right"
-        @click="expanded = !expanded"
+        @click="toggleExpanded()"
       >
         <span class="icon">
           <i
@@ -16,19 +16,18 @@
         </span>
       </button>
     </p>
-    <p class="panel-tabs">
-      <a
-        v-for="pos in watchlistFilters"
-        @click="filterWatchlistBy(pos)"
-        :class="{ 'is-active' : selectedWatchlistFilter === pos }"
-      >
-        {{ pos }}
-      </a>
-    </p>
-    <template v-if="watchlistReceived">
+    <template v-if="watchlistReceived && expanded">
+      <p class="panel-tabs">
+        <a
+          v-for="pos in watchlistFilters"
+          @click="filterWatchlistBy(pos)"
+          :class="{ 'is-active' : selectedWatchlistFilter === pos }"
+        >
+          {{ pos }}
+        </a>
+      </p>
       <div
         v-for="player in filteredWatchlist"
-        v-if="expanded"
         class="panel-block"
       >
         <div class="level is-mobile">
@@ -56,7 +55,16 @@
         </div>
       </div>
     </template>
-    <template v-else="">
+    <template v-if="watchlistReceived && !expanded">
+      <div class="panel-tabs">
+        <a @click.prevent="toggleExpanded()">
+          <i class="fa fa-angle-double-down"></i>
+          Show
+          <i class="fa fa-angle-double-down"></i>
+        </a>
+      </div>
+    </template>
+    <template v-if="!watchlistReceived && expanded">
       <div class="panel-block">
         <span>Fetching watchlist </span>
         <span class="icon">
@@ -73,13 +81,12 @@
   import map from 'lodash/map';
   import keys from 'lodash/keys';
   import findIndex from 'lodash/findIndex';
-  import { SELECT_PICK } from '../../store/mutations';
+  import { SELECT_PICK, CHANGE_USER_PREF } from '../../store/mutations';
 
   export default {
     name: 'my-watchlist',
     data() {
       return {
-        expanded: true,
         watchlistFilters: ['All', 'RB', 'WR', 'QB', 'TE'],
         selectedWatchlistFilter: 'All',
       };
@@ -93,7 +100,11 @@
         'picksArray',
         'currentUser',
         'currentDraft',
+        'userPrefs',
       ]),
+      expanded() {
+        return this.userPrefs.showWatchlist;
+      },
       filteredWatchlist() {
         return this.filterWatchlistBy(this.selectedWatchlistFilter);
       },
@@ -108,7 +119,14 @@
       ]),
       ...mapMutations({
         SELECT_PICK,
+        CHANGE_USER_PREF,
       }),
+      toggleExpanded() {
+        this.CHANGE_USER_PREF({
+          pref: 'showWatchlist',
+          value: !this.expanded,
+        });
+      },
       filterWatchlistBy(pos) {
         this.selectedWatchlistFilter = pos;
 

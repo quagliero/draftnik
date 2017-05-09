@@ -1,3 +1,4 @@
+import { set } from 'vue';
 import get from 'lodash/get';
 import api from '../../api';
 import * as types from '../mutations';
@@ -8,6 +9,11 @@ const state = {
   received: false,
   all: null,
   currentUser: null,
+  prefs: {
+    showPicks: true,
+    showWatchlist: true,
+    showTrades: true,
+  },
 };
 
 // getters
@@ -16,6 +22,7 @@ const getters = {
   currentUser: stateObj => getUserById(stateObj.currentUser),
   isAdmin: stateObj => get(getUserById(stateObj.currentUser), 'isAdmin', false),
   getUserById: stateObj => id => stateObj.all[id],
+  userPrefs: stateObj => stateObj.prefs,
 };
 
 // actions
@@ -52,6 +59,9 @@ const mutations = {
   },
   [types.INVALID_SESSION](stateObj) {
     stateObj.currentUser = null;
+  },
+  [types.CHANGE_USER_PREF](stateObj, { pref, value }) {
+    set(stateObj.prefs, pref, value);
   },
 };
 
