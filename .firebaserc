@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "draftnik-cc54e"
+    "default": "draftnik-cc54e",
+    "dev": "draftnik-dev"
   }
 }

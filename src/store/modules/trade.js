@@ -121,7 +121,6 @@ const actions = {
   },
   proposeTrade({ commit }, { trade, draft }) {
     const tradeKey = db.ref('trades').push().key;
-    const users = [trade.givingTeam, trade.receivingTeam];
     const payload = {
       id: tradeKey,
       givingTeam: trade.givingTeam,
@@ -138,14 +137,10 @@ const actions = {
 
     return new Promise((resolve, reject) => {
       api.set(`trades/${draft}/${tradeKey}`, payload).then(() => {
-        Promise.all(
-          users.map(user => api.set(`tradesUsersPivot/${draft}/${user}/${tradeKey}`, true)),
-        ).then(() => {
-          commit(types.PROPOSED_TRADE, tradeKey);
-          resolve();
-        }).catch((err) => {
-          reject(err);
-        });
+        commit(types.PROPOSED_TRADE, tradeKey);
+        resolve();
+      }).catch((err) => {
+        reject(err);
       });
     });
   },
