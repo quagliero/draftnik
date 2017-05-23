@@ -4,7 +4,7 @@
       Trades
       <button
         class="button is-small pull-right"
-        @click="expanded = !expanded"
+        @click="toggleExpanded()"
       >
         <span class="icon">
           <i
@@ -16,25 +16,39 @@
         </span>
       </button>
     </p>
-    <p class="panel-tabs">
-      <a
-        v-for="filter in tradeFilters"
-        @click="filterTradesBy(filter)"
-        :class="{ 'is-active' : selectedTradeFilter === filter }"
-      >
-        {{ filter }}
-      </a>
-    </p>
-    <template v-if="userTradesReceived">
+    <template v-if="receivedUserTrades && expanded">
+      <p class="panel-tabs">
+        <a
+          v-for="filter in tradeFilters"
+          @click="selectedTradeFilter = filter"
+          :class="{ 'is-active' : selectedTradeFilter === filter }"
+        >
+          {{ filter }}
+        </a>
+      </p>
       <trade-panel
-        v-if="expanded"
         v-for="trade in filteredTrades"
         :trade="trade"
         :currentUser="currentUser"
         :key="trade.id"
       />
+      <p
+        v-show="filteredTrades.length === 0"
+        class="panel-block"
+      >
+        <em>{{ displayEmptyFilterMessage(selectedTradeFilter) }}</em>
+      </p>
     </template>
-    <template v-else>
+    <template v-if="!expanded">
+      <p class="panel-tabs">
+        <a @click.prevent="toggleExpanded()">
+          <i class="fa fa-angle-double-down"></i>
+          Show
+          <i class="fa fa-angle-double-down"></i>
+        </a>
+      </p>
+    </template>
+    <template v-if="!receivedUserTrades && expanded">
       <div class="panel-block">
         <span>Fetching trades </span>
         <span class="icon">
@@ -46,10 +60,11 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
   import filter from 'lodash/filter';
   import TradePanel from './MyTrades/TradePanel.vue';
   import { TradeStatus } from '../../constants';
+  import { CHANGE_USER_PREF } from '../../store/mutations';
 
   export default {
     name: 'my-trades',
@@ -58,7 +73,6 @@
     },
     data() {
       return {
-        expanded: true,
         tradeFilters: ['All', 'Open', 'Accepted', 'Rejected'],
         selectedTradeFilter: 'Open',
       };
@@ -68,32 +82,53 @@
         'currentDraft',
         'currentUser',
         'userTrades',
-        'userTradesReceived',
+        'receivedUserTrades',
+        'userPrefs',
       ]),
+      expanded() {
+        return this.userPrefs.showTrades;
+      },
       filteredTrades() {
         return this.filterTradesBy(this.selectedTradeFilter);
       },
     },
     methods: {
+      ...mapMutations({
+        CHANGE_USER_PREF,
+      }),
+      toggleExpanded() {
+        this.CHANGE_USER_PREF({
+          pref: 'showTrades',
+          value: !this.expanded,
+        });
+      },
       filterTradesBy(option) {
         this.selectedTradeFilter = option;
 
-        if (option === 'Open') {
-          return filter(this.userTrades, (t) => t.status === TradeStatus.OFFERED);
+        switch (option) {
+          case 'All':
+            return filter(this.userTrades);
+          case 'Open':
+            return filter(this.userTrades, (t) => t.status === TradeStatus.OFFERED);
+          case 'Accepted':
+            return filter(this.userTrades, (t) => t.status === TradeStatus.ACCEPTED);
+          case 'Rejected':
+            return filter(
+              this.userTrades,
+              (t) => t.status === TradeStatus.REJECTED || t.status === TradeStatus.WITHDRAWN,
+            );
+          default:
+            return filter(this.userTrades);
+        }
+      },
+      displayEmptyFilterMessage(filterName) {
+        const type = filterName.toLowerCase();
+
+        if (type === 'all') {
+          return 'You have no desire to win, it seems. Make some trades.';
         }
 
-        if (option === 'Accepted') {
-          return filter(this.userTrades, (t) => t.status === TradeStatus.ACCEPTED);
-        }
-
-        if (option === 'Rejected') {
-          return filter(
-            this.userTrades,
-            (t) => t.status === TradeStatus.REJECTED || t.status === TradeStatus.WITHDRAWN,
-          );
-        }
-
-        return this.userTrades;
+        return `You have no ${type} trades`;
       },
     },
     created() {

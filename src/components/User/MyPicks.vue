@@ -4,7 +4,7 @@
       Picks
       <button
         class="button is-small pull-right"
-        @click="expanded = !expanded"
+        @click="toggleExpanded()"
       >
         <span class="icon">
           <i
@@ -16,19 +16,19 @@
         </span>
       </button>
     </p>
-    <div class="panel-tabs">
-      <a
-        v-for="num in pickFilters"
-        @click="filterPickBy(num)"
-        :class="{ 'is-active' : selectedPickFilter === num }"
-      >
-        {{ num === 0 ? 'All' : `${num}` }}
-      </a>
-    </div>
-    <template v-if="currentDraft.picks">
+    <template v-if="currentDraft.picks && expanded">
+      <div class="panel-tabs">
+        <a
+          v-for="num in pickFilters"
+          @click.prevent="selectedPickFilter = num"
+          :class="{ 'is-active' : selectedPickFilter === num }"
+        >
+          {{ num === 0 ? 'All' : `${num}` }}
+        </a>
+      </div>
       <div
         v-for="pick in filteredPicks"
-        v-if="filteredPicks.length && expanded"
+        v-if="filteredPicks.length > 0"
         class="panel-block"
       >
         <button
@@ -41,8 +41,23 @@
           #{{ pick.overall }} - {{ pick.round }}.{{ pick.pickInRound }}
         </button>
       </div>
+      <div
+        v-show="filteredPicks.length === 0"
+        class="panel-block"
+      >
+        <em>{{ displayEmptyFilterMessage(selectedPickFilter) }}</em>
+      </div>
     </template>
-    <template v-else>
+    <template v-if="currentDraft.picks && !expanded">
+      <div class="panel-tabs">
+        <a @click.prevent="toggleExpanded()">
+          <i class="fa fa-angle-double-down"></i>
+          Show
+          <i class="fa fa-angle-double-down"></i>
+        </a>
+      </div>
+    </template>
+    <template v-if="!currentDraft.picks && expanded">
       <div class="panel-block">
         <span>Fetching picks </span>
         <span class="icon">
@@ -56,26 +71,29 @@
 <script>
   import { mapMutations, mapGetters } from 'vuex';
   import filter from 'lodash/filter';
-  import { SELECT_PICK } from '../../store/mutations';
+  import { SELECT_PICK, CHANGE_USER_PREF } from '../../store/mutations';
 
   export default {
     name: 'my-picks',
     data() {
       return {
-        expanded: true,
         pickFilters: [0, 12, 24, 36, 50, 75, 100],
         selectedPickFilter: 0,
       };
     },
     computed: {
-      filteredPicks() {
-        return this.filterPickBy(this.selectedPickFilter);
-      },
       ...mapGetters([
         'currentUser',
         'currentDraft',
         'picksByTeam',
+        'userPrefs',
       ]),
+      expanded() {
+        return this.userPrefs.showPicks;
+      },
+      filteredPicks() {
+        return this.filterPickBy(this.selectedPickFilter);
+      },
       picks() {
         return this.picksByTeam(this.currentUser.id);
       },
@@ -83,9 +101,15 @@
     methods: {
       ...mapMutations([
         SELECT_PICK,
+        CHANGE_USER_PREF,
       ]),
+      toggleExpanded() {
+        this.CHANGE_USER_PREF({
+          pref: 'showPicks',
+          value: !this.expanded,
+        });
+      },
       filterPickBy(num) {
-        this.expanded = true;
         this.selectedPickFilter = num;
         if (num === 0) {
           return this.picks;
@@ -96,6 +120,9 @@
       onPickClick(pick) {
         this.SELECT_PICK({ pick });
         this.$bus.$emit('pickModal.open');
+      },
+      displayEmptyFilterMessage(filterNumber) {
+        return `You have no picks in the top ${filterNumber}`;
       },
     },
   };
