@@ -1,9 +1,7 @@
 import { set } from 'vue';
 import { database as fireDb } from 'firebase';
 import keys from 'lodash/keys';
-import map from 'lodash/map';
-import filter from 'lodash/filter';
-import some from 'lodash/some';
+
 import * as types from '../mutations';
 import api from '../../api';
 import { db } from '../../database';
@@ -168,51 +166,15 @@ const actions = {
     const {
       trade,
       draft,
-      givingTeam,
-      givingPicks,
-      receivingTeam,
-      receivingPicks,
     } = payload;
 
     api.update(`trades/${draft}/${trade}`, {
       status: TradeStatus.ACCEPTED,
       closedAt: fireDb.ServerValue.TIMESTAMP,
     }).then(() => {
-      Promise.all([
-        api.set(`tradesAccepted/${draft}/${trade}`, true),
-        ...map(keys(givingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, receivingTeam)),
-        ...map(keys(receivingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, givingTeam)),
-      ]).then(() => {
-        // mark as accepted
-        commit(types.ACCEPTED_TRADE, trade);
-        // tidy up any potential conflicting open offers
-        const openOffers = filter(state.userTrades, (userTrade) => {
-          if (userTrade.id !== trade && userTrade.status === TradeStatus.OFFERED) {
-            return true;
-          }
-          return false;
-        });
-
-        Promise.all([
-          ...map(openOffers, (offer) => {
-            if (some([
-              some(keys(offer.givingPicks), pick => givingPicks[pick]),
-              some(keys(offer.receivingPicks), pick => givingPicks[pick]),
-              some(keys(offer.givingPicks), pick => receivingPicks[pick]),
-              some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
-            ])) {
-              return api.update(`trades/${draft}/${offer.id}`, {
-                status: TradeStatus.WITHDRAWN,
-                closedAt: fireDb.ServerValue.TIMESTAMP,
-              });
-            }
-
-            return null;
-          }),
-        ]);
-      }).catch((error) => {
-        console.error(error);
-      });
+      commit(types.ACCEPTED_TRADE, trade);
+    }).catch((error) => {
+      console.error(error);
     });
   },
 };

@@ -4,8 +4,10 @@
   "dependencies": {
     "firebase-admin": "~4.1.2",
     "firebase-functions": "^0.5",
+    "lodash.foreach": "^4.5.0",
     "lodash.keys": "^4.2.0",
-    "lodash.map": "^4.6.0"
+    "lodash.map": "^4.6.0",
+    "lodash.some": "^4.6.0"
   },
   "private": true
 }

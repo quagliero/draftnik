@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
 const map = require('lodash.map');
 const keys = require('lodash.keys');
+const forEach = require('lodash.foreach');
+const some = require('lodash.some');
 const admin = require('firebase-admin');
-
-var functions = require('firebase-functions');
+const functions = require('firebase-functions');
 
 // @TODO make this shared from the main project
 const TradeStatus = {
@@ -31,14 +33,23 @@ exports.addTradeToUser = functions.database.ref('/trades/{draftId}/{tradeId}')
     const givingTeam = trade.givingTeam;
     const receivingTeam = trade.receivingTeam;
 
+    console.log(`Adding trade ${tradeId} to user ${givingTeam}`);
+    console.log(`Adding trade ${tradeId} to user ${receivingTeam}`);
+
     return Promise.all([
       admin.database().ref(`/tradesUsersPivot/${draftId}/${givingTeam}/${tradeId}`).set(true),
       admin.database().ref(`/tradesUsersPivot/${draftId}/${receivingTeam}/${tradeId}`).set(true),
     ]);
   });
 
-// add accepted trade to accepted trades
-exports.handleAcceptedTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
+/**
+  Accepted Trade
+  1. add trade to tradesAccepted table
+  2. Swap the picks between the two teams
+  3. Loop through any of these users existing open trades and remove any of them that
+    involved any pick that has just been traded.
+*/
+exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
   .onWrite((event) => {
   // grab the trade status data
     const eventSnapshot = event.data;
@@ -54,50 +65,75 @@ exports.handleAcceptedTrade = functions.database.ref('/trades/{draftId}/{tradeId
       const givingPicks = trade.givingPicks;
       const receivingPicks = trade.receivingPicks;
 
+      console.log(`Trade ${tradeId} ACCEPTED, adding to /tradesAccepted`);
+
       return Promise.all([
         // add entry into accepted trades table
         admin.database().ref(`/tradesAccepted/${draftId}/${tradeId}`).set(true),
-        // transfer pick ownership
-        ...map(keys(givingPicks), (pick) => admin.database().ref(`drafts/${draftId}/picks/${pick}/team`).set(receivingTeam)),
-        ...map(keys(receivingPicks), (pick) => admin.database().ref(`drafts/${draftId}/picks/${pick}/team`).set(givingTeam)),
-      ]);
-    } else {
-      return;
+        // transfer pick ownership from give -> receieve
+        ...map(keys(givingPicks), (pick) => {
+          console.log(`Sending pick ${pick} from ${givingTeam} to ${receivingTeam}`);
+          admin.database().ref(`drafts/${draftId}/picks/${pick}/team`).set(receivingTeam);
+        }),
+        // transfer pick ownership from receive -> give
+        ...map(keys(receivingPicks), (pick) => {
+          console.log(`Sending pick ${pick} from ${receivingTeam} to ${givingTeam}`);
+          admin.database().ref(`drafts/${draftId}/picks/${pick}/team`).set(givingTeam);
+        }),
+      ]).then(() => Promise.all([
+        // get trades
+        admin.database().ref(`/trades/${draftId}`).once('value').then((snapshot) => {
+          const trades = snapshot.val();
+          const openGivingTrades = [];
+          const openReceivingTrades = [];
+          // get existing open trade offers for giving and receiving teams
+          forEach(trades, (offer) => {
+            if (offer.status === TradeStatus.OFFERED) {
+              if (offer.givingTeam === givingTeam || offer.receivingTeam === givingTeam) {
+                openGivingTrades.push(offer);
+              }
+
+              if (offer.givingTeam === receivingTeam || offer.receivingTeam === receivingTeam) {
+                openReceivingTrades.push(offer);
+              }
+            }
+          });
+
+          // check if any open offers to/from giving team include any of givingPicks
+          return Promise.all([
+            ...map(openGivingTrades, (offer) => {
+              if (some([
+                some(keys(offer.givingPicks), pick => givingPicks[pick]),
+                some(keys(offer.receivingPicks), pick => givingPicks[pick]),
+              ])) {
+                console.log(`Withdrawing trade ${offer.id} on behalf of ${givingTeam}`);
+                return admin.database().ref(`trades/${draftId}/${offer.id}`).update({
+                  status: TradeStatus.WITHDRAWN,
+                  closedAt: admin.database.ServerValue.TIMESTAMP,
+                });
+              }
+
+              return null;
+            }),
+            ...map(openReceivingTrades, (offer) => {
+              // check if any open offers to/from receiving team include any of givingPicks
+              if (some([
+                some(keys(offer.givingPicks), pick => receivingPicks[pick]),
+                some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
+              ])) {
+                console.log(`Withdrawing trade ${offer.id} on behalf of ${receivingTeam}`);
+                return admin.database().ref(`trades/${draftId}/${offer.id}`).update({
+                  status: TradeStatus.WITHDRAWN,
+                  closedAt: admin.database.ServerValue.TIMESTAMP,
+                });
+              }
+
+              return null;
+            }),
+          ]);
+        }),
+      ]));
     }
+
+    return false;
   });
-
-  // @TODO tidy up invalid trades
-
-/**
-Promise.all([
-  api.set(`tradesAccepted/${draft}/${trade}`, true),
-  ...map(keys(givingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, receivingTeam)),
-  ...map(keys(receivingPicks), (pick) => api.set(`drafts/${draft}/picks/${pick}/team`, givingTeam)),
-]).then(() => {
-
-// tidy up any potential conflicting open offers
-const openOffers = filter(state.userTrades, (userTrade) => {
-  if (userTrade.id !== trade && userTrade.status === TradeStatus.OFFERED) {
-    return true;
-  }
-  return false;
-});
-
-Promise.all([
-  ...map(openOffers, (offer) => {
-    if (some([
-      some(keys(offer.givingPicks), pick => givingPicks[pick]),
-      some(keys(offer.receivingPicks), pick => givingPicks[pick]),
-      some(keys(offer.givingPicks), pick => receivingPicks[pick]),
-      some(keys(offer.receivingPicks), pick => receivingPicks[pick]),
-    ])) {
-      return api.update(`trades/${draft}/${offer.id}`, {
-        status: TradeStatus.WITHDRAWN,
-        closedAt: fireDb.ServerValue.TIMESTAMP,
-      });
-    }
-
-    return null;
-  }),
-]);
-**/
