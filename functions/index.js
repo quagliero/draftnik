@@ -80,7 +80,7 @@ exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
           console.log(`Sending pick ${pick} from ${receivingTeam} to ${givingTeam}`);
           admin.database().ref(`drafts/${draftId}/picks/${pick}/team`).set(givingTeam);
         }),
-      ]).then(() => Promise.all([
+      ]).then(() => {
         // get trades
         admin.database().ref(`/trades/${draftId}`).once('value').then((snapshot) => {
           const trades = snapshot.val();
@@ -131,8 +131,8 @@ exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
               return null;
             }),
           ]);
-        }),
-      ]));
+        });
+      });
     }
 
     return false;
