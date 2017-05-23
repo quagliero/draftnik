@@ -26,12 +26,14 @@ const state = {
   current: {},
   userTrades: {},
   acceptedTrades: {},
+  receivedUserTrades: false,
 };
 
 // getters
 const getters = {
   currentTrade: stateObj => stateObj.current,
   userTrades: stateObj => stateObj.userTrades,
+  receivedUserTrades: stateObj => stateObj.receivedUserTrades,
   acceptedTrades: stateObj => stateObj.acceptedTrades,
   getTradeById: stateObj => tradeId => stateObj.userTrades[tradeId],
 };
@@ -109,8 +111,13 @@ const actions = {
       });
     };
 
-    api.listenForAddedEvents(url, (snapshot) => getUserTrade(snapshot.key));
-    api.listenForChangeEvents(url, (snapshot) => getUserTrade(snapshot.key));
+    // fetch trades once so we know we have them
+    api.once(url).then((snap) => {
+      commit(types.RECEIVE_USER_TRADES, snap.val());
+      // replace the trades with the dynamic ones
+      api.listenForAddedEvents(url, (snapshot) => getUserTrade(snapshot.key));
+      api.listenForChangeEvents(url, (snapshot) => getUserTrade(snapshot.key));
+    });
   },
   proposeTrade({ commit }, { trade, draft }) {
     const tradeKey = db.ref('trades').push().key;
@@ -260,6 +267,10 @@ const mutations = {
   [types.RECEIVE_USER_TRADE](stateObj, trade) {
     set(stateObj.userTrades, trade.id, trade);
   },
+  [types.RECEIVE_USER_TRADES](stateObj, trades) {
+    stateObj.receivedUserTrades = true;
+    stateObj.userTrades = trades;
+  },
   [types.SAVE_TRADE](stateObj, { trade }) {
     stateObj.savedTrades.push(trade);
   },
@@ -278,6 +289,7 @@ const mutations = {
   [types.DESTROY_SESSION](stateObj) {
     stateObj.userTrades = {};
     stateObj.current = {};
+    stateObj.receivedUserTrades = false;
   },
 };
 
