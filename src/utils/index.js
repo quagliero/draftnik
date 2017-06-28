@@ -76,6 +76,11 @@ export const getPickValue = (pickNumber) => {
   return pick.value;
 };
 
+export const getDoddsPickValue = (pickNumber) => {
+  const pick = store.getters.bayesianValues.find(p => p.overall === pickNumber);
+  return pick.value;
+};
+
 export const getPlayersInRange = (pick, range) => {
   range = range || 2;
   pick = (pick >= range) ? pick : range;

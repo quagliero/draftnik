@@ -1,27 +1,27 @@
 /* eslint-disable */
-function calculate(givingPicks, receivingPicks) {
-  /* Footballguys.com Quik-Vu™ Pick Value Calculator is Copyright © 1997 David Dodds. */
-  const getValue = (pick) => {
-    const magic = 1959.184;
-    const value = (pick.overall * pick.overall * pick.overall * pick.overall * pick.overall * pick.overall * 0.000000001059022)
-    - (pick.overall * pick.overall * pick.overall * pick.overall * pick.overall * 0.0000007143797)
-    + (pick.overall * pick.overall * pick.overall * pick.overall * 0.0001881737)
-    - (pick.overall * pick.overall * pick.overall * 0.02460543)
-    + (pick.overall * pick.overall * 1.724025)
-    - (pick.overall * 71.53730);
+export const getDoddsPickValue = (pick) => {
+  const magic = 1959.184;
+  const value = (pick * pick * pick * pick * pick * pick * 0.000000001059022)
+  - (pick * pick * pick * pick * pick * 0.0000007143797)
+  + (pick * pick * pick * pick * 0.0001881737)
+  - (pick * pick * pick * 0.02460543)
+  + (pick * pick * 1.724025)
+  - (pick * 71.53730);
 
-    if (value < 0) {
-      return Math.round(value + magic);
-    }
-
-    return 0;
+  if (value < 0) {
+    return Number(value + magic);
   }
 
+  return 0;
+};
+
+const calculate = (givingPicks, receivingPicks) => {
+  /* Footballguys.com Quik-Vu™ Pick Value Calculator is Copyright © 1997 David Dodds. */
   const receivingValue = receivingPicks.reduce((acc, pick) => {
-    return acc + getValue(pick);
+    return acc + getDoddsPickValue(pick.overall);
   }, 0);
   const givingValue = givingPicks.reduce((acc, pick) => {
-    return acc + getValue(pick);
+    return acc + getDoddsPickValue(pick.overall);
   }, 0);
   let verdict;
   let difference = 0;
