@@ -1,6 +1,6 @@
 import reduce from 'lodash/reduce';
-import api from '../../api';
 import * as types from '../mutations';
+import playerAdpData from '../../../static/data/adp-player.json';
 
 // initial state
 const state = {
@@ -16,15 +16,8 @@ const getters = {
 // actions
 const actions = {
   getPlayersAndAdp({ commit }) {
-    if (state.all === null) {
-      api.get('/static/data/adp-player.json').then((response) => {
-        const data = response.data;
-        commit(types.RECEIVE_PLAYERS, { players: data.adp_data.player });
-        commit(types.RECEIVE_ADP, { adp: data });
-      }).catch(error => {
-        console.error(error);
-      });
-    }
+    commit(types.RECEIVE_PLAYERS, { players: playerAdpData.player });
+    commit(types.RECEIVE_ADP, { adp: playerAdpData });
   },
 };
 
