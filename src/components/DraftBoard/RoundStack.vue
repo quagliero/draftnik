@@ -14,6 +14,9 @@
         :key="`slotPick_${pick.overall}`"
       />
     </td>
+    <td class="board__number round-number">
+      {{ number }}
+    </td>
   </tr>
 </template>
 
@@ -36,18 +39,3 @@
     },
   };
 </script>
-
-<style lang="scss">
-  @import "~bulma/utilities/variables";
-
-  .round-number {
-    font-size: 1.4rem;
-    padding: 0 2px;
-    vertical-align: middle;
-    text-align: center;
-    background-color: $grey-lighter;
-    color: $grey-darker;
-    border: 2px solid $white;
-  }
-
-</style>

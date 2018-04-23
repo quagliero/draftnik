@@ -68,13 +68,13 @@
           <table class="board__table">
             <thead>
               <tr>
-                <!-- for round number alignment -->
-                <th v-show="boardView === BoardView.STACK"></th>
+                <th></th>
                 <team
                   v-for="team in currentDraftOrder"
                   :teamId="team"
                   :key="team.id"
                 />
+                <th></th>
               </tr>
             </thead>
             <tbody v-show="boardView === BoardView.STACK">
@@ -95,6 +95,49 @@
                 @onPickClick="$emit('onPickClick')"
               />
             </tbody>
+            <tfoot>
+              <tr>
+                <th></th>
+                <team
+                  v-for="team in currentDraftOrder"
+                  :teamId="team"
+                  :key="team.id"
+                />
+                <th></th>
+              </tr>
+              <tr>
+                <th style="vertical-align: middle;">
+                  <img src="/static/img/bayesian.png" class="board-value-icon"/>
+                </th>
+                <th
+                  v-for="team in currentDraftOrder"
+                  :key="team.id"
+                  style="text-align: center; vertical-align: middle;"
+                  class="board__cell"
+                >
+                  {{ getBayesianValues(team) }}
+                </th>
+                <th style="vertical-align: middle;">
+                  <img src="/static/img/bayesian.png" class="board-value-icon"/>
+                </th>
+              </tr>
+              <tr>
+                <th style="vertical-align: middle;">
+                  <img src="/static/img/dodds.png" class="board-value-icon board-value-icon--circle"/>
+                </th>
+                <th
+                  v-for="team in currentDraftOrder"
+                  :key="team.id"
+                  style="text-align: center; vertical-align: middle;"
+                  class="board__cell"
+                >
+                  {{ getDoddsValues(team) }}
+                </th>
+                <th style="vertical-align: middle;">
+                  <img src="/static/img/dodds.png" class="board-value-icon board-value-icon--circle"/>
+                </th>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -113,6 +156,8 @@ import RoundStack from '../components/DraftBoard/RoundStack.vue';
 import Team from '../components/DraftBoard/Team.vue';
 import PickModal from '../components/Modals/PickModal.vue';
 import { BoardView, PickView } from '../constants';
+import { getPickValue } from '../utils';
+import { getDoddsPickValue } from '../utils/dodds-calculator';
 
 export default {
   name: 'draft-board',
@@ -137,6 +182,7 @@ export default {
       'currentDraftOrder',
       'picksByRound',
       'picksByRoundByTeam',
+      'picksByTeam',
       'adp',
       'adpStart',
       'adpEnd',
@@ -170,6 +216,16 @@ export default {
           user: this.currentUser.id,
         });
       }
+    },
+    getBayesianValues(team) {
+      const picks = this.picksByTeam(team);
+      const total = picks.reduce((acc, pick) => acc + getPickValue(pick.overall), 0);
+      return total.toFixed(2);
+    },
+    getDoddsValues(team) {
+      const picks = this.picksByTeam(team);
+      const total = picks.reduce((acc, pick) => acc + getDoddsPickValue(pick.overall), 0);
+      return total.toFixed(2);
     },
   },
 };
@@ -226,9 +282,28 @@ export default {
   min-width: 40px;
 }
 
+.round-number {
+  font-size: 1.4rem;
+  padding: 0 2px;
+  vertical-align: middle;
+  text-align: center;
+  background-color: $grey-lighter;
+  color: $grey-darker;
+  border: 2px solid $white;
+}
+
 .board-toggle {
   margin: 0 auto;
   display: inline-block;
+}
+
+.board-value-icon {
+  max-width: 50px;
+}
+
+.board-value-icon--circle {
+  border-radius: 25px;
+  border: 2px solid $white-ter;
 }
 
 </style>

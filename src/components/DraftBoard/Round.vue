@@ -1,6 +1,12 @@
 <template>
   <tr name="flip-row" is="transition-group">
     <td
+      class="board__number round-number"
+      :key="`${number}_left`"
+    >
+      {{ number }}
+    </td>
+    <td
       v-for="(pick, i) in pickDirection"
       class="board__cell flip-row-item"
       :key="`pick_${pick.overall}`"
@@ -8,6 +14,12 @@
       <pick
         :pick="pick"
       />
+    </td>
+    <td
+      class="board__number round-number"
+      :key="`${number}_right`"
+    >
+      {{ number }}
     </td>
   </tr>
 </template>
