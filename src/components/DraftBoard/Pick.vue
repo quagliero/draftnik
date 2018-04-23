@@ -155,8 +155,11 @@
       },
       playerInfo: {
         get() {
-          return new Promise(resolve => {
+          return new Promise((resolve, reject) => {
             const player = this.adp[Number(this.pick.overall) - 1];
+            if (!player) {
+              reject(new Error(`No player at ADP spot ${Number(this.pick.overall) - 1}`));
+            }
             let playerName = player.name.split(' ');
             if ((playerName.indexOf('Defense') > -1) && playerName.length === 3) {
               playerName = [[playerName[0], playerName[1]].join(' '), playerName[2]];

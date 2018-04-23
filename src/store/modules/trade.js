@@ -232,16 +232,16 @@ const mutations = {
     stateObj.savedTrades.push(trade);
   },
   [types.PROPOSED_TRADE](stateObj, trade) {
-    console.log(trade);
+    console.log(`Propsed trade ${trade}`);
   },
   [types.REJECTED_TRADE](stateObj, trade) {
-    console.log(trade);
+    console.log(`Rejected trade ${trade}`);
   },
   [types.WITHDRAWN_TRADE](stateObj, trade) {
-    console.log(trade);
+    console.log(`Withdrew trade ${trade}`);
   },
   [types.ACCEPTED_TRADE](stateObj, trade) {
-    console.log(trade);
+    console.log(`Accepted trade ${trade}`);
   },
   [types.DESTROY_SESSION](stateObj) {
     stateObj.userTrades = {};

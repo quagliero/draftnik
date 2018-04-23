@@ -16,7 +16,7 @@
         <span class="icon is-small" style="margin-right: 0.5rem;">
           <i class="fa fa-handshake-o"></i>
         </span>
-        <span>Trades</span>
+        <span>Done Deals</span>
       </router-link>
       <router-link
         v-if="authenticated && isAdmin === true"

@@ -45,6 +45,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       // once we have them, don't bother again
       if (state.fetched === true) {
+        console.log('in');
         commit(types.FETCHED_DRAFTS);
         resolve();
       }
@@ -73,7 +74,13 @@ const mutations = {
   },
   [types.RECEIVE_DRAFTS](stateObj, response) {
     stateObj.all = response;
-    stateObj.currentDraft = response[keys(response)[0]];
+    const year = new Date().getFullYear();
+    const recentDraft = toArray(response).find((el) => el.year === year);
+    if (recentDraft) {
+      stateObj.currentDraft = recentDraft;
+    } else {
+      stateObj.currentDraft = toArray(response)[0];
+    }
     stateObj.currentDraftOrder = sortBy(
       keys(stateObj.currentDraft.order), (team) => stateObj.currentDraft.order[team],
     );

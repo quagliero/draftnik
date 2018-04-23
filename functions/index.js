@@ -14,7 +14,9 @@ const TradeStatus = {
   WITHDRAWN: 'WITHDRAWN',
 };
 
-admin.initializeApp(functions.config().firebase);
+const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+
+admin.initializeApp();
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -25,16 +27,13 @@ admin.initializeApp(functions.config().firebase);
 
 // new trade added to the DB
 exports.addTradeToUser = functions.database.ref('/trades/{draftId}/{tradeId}')
-  .onWrite((event) => {
+  .onCreate((snapshot, context) => {
     // Only add trades to user when it is first created.
-    if (event.data.previous.exists()) {
-      return false;
-    }
 
     // grab the new trade data
-    const draftId = event.params.draftId;
-    const tradeId = event.params.tradeId;
-    const trade = event.data.val();
+    const draftId = context.params.draftId;
+    const tradeId = context.params.tradeId;
+    const trade = snapshot.val();
     const givingTeam = trade.givingTeam;
     const receivingTeam = trade.receivingTeam;
 
@@ -53,16 +52,16 @@ exports.addTradeToUser = functions.database.ref('/trades/{draftId}/{tradeId}')
   2. add trade to tradesAccepted table
 */
 exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
-  .onWrite((event) => {
+  .onUpdate((change, context) => {
   // grab the trade status data
-    const eventSnapshot = event.data;
-    const statusSnapshot = eventSnapshot.child('status');
+    const statusBefore = change.before.child('status').val();
+    const statusNow = change.after.child('status').val();
 
     // trade has been accepted
-    if (statusSnapshot.changed() && statusSnapshot.val() === TradeStatus.ACCEPTED) {
-      const trade = event.data.val();
-      const draftId = event.params.draftId;
-      const tradeId = event.params.tradeId;
+    if (statusBefore !== statusNow && statusNow === TradeStatus.ACCEPTED) {
+      const trade = change.after.val();
+      const draftId = context.params.draftId;
+      const tradeId = context.params.tradeId;
       const givingTeam = trade.givingTeam;
       const receivingTeam = trade.receivingTeam;
       const givingPicks = trade.givingPicks;
@@ -82,7 +81,7 @@ exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
       ]).then(() => {
         console.log(`Trade ${tradeId} ACCEPTED, adding to /tradesAccepted`);
         // add entry into accepted trades table
-        admin.database().ref(`/tradesAccepted/${draftId}/${tradeId}`).set(true);
+        return admin.database().ref(`/tradesAccepted/${draftId}/${tradeId}`).set(true);
       });
     }
 
@@ -96,9 +95,9 @@ exports.acceptTrade = functions.database.ref('/trades/{draftId}/{tradeId}')
     involved any pick that has just been traded.
 */
 exports.clearInvalidOffers = functions.database.ref('/tradesAccepted/{draftId}/{tradeId}')
-  .onWrite((event) => {
-    const draftId = event.params.draftId;
-    const tradeId = event.params.tradeId;
+  .onCreate((snap, context) => {
+    const draftId = context.params.draftId;
+    const tradeId = context.params.tradeId;
 
     // get the trade details
     return admin.database().ref(`/trades/${draftId}/${tradeId}`).once('value').then((snapshot) => {
@@ -110,7 +109,7 @@ exports.clearInvalidOffers = functions.database.ref('/tradesAccepted/{draftId}/{
       const receivingPicks = trade.receivingPicks;
 
       // get trades
-      admin.database().ref(`/trades/${draftId}`).once('value').then((snap) => {
+      return admin.database().ref(`/trades/${draftId}`).once('value').then((snap) => {
         const trades = snap.val();
         const openGivingTrades = [];
         const openReceivingTrades = [];
