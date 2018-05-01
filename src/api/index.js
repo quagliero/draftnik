@@ -2,8 +2,8 @@ import axios from 'axios';
 import { auth, db } from '../database';
 
 export default {
-  get(url) {
-    return axios.get(url);
+  get(url, config) {
+    return axios.get(url, config);
   },
   login(credentials) {
     return auth.signInWithEmailAndPassword(

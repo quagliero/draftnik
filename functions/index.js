@@ -1,4 +1,9 @@
 /* eslint-disable no-console */
+const axios = require('axios');
+const parser = require('xml2json');
+const cors = require('cors')({
+  origin: true,
+});
 const map = require('lodash.map');
 const keys = require('lodash.keys');
 const forEach = require('lodash.foreach');
@@ -14,16 +19,23 @@ const TradeStatus = {
   WITHDRAWN: 'WITHDRAWN',
 };
 
-const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+// const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+// fetch player data from FFC
+exports.fetchPlayerData = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    axios.get('https://fantasyfootballcalculator.com/adp_xml.php?format=standard&teams=12')
+      .then((response) => {
+        const data = parser.toJson(response.data, { object: true });
+        res.json(data.root);
+      })
+      .catch((err) => {
+        res.send(err.response);
+      });
+  });
+});
 
 // new trade added to the DB
 exports.addTradeToUser = functions.database.ref('/trades/{draftId}/{tradeId}')
